@@ -10,7 +10,62 @@
         "hgap": 16.0,
         "vgap": 16.0,
         "titleType": 0,
-        "tiles": {}
+        "tiles": {
+          "0,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/Drivetrain/Braking",
+              "_title": "Drivetrain/Braking",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "1,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Drivetrain/Yaw",
+              "_title": "Drivetrain/Yaw",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "2,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Drivetrain/Pitch",
+              "_title": "Drivetrain/Pitch",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "3,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Drivetrain/Roll",
+              "_title": "Drivetrain/Roll",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          }
+        }
       }
     },
     {
@@ -24,53 +79,6 @@
         "vgap": 16.0,
         "titleType": 0,
         "tiles": {}
-      }
-    },
-    {
-      "title": "Gyro",
-      "autoPopulate": false,
-      "autoPopulatePrefix": "",
-      "widgetPane": {
-        "gridSize": 128.0,
-        "showGrid": true,
-        "hgap": 16.0,
-        "vgap": 16.0,
-        "titleType": 0,
-        "tiles": {
-          "0,0": {
-            "size": [
-              2,
-              2
-            ],
-            "content": {
-              "_type": "Network Table Tree",
-              "_source0": "network_table:///Drivetrain Gyro",
-              "_title": "Drivetrain Gyro",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "2,0": {
-            "size": [
-              3,
-              3
-            ],
-            "content": {
-              "_type": "Graph",
-              "_source0": "network_table:///Drivetrain Gyro/Pitch",
-              "_title": "/Drivetrain Gyro/Pitch",
-              "_glyph": 148,
-              "_showGlyph": false,
-              "Graph/Visible time": 30.0,
-              "Graph/X-axis auto scrolling": true,
-              "Y-axis/Automatic bounds": false,
-              "Y-axis/Upper bound": 180.0,
-              "Y-axis/Lower bound": -180.0,
-              "Y-axis/Unit": "ul",
-              "Visible data/Drivetrain Gyro/Pitch": true
-            }
-          }
-        }
       }
     }
   ],

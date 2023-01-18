@@ -9,10 +9,9 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
-
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -25,13 +24,11 @@ public class Drivetrain extends SubsystemBase {
   private static CANSparkMax m_rightDriveTwo;
   private static CANSparkMax m_rightDriveThree;
 
+  private static DifferentialDrive m_drive;
+
   private static Pigeon2 m_gyro;
 
-  private static NetworkTableInstance tableInstance;
-  private static NetworkTable gyroTable;
-  private static NetworkTableEntry gyroYaw;
-  private static NetworkTableEntry gyroPitch;
-  private static NetworkTableEntry gyroRoll;
+  private static boolean m_brakingEnabled;
 
   /** Creates a new Drivetrain. */
   public Drivetrain() {
@@ -43,13 +40,9 @@ public class Drivetrain extends SubsystemBase {
       m_rightDriveTwo = new CANSparkMax(Constants.Drive.kRightMotorTwoId, MotorType.kBrushless);
       m_rightDriveThree = new CANSparkMax(Constants.Drive.kRightMotorThreeId, MotorType.kBrushless);
 
-      m_gyro = new Pigeon2(Constants.Sensors.kPigeonId);
+      m_drive = new DifferentialDrive(m_leftDriveOne, m_rightDriveOne);
 
-      tableInstance = NetworkTableInstance.getDefault();
-      gyroTable = tableInstance.getTable("Drivetrain Gyro");
-      gyroYaw = gyroTable.getEntry("Yaw");
-      gyroPitch = gyroTable.getEntry("Pitch");
-      gyroRoll = gyroTable.getEntry("Roll");
+      m_gyro = new Pigeon2(Constants.Sensors.kPigeonId);
 
       m_leftDriveTwo.follow(m_leftDriveOne);
       m_leftDriveThree.follow(m_leftDriveOne);
@@ -63,16 +56,23 @@ public class Drivetrain extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-    gyroYaw.setDouble(m_gyro.getYaw());
-    gyroPitch.setDouble(m_gyro.getPitch());
-    gyroRoll.setDouble(m_gyro.getRoll());
+  public void periodic() {}
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    builder.setSmartDashboardType("Drivetrain");
+    builder.addBooleanProperty("Braking", this::getBrakingState, null);
+    builder.addDoubleProperty("Yaw", this::getYaw, null);
+    builder.addDoubleProperty("Pitch", this::getPitch, null);
+    builder.addDoubleProperty("Roll", this::getRoll, null);
   }
 
-  public void drive(double leftSpeed, double rightSpeed) {
-    m_leftDriveOne.set(leftSpeed);
-    m_rightDriveOne.set(rightSpeed);
+  public void tankDrive(double leftSpeed, double rightSpeed) {
+    m_drive.tankDrive(leftSpeed, rightSpeed);
+  }
+
+  public void arcadeDrive(double speed, double rotation) {
+    m_drive.arcadeDrive(speed, rotation);
   }
 
   public void stop() {
@@ -81,6 +81,8 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void enableBreak() {
+    m_brakingEnabled = true;
+
     m_leftDriveOne.setIdleMode(IdleMode.kBrake);
     m_leftDriveTwo.setIdleMode(IdleMode.kBrake);
     m_leftDriveThree.setIdleMode(IdleMode.kBrake);
@@ -91,6 +93,8 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void disableBreak() {
+    m_brakingEnabled = false;
+
     m_leftDriveOne.setIdleMode(IdleMode.kCoast);
     m_leftDriveTwo.setIdleMode(IdleMode.kCoast);
     m_leftDriveThree.setIdleMode(IdleMode.kCoast);
@@ -101,5 +105,13 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public Pigeon2 getGyro() { return m_gyro; }
+
+  public boolean getBrakingState() { return m_brakingEnabled; }
+
+  public double getPitch() { return m_gyro.getPitch(); }
+
+  public double getYaw() { return m_gyro.getYaw(); }
+
+  public double getRoll() { return m_gyro.getRoll(); }
 }
 

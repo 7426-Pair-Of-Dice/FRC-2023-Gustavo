@@ -15,20 +15,26 @@ public class Constants {
         public static final int kRightMotorThreeId = 3;
 
         public static final double kSpeedDivider = 0.5;
-    } 
+    }
 
     public static final class Sensors {
         public static final int kPigeonId = 11;
     }
 
     public static final class AutoBalanceCommand {
-        public static final double kMaxPower = 0.1;
+        public static final double kMaxPower = 0.09;
         public static final double kTolerance = 3.0;
         
-        public static final double kP = 0.12;
+        public static final double kP = 0.1;
         public static final double kI = 0.0;
         public static final double kD = 0.0;
 
         public static final double kTargetAngle = 0.0;
+    }
+
+    public static final class DriveStraight {
+        public static final double kP = 0.05;
+
+        public static final double kSpeedDivider = 0.8;
     }
 }

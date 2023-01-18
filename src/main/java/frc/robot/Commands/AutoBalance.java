@@ -51,7 +51,7 @@ public class AutoBalance extends CommandBase {
     double power = m_controller.calculate(m_gyro.getPitch(), Constants.AutoBalanceCommand.kTargetAngle);
     power = Math.max(-Constants.AutoBalanceCommand.kMaxPower, Math.min(Constants.AutoBalanceCommand.kMaxPower, power));
 
-    m_drivetrain.drive(power, power);
+    m_drivetrain.tankDrive(power, power);
   }
 
   // Called once the command ends or is interrupted.
