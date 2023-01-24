@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+
 public class Constants {
     public static final class Drive {
         public static final int kLeftMotorOneId = 4;
@@ -15,6 +17,28 @@ public class Constants {
         public static final int kRightMotorThreeId = 3;
 
         public static final double kSpeedDivider = 0.5;
+
+        public static final double kMotorToDriveShaftGearRatio = 10.71;
+
+        public static final double ksVolts = 0.22;
+        public static final double kvVoltSecondsPerMeter = 2.70;
+        public static final double kaVoltSecondsSquaredPerMeter = 1.99;
+
+        public static final double kPDriveVel = 7;
+        
+        public static final double kTrackWidth = 0.63;
+        public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackWidth);
+
+        public static final double kMaxSpeedMetersPerSecond = 3;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 1;
+
+        public static final double kRamseteB = 2;
+        public static final double kRamseteZeta = 0.7;
+
+        public static final double kEncoderVelocityConversationFactor = 0.008;
+
+        public static final double kMaxVoltage = 10;
+
     }
 
     public static final class Sensors {

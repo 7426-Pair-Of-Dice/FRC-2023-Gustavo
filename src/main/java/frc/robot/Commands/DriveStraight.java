@@ -6,7 +6,6 @@ package frc.robot.Commands;
 
 import com.ctre.phoenix.sensors.Pigeon2;
 
-import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
