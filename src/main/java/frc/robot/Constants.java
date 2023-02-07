@@ -4,9 +4,14 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
-
 public class Constants {
+
+    public static final class TalonFX {
+        public static final double kEncoderResolution = 2048;
+
+        public static final int kTimeoutMs = 30;
+    }
+
     public static final class Drive {
         public static final int kLeftMotorOneId = 4;
         public static final int kLeftMotorTwoId = 5;
@@ -17,48 +22,38 @@ public class Constants {
         public static final int kRightMotorThreeId = 3;
 
         public static final double kSpeedDivider = 0.5;
-
-        public static final double kMotorToDriveShaftGearRatio = 10.71;
-
-        public static final double ksVolts = 0.22;
-        public static final double kvVoltSecondsPerMeter = 2.70;
-        public static final double kaVoltSecondsSquaredPerMeter = 1.99;
-
-        public static final double kPDriveVel = 7;
-        
-        public static final double kTrackWidth = 0.63;
-        public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackWidth);
-
-        public static final double kMaxSpeedMetersPerSecond = 3;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 1;
-
-        public static final double kRamseteB = 2;
-        public static final double kRamseteZeta = 0.7;
-
-        public static final double kEncoderVelocityConversationFactor = 0.008;
-
-        public static final double kMaxVoltage = 10;
-
     }
 
-    public static final class Sensors {
-        public static final int kPigeonId = 11;
-    }
+    public static final class Turret {
+        public static final int kTurretMotorId = 10;
 
-    public static final class AutoBalanceCommand {
-        public static final double kMaxPower = 0.09;
-        public static final double kTolerance = 3.0;
-        
-        public static final double kP = 0.1;
+        public static final double kTurretPercentOutput = 0.25;
+
+        public static final int kPIDLoopId = 0;
+
+        public static final double kP = 0.15;
         public static final double kI = 0.0;
         public static final double kD = 0.0;
 
-        public static final double kTargetAngle = 0.0;
+        public static final double kMotorToDriving = (1 / 10);
+
+        public static final double kDrivingToTurret = (70 / 14);
+
+        public static final double kReverseSoftLimitOffset = 95000; // In ticks
+        public static final double kForwardSoftLimitOffset = 98000; // In ticks
     }
 
-    public static final class DriveStraight {
-        public static final double kP = 0.05;
+    public static final class Arm {
+        public static final int kLeftAngleMotorId = 7;
+        public static final int kRightAngleMotorId = 8;
 
-        public static final double kSpeedDivider = 0.8;
+        public static final int kTelescopeMotorId = 9;
+
+        public static final double kForwardLimitOffset = 80000; // In ticks
+    }
+
+    public static final class Input {
+        public static final int kDriverControllerId = 0;
+        public static final int kOperatorControllerId = 1;
     }
 }
