@@ -46,8 +46,8 @@ public class RobotContainer {
 
     m_breakRobot = new StartEndCommand(() -> m_driveTrain.enableBreak(), () -> m_driveTrain.disableBreak(), m_driveTrain);
 
-    m_turretRight = new RunCommand(() -> m_turret.setPercentOutput(Constants.Turret.kTurretPercentOutput), m_turret);
-    m_turretLeft = new RunCommand(() -> m_turret.setPercentOutput(-Constants.Turret.kTurretPercentOutput), m_turret);
+    m_turretRight = new RunCommand(() -> m_turret.setPercentOutput(-Constants.Turret.kTurretPercentOutput), m_turret);
+    m_turretLeft = new RunCommand(() -> m_turret.setPercentOutput(Constants.Turret.kTurretPercentOutput), m_turret);
     m_stopTurret = new InstantCommand(() -> m_turret.stop(), m_turret);
 
     m_armTeleop = new ArmTeleop(m_arm, m_operatorController);

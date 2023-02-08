@@ -29,27 +29,24 @@ public class Constants {
 
         public static final double kTurretPercentOutput = 0.25;
 
-        public static final int kPIDLoopId = 0;
-
         public static final double kP = 0.15;
         public static final double kI = 0.0;
         public static final double kD = 0.0;
 
-        public static final double kMotorToDriving = (1 / 10);
+        public static final double kMotorToDriving = (1.0 / 10.0);
 
-        public static final double kDrivingToTurret = (70 / 14);
+        public static final double kDrivingToTurret = (14.0 / 70.0);
 
-        public static final double kReverseSoftLimitOffset = 95000; // In ticks
-        public static final double kForwardSoftLimitOffset = 98000; // In ticks
+        public static final double kMotorToTurret = kMotorToDriving * kDrivingToTurret;
     }
 
     public static final class Arm {
-        public static final int kLeftAngleMotorId = 7;
-        public static final int kRightAngleMotorId = 8;
+        public static final int kLeftArmMotorId = 7;
+        public static final int kRightArmMotorId = 8;
 
         public static final int kTelescopeMotorId = 9;
 
-        public static final double kForwardLimitOffset = 80000; // In ticks
+        public static final double kMetersPerRev = 0.0127;
     }
 
     public static final class Input {
