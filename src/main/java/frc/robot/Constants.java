@@ -21,17 +21,16 @@ public class Constants {
         public static final int kRightMotorTwoId = 2;
         public static final int kRightMotorThreeId = 3;
 
-        public static final double kSpeedDivider = 0.5;
+        public static final double kSpeedDivider = 0.7;
     }
 
     public static final class Turret {
         public static final int kTurretMotorId = 10;
 
-        public static final double kTurretPercentOutput = 0.25;
-
-        public static final double kP = 0.15;
+        public static final double kF = 0.0;
+        public static final double kP = 0.05;
         public static final double kI = 0.0;
-        public static final double kD = 0.0;
+        public static final double kD = 5;
 
         public static final double kMotorToDriving = (1.0 / 10.0);
 
@@ -47,6 +46,16 @@ public class Constants {
         public static final int kTelescopeMotorId = 9;
 
         public static final double kMetersPerRev = 0.0127;
+
+        public static final double kMotorToArm = (1.0 / 100.0);
+    }
+
+    public static final class Claw {
+        public static final int kWristMotorId = 12;
+        public static final int kFrontIntakeMotorId = 13;
+        public static final int kBackIntakeMotorId = 14;
+
+        public static final double kIntakePercentOutput = 0.8;
     }
 
     public static final class Input {

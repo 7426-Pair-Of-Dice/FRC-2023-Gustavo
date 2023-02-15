@@ -7,7 +7,7 @@ package frc.robot.Utility;
 // Utility class for unit conversions
 public class Units {
     public static double ticksToDegrees(double ticks, double gearRatio, double ticksPerRev) {
-        return (ticks * gearRatio * (1 / ticksPerRev)) * 360;
+        return (ticks * gearRatio / ticksPerRev) * 360;
     }
 
     public static double degreesToTicks(double degrees, double gearRatio, double ticksPerRev) {
@@ -15,11 +15,11 @@ public class Units {
     }
 
     public static double ticksToMeters(double ticks, double gearRatio, double ticksPerRev, double metersPerRev) {
-        return (ticks * gearRatio * (1 / ticksPerRev)) * metersPerRev;
+        return (ticks * gearRatio / ticksPerRev) * metersPerRev;
     }
 
     public static double metersToTicks(double meters, double gearRatio, double ticksPerRev, double metersPerRev) {
-        return (meters / metersPerRev) * ticksPerRev;
+        return (meters / metersPerRev) * ticksPerRev * gearRatio;
     }
 
     public static double inchesToMeters(double inches) {

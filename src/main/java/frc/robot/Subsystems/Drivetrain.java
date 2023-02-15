@@ -59,6 +59,14 @@ public class Drivetrain extends SubsystemBase {
     m_rightDriveTwo.setInverted(true);
     m_rightDriveThree.setInverted(true);
 
+    m_leftDriveOne.setIdleMode(IdleMode.kBrake);
+    m_leftDriveTwo.setIdleMode(IdleMode.kBrake);
+    m_leftDriveThree.setIdleMode(IdleMode.kBrake);
+
+    m_rightDriveOne.setIdleMode(IdleMode.kBrake);
+    m_rightDriveTwo.setIdleMode(IdleMode.kBrake);
+    m_rightDriveThree.setIdleMode(IdleMode.kBrake);
+
     m_drive = new DifferentialDrive(m_leftDriveOne, m_rightDriveOne);
   }
 
@@ -82,30 +90,6 @@ public class Drivetrain extends SubsystemBase {
   public void stop() {
     m_leftDriveOne.set(0);
     m_rightDriveOne.set(0);
-  }
-
-  public void enableBreak() {
-    m_brakingEnabled = true;
-
-    m_leftDriveOne.setIdleMode(IdleMode.kBrake);
-    m_leftDriveTwo.setIdleMode(IdleMode.kBrake);
-    m_leftDriveThree.setIdleMode(IdleMode.kBrake);
-
-    m_rightDriveOne.setIdleMode(IdleMode.kBrake);
-    m_rightDriveTwo.setIdleMode(IdleMode.kBrake);
-    m_rightDriveThree.setIdleMode(IdleMode.kBrake);
-  }
-
-  public void disableBreak() {
-    m_brakingEnabled = false;
-
-    m_leftDriveOne.setIdleMode(IdleMode.kCoast);
-    m_leftDriveTwo.setIdleMode(IdleMode.kCoast);
-    m_leftDriveThree.setIdleMode(IdleMode.kCoast);
-
-    m_rightDriveOne.setIdleMode(IdleMode.kCoast);
-    m_rightDriveTwo.setIdleMode(IdleMode.kCoast);
-    m_rightDriveThree.setIdleMode(IdleMode.kCoast);
   }
 
   public boolean getBrakingState() { return m_brakingEnabled; }

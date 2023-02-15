@@ -20,13 +20,19 @@ public class RobotContainer {
   private static Drivetrain m_driveTrain;
   private static Turret m_turret;
   private static Arm m_arm;
+  private static Claw m_claw;
 
   private static DriveTeleop m_driveTeleop;
-  private static StartEndCommand m_breakRobot;
   private static RunCommand m_turretRight;
   private static RunCommand m_turretLeft;
   private static InstantCommand m_stopTurret;
   private static ArmTeleop m_armTeleop;
+
+  private static RunCommand m_intakeCone;
+  private static RunCommand m_intakeCube;
+  private static RunCommand m_releaseCone;
+  private static RunCommand m_releaseCube;
+  private static InstantCommand m_stopIntake;
 
   private static CommandXboxController m_driverController;
   private static CommandXboxController m_operatorController;
@@ -40,17 +46,21 @@ public class RobotContainer {
     m_driveTrain = new Drivetrain();
     m_turret = new Turret();
     m_arm = new Arm();
+    m_claw = new Claw();
 
     // Commands
     m_driveTeleop = new DriveTeleop(m_driveTrain, m_driverController);
+    m_armTeleop = new ArmTeleop(m_arm, m_operatorController);
 
-    m_breakRobot = new StartEndCommand(() -> m_driveTrain.enableBreak(), () -> m_driveTrain.disableBreak(), m_driveTrain);
-
-    m_turretRight = new RunCommand(() -> m_turret.setPercentOutput(-Constants.Turret.kTurretPercentOutput), m_turret);
-    m_turretLeft = new RunCommand(() -> m_turret.setPercentOutput(Constants.Turret.kTurretPercentOutput), m_turret);
+    m_turretRight = new RunCommand(() -> m_turret.setPercentOutput(-0.25), m_turret);
+    m_turretLeft = new RunCommand(() -> m_turret.setPercentOutput(0.25), m_turret);
     m_stopTurret = new InstantCommand(() -> m_turret.stop(), m_turret);
 
-    m_armTeleop = new ArmTeleop(m_arm, m_operatorController);
+    m_intakeCone = new RunCommand(() -> m_claw.setIntakePercentOutput(Constants.Claw.kIntakePercentOutput, Constants.Claw.kIntakePercentOutput), m_claw);
+    m_releaseCone = new RunCommand(() -> m_claw.setIntakePercentOutput(-Constants.Claw.kIntakePercentOutput, -Constants.Claw.kIntakePercentOutput), m_claw);
+    m_intakeCube = new RunCommand(() -> m_claw.setIntakePercentOutput(-Constants.Claw.kIntakePercentOutput, -Constants.Claw.kIntakePercentOutput), m_claw);
+    m_releaseCube = new RunCommand(() -> m_claw.setIntakePercentOutput(Constants.Claw.kIntakePercentOutput, Constants.Claw.kIntakePercentOutput), m_claw);
+    m_stopIntake = new InstantCommand(() -> m_claw.stopIntake(), m_claw);
 
     m_driveTrain.setDefaultCommand(m_driveTeleop);
     m_arm.setDefaultCommand(m_armTeleop);
@@ -61,10 +71,14 @@ public class RobotContainer {
   
 
   private void configureBindings() {
-    m_driverController.b().whileTrue(m_breakRobot);
-
     m_operatorController.leftTrigger().whileTrue(m_turretLeft).onFalse(m_stopTurret);
     m_operatorController.rightTrigger().whileTrue(m_turretRight).onFalse(m_stopTurret);
+
+    m_operatorController.y().whileTrue(m_intakeCone).onFalse(m_stopIntake);
+    m_operatorController.a().whileTrue(m_releaseCone).onFalse(m_stopIntake);
+
+    m_operatorController.x().whileTrue(m_intakeCube).onFalse(m_stopIntake);
+    m_operatorController.b().whileTrue(m_releaseCube).onFalse(m_stopIntake);
   }
 
   public void updateDashboard() {

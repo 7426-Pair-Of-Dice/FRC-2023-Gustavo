@@ -34,7 +34,9 @@ public class DriveTeleop extends CommandBase {
     double leftSpeed = -m_xboxController.getLeftY();
     double rightSpeed = -m_xboxController.getRightY();
 
-    m_driveTrain.tankDrive(leftSpeed * Constants.Drive.kSpeedDivider, rightSpeed * Constants.Drive.kSpeedDivider);
+    if (leftSpeed > 0.05 || rightSpeed > 0.05) {
+      m_driveTrain.tankDrive(leftSpeed * Constants.Drive.kSpeedDivider, rightSpeed * Constants.Drive.kSpeedDivider);
+    }
   }
 
   // Called once the command ends or is interrupted.

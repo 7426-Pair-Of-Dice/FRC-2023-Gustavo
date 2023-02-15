@@ -37,15 +37,21 @@ public class Arm extends SubsystemBase {
 
     m_armMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, Constants.TalonFX.kTimeoutMs);
 
-    m_armZeroPosition = getArmPosition();
-
     m_armMotor.configNominalOutputForward(0, Constants.TalonFX.kTimeoutMs);
     m_armMotor.configNominalOutputReverse(0, Constants.TalonFX.kTimeoutMs);
     m_armMotor.configPeakOutputForward(1, Constants.TalonFX.kTimeoutMs);
     m_armMotor.configPeakOutputReverse(-1, Constants.TalonFX.kTimeoutMs);
 
     m_armMotor.configAllowableClosedloopError(0, 0, Constants.TalonFX.kTimeoutMs);
-    
+
+    m_armMotor.configForwardSoftLimitThreshold(m_armZeroPosition + Units.degreesToTicks(100, Constants.Arm.kMotorToArm, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
+    m_armMotor.configReverseSoftLimitThreshold(m_armZeroPosition, Constants.TalonFX.kTimeoutMs);
+    m_armMotor.configForwardSoftLimitEnable(true);
+    m_armMotor.configReverseSoftLimitEnable(true);
+
+    m_armMotor.configNeutralDeadband(0.05);
+    m_armMotorFollower.configNeutralDeadband(0.05);
+
     m_armMotorFollower.follow(m_armMotor);
     m_armMotorFollower.setInverted(TalonFXInvertType.OpposeMaster);
 
@@ -57,25 +63,25 @@ public class Arm extends SubsystemBase {
 
     m_telescopeMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, Constants.TalonFX.kTimeoutMs);
 
-    m_telescopeZeroPosition = getTelescopePosition();
-
     m_telescopeMotor.configNominalOutputForward(0, Constants.TalonFX.kTimeoutMs);
     m_telescopeMotor.configNominalOutputReverse(0, Constants.TalonFX.kTimeoutMs);
     m_telescopeMotor.configPeakOutputForward(1, Constants.TalonFX.kTimeoutMs);
     m_telescopeMotor.configPeakOutputReverse(-1, Constants.TalonFX.kTimeoutMs);
 
-    m_telescopeMotor.configIntegratedSensorOffset(0);
-
     m_telescopeMotor.configReverseSoftLimitThreshold(m_telescopeZeroPosition);
     m_telescopeMotor.configForwardSoftLimitThreshold(m_telescopeZeroPosition + Units.metersToTicks(Units.inchesToMeters(20), 1, Constants.TalonFX.kEncoderResolution, Constants.Arm.kMetersPerRev));
-    
     m_telescopeMotor.configReverseSoftLimitEnable(true);
     m_telescopeMotor.configForwardSoftLimitEnable(true);
+
+    m_telescopeMotor.configNeutralDeadband(0.05);
 
     m_telescopeMotor.setNeutralMode(NeutralMode.Brake);
 
     m_telescopeMotor.setInverted(true);
 
+    // Sets motor zero positions (where they are at the beginning of runtime)
+    m_armZeroPosition = getArmPosition();
+    m_telescopeZeroPosition = getTelescopePosition();
   }
 
   @Override

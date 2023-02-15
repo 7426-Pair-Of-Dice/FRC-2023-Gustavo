@@ -30,10 +30,6 @@ public class Turret extends SubsystemBase {
 
     m_turretMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
 
-    m_zeroPosition = getPosition();
-
-    m_turretMotor.configIntegratedSensorOffset(0);
-
     m_turretMotor.configNominalOutputForward(0, Constants.TalonFX.kTimeoutMs);
     m_turretMotor.configNominalOutputReverse(0, Constants.TalonFX.kTimeoutMs);
     m_turretMotor.configPeakOutputForward(1, Constants.TalonFX.kTimeoutMs);
@@ -41,6 +37,7 @@ public class Turret extends SubsystemBase {
 
     m_turretMotor.configAllowableClosedloopError(0, 0, Constants.TalonFX.kTimeoutMs);
 
+    m_turretMotor.config_kF(0, Constants.Turret.kF);
     m_turretMotor.config_kP(0, Constants.Turret.kP);
     m_turretMotor.config_kI(0, Constants.Turret.kI);
     m_turretMotor.config_kD(0, Constants.Turret.kD);
@@ -51,6 +48,7 @@ public class Turret extends SubsystemBase {
     m_turretMotor.configForwardSoftLimitEnable(true);
     m_turretMotor.configReverseSoftLimitEnable(true);
 
+    m_zeroPosition = getPosition();
   }
 
   @Override
@@ -67,6 +65,11 @@ public class Turret extends SubsystemBase {
     m_turretMotor.set(ControlMode.PercentOutput, percentOutput);
   }
 
+  public void setPosition(double degrees) {
+    double ticks = Units.degreesToTicks(degrees, Constants.Turret.kMotorToTurret, Constants.TalonFX.kEncoderResolution);
+    m_turretMotor.set(ControlMode.Position, m_zeroPosition + ticks);
+  }
+
   public void stop() {
     m_turretMotor.set(ControlMode.PercentOutput, 0);
   }
@@ -80,7 +83,7 @@ public class Turret extends SubsystemBase {
     return getPosition() - m_zeroPosition;
   }
 
-  //
+  // Returns the angle the turret it as based off encoder counts (possible inaccuracies due to mechanical approximations)
   public double getAngle() {
     return Units.ticksToDegrees(getOffset(), Constants.Turret.kMotorToTurret, Constants.TalonFX.kEncoderResolution);
   }
