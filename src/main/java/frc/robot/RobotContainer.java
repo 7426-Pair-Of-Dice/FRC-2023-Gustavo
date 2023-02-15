@@ -85,6 +85,7 @@ public class RobotContainer {
     SmartDashboard.putData(m_driveTrain);
     SmartDashboard.putData(m_turret);
     SmartDashboard.putData(m_arm);
+    SmartDashboard.putData(m_claw);
   }
 
   public Command getAutonomousCommand() {

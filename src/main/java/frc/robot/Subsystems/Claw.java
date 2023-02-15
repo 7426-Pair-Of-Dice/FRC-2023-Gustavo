@@ -10,7 +10,12 @@ import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.revrobotics.Rev2mDistanceSensor;
+import com.revrobotics.Rev2mDistanceSensor.Port;
+import com.revrobotics.Rev2mDistanceSensor.RangeProfile;
+import com.revrobotics.Rev2mDistanceSensor.Unit;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -21,12 +26,18 @@ public class Claw extends SubsystemBase {
   private static VictorSPX m_backIntakeMotor;
   private static VictorSPX m_frontIntakeMotor;
 
+  private static Rev2mDistanceSensor m_distanceSensor;
+
   /** Creates a new Claw. */
   public Claw() {
     m_wristMotor = new TalonFX(Constants.Claw.kWristMotorId);
 
     m_backIntakeMotor = new VictorSPX(Constants.Claw.kBackIntakeMotorId);
     m_frontIntakeMotor = new VictorSPX(Constants.Claw.kFrontIntakeMotorId);
+
+    m_distanceSensor = new Rev2mDistanceSensor(Port.kOnboard, Unit.kInches, RangeProfile.kDefault);
+
+    m_distanceSensor.setAutomaticMode(true);
 
     // Wrist configuration
     m_wristMotor.configFactoryDefault();
@@ -52,6 +63,12 @@ public class Claw extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    builder.setSmartDashboardType("Claw");
+    builder.addDoubleProperty("Claw Front Sonar Distance", this::getSonarRange, null);
+  }
+
   public void setWristPercentOutput(double percentOutput) {
     m_wristMotor.set(ControlMode.PercentOutput, percentOutput);
   }
@@ -67,5 +84,9 @@ public class Claw extends SubsystemBase {
 
   public void stopIntake() {
     setIntakePercentOutput(0, 0);
+  }
+
+  public double getSonarRange() {
+    return m_distanceSensor.GetRange();
   }
 }

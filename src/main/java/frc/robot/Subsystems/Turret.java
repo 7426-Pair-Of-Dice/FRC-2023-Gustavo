@@ -28,7 +28,7 @@ public class Turret extends SubsystemBase {
 
     m_turretMotor.setInverted(true);
 
-    m_turretMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
+    m_turretMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, Constants.TalonFX.kTimeoutMs);
 
     m_turretMotor.configNominalOutputForward(0, Constants.TalonFX.kTimeoutMs);
     m_turretMotor.configNominalOutputReverse(0, Constants.TalonFX.kTimeoutMs);
@@ -47,6 +47,8 @@ public class Turret extends SubsystemBase {
 
     m_turretMotor.configForwardSoftLimitEnable(true);
     m_turretMotor.configReverseSoftLimitEnable(true);
+
+    m_turretMotor.configNeutralDeadband(0.05);
 
     m_zeroPosition = getPosition();
   }
