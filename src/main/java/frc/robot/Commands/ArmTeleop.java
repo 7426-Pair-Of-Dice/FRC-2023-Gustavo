@@ -35,10 +35,16 @@ public class ArmTeleop extends CommandBase {
   @Override
   public void execute() {
 
-    double armOutput = -m_xboxController.getLeftY() * 0.6;
+    double armOutput = -m_xboxController.getLeftY() * 0.3;
     double armTelescopeOutput = -m_xboxController.getRightY() * 0.6;
 
-    m_arm.setArmPercentOutput(armOutput);
+
+    if (Math.abs(armOutput) > 0.05) {
+      m_arm.setArmPercentOutput(armOutput);
+    } else {
+      m_arm.setArmLastPosition();
+    }
+
     m_arm.setTelescopePercentOutput(armTelescopeOutput);
   }
 

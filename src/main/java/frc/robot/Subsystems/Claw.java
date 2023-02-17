@@ -36,6 +36,8 @@ public class Claw extends SubsystemBase {
 
   private static Pigeon2 m_gyro;
 
+  private static double m_lastWristPosition;
+
   /** Creates a new Claw. */
   public Claw() {
     m_wristMotor = new TalonFX(Constants.Claw.kWristMotorId);
@@ -67,26 +69,28 @@ public class Claw extends SubsystemBase {
 
     m_wristMotor.selectProfileSlot(0, 0);
     m_wristMotor.config_kF(0, 0.2);
-    m_wristMotor.config_kP(0, 0.05);
+    m_wristMotor.config_kP(0, 0.08);
     m_wristMotor.config_kI(0, 0);
     m_wristMotor.config_kD(0,0);
 
     m_wristMotor.configAllowableClosedloopError(0, 0, Constants.TalonFX.kTimeoutMs);
 
-    m_wristMotor.configForwardSoftLimitThreshold(Units.degreesToTicks(90, Constants.Claw.kMotorToWrist, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
+    m_wristMotor.configForwardSoftLimitThreshold(Units.degreesToTicks(120, Constants.Claw.kMotorToWrist, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
     m_wristMotor.configReverseSoftLimitThreshold(0, Constants.TalonFX.kTimeoutMs);
     
     m_wristMotor.configForwardSoftLimitEnable(true);
     m_wristMotor.configReverseSoftLimitEnable(true);
 
     m_wristMotor.configMotionCruiseVelocity(10000, Constants.TalonFX.kTimeoutMs);
-    m_wristMotor.configMotionAcceleration(5000, Constants.TalonFX.kTimeoutMs); 
+    m_wristMotor.configMotionAcceleration(8000, Constants.TalonFX.kTimeoutMs); 
 
     m_wristMotor.configNeutralDeadband(0.05);
 
     m_wristMotor.setNeutralMode(NeutralMode.Brake);
 
     m_wristMotor.setInverted(true);
+
+    m_lastWristPosition = getPosition();
 
     // Intake Configuration
     m_backIntakeMotor.configNeutralDeadband(0.05);
@@ -107,10 +111,12 @@ public class Claw extends SubsystemBase {
     builder.addDoubleProperty("Claw Pitch", this::getPitch, null);
     builder.addDoubleProperty("Claw Roll", this::getRoll, null);
     builder.addDoubleProperty("Claw Position", this::getPosition, null);
+    builder.addDoubleProperty("Claw Angle", this::getAngle, null);
   }
 
   public void setWristPercentOutput(double percentOutput) {
     m_wristMotor.set(ControlMode.PercentOutput, percentOutput);
+    m_lastWristPosition = getPosition();
   }
 
   public void setIntakePercentOutput(double backPercentOutput, double frontPercentOutput) {
@@ -120,7 +126,12 @@ public class Claw extends SubsystemBase {
 
   public void setWristPosition(double degrees) {
     double ticks = Units.degreesToTicks(degrees, Constants.Claw.kMotorToWrist, Constants.TalonFX.kEncoderResolution);
+    m_lastWristPosition = ticks;
     m_wristMotor.set(ControlMode.MotionMagic, ticks);
+  }
+
+  public void setWristLastPosition() {
+    m_wristMotor.set(ControlMode.MotionMagic, m_lastWristPosition);
   }
 
   public void stopWrist() {
@@ -129,6 +140,10 @@ public class Claw extends SubsystemBase {
 
   public void stopIntake() {
     setIntakePercentOutput(0, 0);
+  }
+
+  public void zero() {
+    m_wristMotor.setSelectedSensorPosition(0);
   }
 
   public double getConeRange() { return m_coneDistanceSensor.GetRange(); }
@@ -142,4 +157,6 @@ public class Claw extends SubsystemBase {
   public double getRoll() { return m_gyro.getRoll(); }
 
   public double getPosition() { return m_wristMotor.getSelectedSensorPosition(); }
+
+  public double getAngle() { return Units.ticksToDegrees(getPosition(), Constants.Claw.kMotorToWrist, Constants.TalonFX.kEncoderResolution); }
 }

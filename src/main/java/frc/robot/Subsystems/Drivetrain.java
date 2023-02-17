@@ -6,6 +6,7 @@ package frc.robot.Subsystems;
 
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -23,6 +24,9 @@ public class Drivetrain extends SubsystemBase {
   private static CANSparkMax m_rightDriveOne;  
   private static CANSparkMax m_rightDriveTwo;
   private static CANSparkMax m_rightDriveThree;
+
+  private static RelativeEncoder m_leftEncoder;
+  private static RelativeEncoder m_rightEncoder;
 
   private static DifferentialDrive m_drive;
 
@@ -68,6 +72,9 @@ public class Drivetrain extends SubsystemBase {
     m_rightDriveTwo.setIdleMode(IdleMode.kBrake);
     m_rightDriveThree.setIdleMode(IdleMode.kBrake);
 
+    m_leftEncoder = m_leftDriveOne.getEncoder();
+    m_rightEncoder = m_rightDriveOne.getEncoder();
+
     m_drive = new DifferentialDrive(m_leftDriveOne, m_rightDriveOne);
 
     m_gyro = new Pigeon2(Constants.Sensors.kDrivetrainGyroId);
@@ -97,6 +104,11 @@ public class Drivetrain extends SubsystemBase {
   public void stop() {
     m_leftDriveOne.set(0);
     m_rightDriveOne.set(0);
+  }
+
+  public void zero() {
+    m_leftEncoder.setPosition(0);
+    m_rightEncoder.setPosition(0);
   }
 
   public double getYaw() { return m_gyro.getYaw(); }

@@ -24,6 +24,8 @@ public class Arm extends SubsystemBase {
   private static double m_telescopeZeroPosition;
   private static double m_armZeroPosition;
 
+  private static double m_lastArmPosition;
+
   /** Creates a new Arm. */
   public Arm() {
 
@@ -48,6 +50,15 @@ public class Arm extends SubsystemBase {
     m_armMotor.configReverseSoftLimitThreshold(m_armZeroPosition, Constants.TalonFX.kTimeoutMs);
     m_armMotor.configForwardSoftLimitEnable(true);
     m_armMotor.configReverseSoftLimitEnable(true);
+
+    m_armMotor.selectProfileSlot(0, 0);
+    m_armMotor.config_kF(0, 0.2);
+    m_armMotor.config_kP(0, 0.08);
+    m_armMotor.config_kI(0, 0.0);
+    m_armMotor.config_kD(0, 0.0);
+
+    m_armMotor.configMotionCruiseVelocity(10000, Constants.TalonFX.kTimeoutMs);
+    m_armMotor.configMotionAcceleration(5000, Constants.TalonFX.kTimeoutMs);
 
     m_armMotor.configNeutralDeadband(0.05);
     m_armMotorFollower.configNeutralDeadband(0.05);
@@ -99,6 +110,17 @@ public class Arm extends SubsystemBase {
 
   public void setArmPercentOutput(double percentOutput) {
     m_armMotor.set(ControlMode.PercentOutput, percentOutput);
+    m_lastArmPosition = getArmPosition();
+  }
+
+  public void setArmPosition(double degrees) {
+    double ticks = Units.degreesToTicks(degrees, Constants.Arm.kMotorToArm, Constants.TalonFX.kEncoderResolution);
+    m_lastArmPosition = ticks;
+    m_armMotor.set(ControlMode.MotionMagic, ticks);
+  }
+
+  public void setArmLastPosition() {
+    m_armMotor.set(ControlMode.MotionMagic, m_lastArmPosition);
   }
 
   public void setTelescopePercentOutput(double percentOutput) {
@@ -123,5 +145,10 @@ public class Arm extends SubsystemBase {
 
   public double getTelescopePositionMeters() {
     return Units.ticksToMeters(getTelescopeOffset(), 1, Constants.TalonFX.kEncoderResolution, Constants.Arm.kMetersPerRev);
+  }
+
+  public void zero() {
+    m_armMotor.setSelectedSensorPosition(0);
+    m_telescopeMotor.setSelectedSensorPosition(0);
   }
 }

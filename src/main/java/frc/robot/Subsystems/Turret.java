@@ -37,10 +37,15 @@ public class Turret extends SubsystemBase {
 
     m_turretMotor.configAllowableClosedloopError(0, 0, Constants.TalonFX.kTimeoutMs);
 
+    m_turretMotor.selectProfileSlot(0, 0);
     m_turretMotor.config_kF(0, Constants.Turret.kF);
     m_turretMotor.config_kP(0, Constants.Turret.kP);
     m_turretMotor.config_kI(0, Constants.Turret.kI);
     m_turretMotor.config_kD(0, Constants.Turret.kD);
+
+    m_turretMotor.configMotionCruiseVelocity(10000, Constants.TalonFX.kTimeoutMs);
+    m_turretMotor.configMotionAcceleration(5000, Constants.TalonFX.kTimeoutMs);
+    m_turretMotor.configMotionSCurveStrength(2);
 
     m_turretMotor.configForwardSoftLimitThreshold(Units.degreesToTicks(360, Constants.Turret.kMotorToTurret, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
     m_turretMotor.configReverseSoftLimitThreshold(Units.degreesToTicks(-360, Constants.Turret.kMotorToTurret, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
@@ -67,7 +72,7 @@ public class Turret extends SubsystemBase {
 
   public void setPosition(double degrees) {
     double ticks = Units.degreesToTicks(degrees, Constants.Turret.kMotorToTurret, Constants.TalonFX.kEncoderResolution);
-    m_turretMotor.set(ControlMode.Position, ticks);
+    m_turretMotor.set(ControlMode.MotionMagic, ticks);
   }
 
   public void stop() {
@@ -80,5 +85,9 @@ public class Turret extends SubsystemBase {
 
   public double getAngle() {
     return Units.ticksToDegrees(getPosition(), Constants.Turret.kMotorToTurret, Constants.TalonFX.kEncoderResolution);
+  }
+
+  public void zero() {
+    m_turretMotor.setSelectedSensorPosition(0);
   }
 }
