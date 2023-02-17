@@ -12,6 +12,14 @@ public class Constants {
         public static final int kTimeoutMs = 30;
     }
 
+    public static final class Sensors {
+        public static final int kDrivetrainGyroId = 11;
+        public static final int kClawGyroId = 15;
+
+        public static final int kClawSonarPingChannel = 1;
+        public static final int kClawSonarEchoChannel = 0;
+    }
+
     public static final class Drive {
         public static final int kLeftMotorOneId = 4;
         public static final int kLeftMotorTwoId = 5;
@@ -48,6 +56,8 @@ public class Constants {
         public static final double kMetersPerRev = 0.0127;
 
         public static final double kMotorToArm = (1.0 / 100.0);
+
+        public static final double kMotorToTelescope = (1.0 / 3.0);
     }
 
     public static final class Claw {
@@ -56,6 +66,8 @@ public class Constants {
         public static final int kBackIntakeMotorId = 14;
 
         public static final double kIntakePercentOutput = 0.8;
+
+        public static final double kMotorToWrist = (1.0 / 100.0);
     }
 
     public static final class Input {

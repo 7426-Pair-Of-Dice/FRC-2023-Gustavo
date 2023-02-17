@@ -69,7 +69,7 @@ public class Arm extends SubsystemBase {
     m_telescopeMotor.configPeakOutputReverse(-1, Constants.TalonFX.kTimeoutMs);
 
     m_telescopeMotor.configReverseSoftLimitThreshold(m_telescopeZeroPosition);
-    m_telescopeMotor.configForwardSoftLimitThreshold(m_telescopeZeroPosition + Units.metersToTicks(Units.inchesToMeters(20), 1, Constants.TalonFX.kEncoderResolution, Constants.Arm.kMetersPerRev));
+    m_telescopeMotor.configForwardSoftLimitThreshold(m_telescopeZeroPosition + Units.metersToTicks(Units.inchesToMeters(20), Constants.Arm.kMotorToTelescope, Constants.TalonFX.kEncoderResolution, Constants.Arm.kMetersPerRev));
     m_telescopeMotor.configReverseSoftLimitEnable(true);
     m_telescopeMotor.configForwardSoftLimitEnable(true);
 

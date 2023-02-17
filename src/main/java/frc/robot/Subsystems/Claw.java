@@ -10,14 +10,18 @@ import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.ctre.phoenix.sensors.Pigeon2;
 import com.revrobotics.Rev2mDistanceSensor;
 import com.revrobotics.Rev2mDistanceSensor.Port;
 import com.revrobotics.Rev2mDistanceSensor.RangeProfile;
 import com.revrobotics.Rev2mDistanceSensor.Unit;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Utility.Units;
 
 public class Claw extends SubsystemBase {
 
@@ -26,7 +30,11 @@ public class Claw extends SubsystemBase {
   private static VictorSPX m_backIntakeMotor;
   private static VictorSPX m_frontIntakeMotor;
 
-  private static Rev2mDistanceSensor m_distanceSensor;
+  private static Rev2mDistanceSensor m_coneDistanceSensor;
+  
+  private static Ultrasonic m_cubeDistanceSensor;
+
+  private static Pigeon2 m_gyro;
 
   /** Creates a new Claw. */
   public Claw() {
@@ -35,23 +43,50 @@ public class Claw extends SubsystemBase {
     m_backIntakeMotor = new VictorSPX(Constants.Claw.kBackIntakeMotorId);
     m_frontIntakeMotor = new VictorSPX(Constants.Claw.kFrontIntakeMotorId);
 
-    m_distanceSensor = new Rev2mDistanceSensor(Port.kOnboard, Unit.kInches, RangeProfile.kDefault);
+    m_coneDistanceSensor = new Rev2mDistanceSensor(Port.kOnboard, Unit.kInches, RangeProfile.kDefault);
 
-    m_distanceSensor.setAutomaticMode(true);
+    m_cubeDistanceSensor = new Ultrasonic(Constants.Sensors.kClawSonarPingChannel, Constants.Sensors.kClawSonarEchoChannel); 
+
+    m_gyro = new Pigeon2(Constants.Sensors.kClawGyroId);
+
+    m_coneDistanceSensor.setAutomaticMode(true);
+    
+    Ultrasonic.setAutomaticMode(true);
 
     // Wrist configuration
     m_wristMotor.configFactoryDefault();
 
     m_wristMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
 
+    m_wristMotor.setSelectedSensorPosition(0);
+
     m_wristMotor.configNominalOutputForward(0, Constants.TalonFX.kTimeoutMs);
     m_wristMotor.configNominalOutputReverse(0, Constants.TalonFX.kTimeoutMs);
     m_wristMotor.configPeakOutputForward(1, Constants.TalonFX.kTimeoutMs);
     m_wristMotor.configPeakOutputReverse(-1, Constants.TalonFX.kTimeoutMs);
 
+    m_wristMotor.selectProfileSlot(0, 0);
+    m_wristMotor.config_kF(0, 0.2);
+    m_wristMotor.config_kP(0, 0.05);
+    m_wristMotor.config_kI(0, 0);
+    m_wristMotor.config_kD(0,0);
+
+    m_wristMotor.configAllowableClosedloopError(0, 0, Constants.TalonFX.kTimeoutMs);
+
+    m_wristMotor.configForwardSoftLimitThreshold(Units.degreesToTicks(90, Constants.Claw.kMotorToWrist, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
+    m_wristMotor.configReverseSoftLimitThreshold(0, Constants.TalonFX.kTimeoutMs);
+    
+    m_wristMotor.configForwardSoftLimitEnable(true);
+    m_wristMotor.configReverseSoftLimitEnable(true);
+
+    m_wristMotor.configMotionCruiseVelocity(10000, Constants.TalonFX.kTimeoutMs);
+    m_wristMotor.configMotionAcceleration(5000, Constants.TalonFX.kTimeoutMs); 
+
     m_wristMotor.configNeutralDeadband(0.05);
 
     m_wristMotor.setNeutralMode(NeutralMode.Brake);
+
+    m_wristMotor.setInverted(true);
 
     // Intake Configuration
     m_backIntakeMotor.configNeutralDeadband(0.05);
@@ -66,7 +101,12 @@ public class Claw extends SubsystemBase {
   @Override
   public void initSendable(SendableBuilder builder) {
     builder.setSmartDashboardType("Claw");
-    builder.addDoubleProperty("Claw Front Sonar Distance", this::getSonarRange, null);
+    builder.addDoubleProperty("Claw Cone Distance", this::getConeRange, null);
+    builder.addDoubleProperty("Claw Cube Distance", this::getCubeRange, null);
+    builder.addDoubleProperty("Claw Yaw", this::getYaw, null);
+    builder.addDoubleProperty("Claw Pitch", this::getPitch, null);
+    builder.addDoubleProperty("Claw Roll", this::getRoll, null);
+    builder.addDoubleProperty("Claw Position", this::getPosition, null);
   }
 
   public void setWristPercentOutput(double percentOutput) {
@@ -78,6 +118,11 @@ public class Claw extends SubsystemBase {
     m_backIntakeMotor.set(VictorSPXControlMode.PercentOutput, backPercentOutput);
   }
 
+  public void setWristPosition(double degrees) {
+    double ticks = Units.degreesToTicks(degrees, Constants.Claw.kMotorToWrist, Constants.TalonFX.kEncoderResolution);
+    m_wristMotor.set(ControlMode.MotionMagic, ticks);
+  }
+
   public void stopWrist() {
     setWristPercentOutput(0);
   }
@@ -86,7 +131,15 @@ public class Claw extends SubsystemBase {
     setIntakePercentOutput(0, 0);
   }
 
-  public double getSonarRange() {
-    return m_distanceSensor.GetRange();
-  }
+  public double getConeRange() { return m_coneDistanceSensor.GetRange(); }
+
+  public double getCubeRange() { return m_cubeDistanceSensor.getRangeInches(); }
+
+  public double getYaw() { return m_gyro.getYaw(); }
+
+  public double getPitch() { return m_gyro.getPitch(); }
+
+  public double getRoll() { return m_gyro.getRoll(); }
+
+  public double getPosition() { return m_wristMotor.getSelectedSensorPosition(); }
 }

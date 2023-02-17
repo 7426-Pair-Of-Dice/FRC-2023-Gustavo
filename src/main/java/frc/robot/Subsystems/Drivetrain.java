@@ -4,6 +4,7 @@
 
 package frc.robot.Subsystems;
 
+import com.ctre.phoenix.sensors.Pigeon2;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -25,7 +26,7 @@ public class Drivetrain extends SubsystemBase {
 
   private static DifferentialDrive m_drive;
 
-  private static boolean m_brakingEnabled;
+  private static Pigeon2 m_gyro;
 
   /** Creates a new Drivetrain. */
   public Drivetrain() {
@@ -68,15 +69,21 @@ public class Drivetrain extends SubsystemBase {
     m_rightDriveThree.setIdleMode(IdleMode.kBrake);
 
     m_drive = new DifferentialDrive(m_leftDriveOne, m_rightDriveOne);
+
+    m_gyro = new Pigeon2(Constants.Sensors.kDrivetrainGyroId);
   }
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+    m_drive.feed();
+  }
 
   @Override
   public void initSendable(SendableBuilder builder) {
     builder.setSmartDashboardType("Drivetrain");
-    builder.addBooleanProperty("Braking", this::getBrakingState, null);
+    builder.addDoubleProperty("Drivetrain Yaw", this::getYaw, null);
+    builder.addDoubleProperty("Drivetrain Pitch", this::getPitch, null);
+    builder.addDoubleProperty("Drivetrain Roll", this::getRoll, null);
   }
 
   public void tankDrive(double leftSpeed, double rightSpeed) {
@@ -92,6 +99,10 @@ public class Drivetrain extends SubsystemBase {
     m_rightDriveOne.set(0);
   }
 
-  public boolean getBrakingState() { return m_brakingEnabled; }
+  public double getYaw() { return m_gyro.getYaw(); }
+
+  public double getPitch() { return m_gyro.getPitch(); }
+
+  public double getRoll() { return m_gyro.getRoll(); }
 }
 

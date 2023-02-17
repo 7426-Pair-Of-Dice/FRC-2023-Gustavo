@@ -18,8 +18,6 @@ public class Turret extends SubsystemBase {
 
   private static TalonFX m_turretMotor;
 
-  private static double m_zeroPosition;
-
   /** Creates a new Turret. */
   public Turret() {
     m_turretMotor = new TalonFX(Constants.Turret.kTurretMotorId);
@@ -29,6 +27,8 @@ public class Turret extends SubsystemBase {
     m_turretMotor.setInverted(true);
 
     m_turretMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, Constants.TalonFX.kTimeoutMs);
+
+    m_turretMotor.setSelectedSensorPosition(0);
 
     m_turretMotor.configNominalOutputForward(0, Constants.TalonFX.kTimeoutMs);
     m_turretMotor.configNominalOutputReverse(0, Constants.TalonFX.kTimeoutMs);
@@ -42,15 +42,13 @@ public class Turret extends SubsystemBase {
     m_turretMotor.config_kI(0, Constants.Turret.kI);
     m_turretMotor.config_kD(0, Constants.Turret.kD);
 
-    m_turretMotor.configForwardSoftLimitThreshold(m_zeroPosition + Units.degreesToTicks(360, Constants.Turret.kMotorToTurret, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
-    m_turretMotor.configReverseSoftLimitThreshold(m_zeroPosition + Units.degreesToTicks(-360, Constants.Turret.kMotorToTurret, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
+    m_turretMotor.configForwardSoftLimitThreshold(Units.degreesToTicks(360, Constants.Turret.kMotorToTurret, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
+    m_turretMotor.configReverseSoftLimitThreshold(Units.degreesToTicks(-360, Constants.Turret.kMotorToTurret, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
 
     m_turretMotor.configForwardSoftLimitEnable(true);
     m_turretMotor.configReverseSoftLimitEnable(true);
 
     m_turretMotor.configNeutralDeadband(0.05);
-
-    m_zeroPosition = getPosition();
   }
 
   @Override
@@ -69,7 +67,7 @@ public class Turret extends SubsystemBase {
 
   public void setPosition(double degrees) {
     double ticks = Units.degreesToTicks(degrees, Constants.Turret.kMotorToTurret, Constants.TalonFX.kEncoderResolution);
-    m_turretMotor.set(ControlMode.Position, m_zeroPosition + ticks);
+    m_turretMotor.set(ControlMode.Position, ticks);
   }
 
   public void stop() {
@@ -80,13 +78,7 @@ public class Turret extends SubsystemBase {
     return m_turretMotor.getSelectedSensorPosition();
   }
 
-  // Returns the offset ticks from the zero
-  public double getOffset() {
-    return getPosition() - m_zeroPosition;
-  }
-
-  // Returns the angle the turret it as based off encoder counts (possible inaccuracies due to mechanical approximations)
   public double getAngle() {
-    return Units.ticksToDegrees(getOffset(), Constants.Turret.kMotorToTurret, Constants.TalonFX.kEncoderResolution);
+    return Units.ticksToDegrees(getPosition(), Constants.Turret.kMotorToTurret, Constants.TalonFX.kEncoderResolution);
   }
 }

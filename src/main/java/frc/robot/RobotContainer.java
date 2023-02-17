@@ -34,6 +34,11 @@ public class RobotContainer {
   private static RunCommand m_releaseCube;
   private static InstantCommand m_stopIntake;
 
+  private static RunCommand m_wristForward;
+  private static RunCommand m_wristBackward;
+  private static RunCommand m_wristPreset;
+  private static InstantCommand m_stopWrist;
+
   private static CommandXboxController m_driverController;
   private static CommandXboxController m_operatorController;
 
@@ -62,6 +67,11 @@ public class RobotContainer {
     m_releaseCube = new RunCommand(() -> m_claw.setIntakePercentOutput(Constants.Claw.kIntakePercentOutput, Constants.Claw.kIntakePercentOutput), m_claw);
     m_stopIntake = new InstantCommand(() -> m_claw.stopIntake(), m_claw);
 
+    m_wristForward = new RunCommand(() -> m_claw.setWristPercentOutput(0.3), m_claw);
+    m_wristBackward = new RunCommand(() -> m_claw.setWristPercentOutput(-0.3), m_claw);
+    m_wristPreset = new RunCommand(() -> m_claw.setWristPosition(90), m_claw);
+    m_stopWrist = new InstantCommand(() -> m_claw.stopWrist(), m_claw);
+
     m_driveTrain.setDefaultCommand(m_driveTeleop);
     m_arm.setDefaultCommand(m_armTeleop);
 
@@ -79,6 +89,11 @@ public class RobotContainer {
 
     m_operatorController.x().whileTrue(m_intakeCube).onFalse(m_stopIntake);
     m_operatorController.b().whileTrue(m_releaseCube).onFalse(m_stopIntake);
+
+    m_operatorController.rightBumper().whileTrue(m_wristPreset).onFalse(m_stopWrist);
+
+    m_operatorController.povUp().whileTrue(m_wristForward).onFalse(m_stopWrist);
+    m_operatorController.povDown().whileTrue(m_wristBackward).onFalse(m_stopWrist);
   }
 
   public void updateDashboard() {
