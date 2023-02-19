@@ -28,8 +28,6 @@ public class Constants {
         public static final int kRightMotorOneId = 1;
         public static final int kRightMotorTwoId = 2;
         public static final int kRightMotorThreeId = 3;
-
-        public static final double kSpeedDivider = 0.7;
     }
 
     public static final class Turret {
@@ -72,6 +70,13 @@ public class Constants {
 
     public static final class Input {
         public static final int kDriverControllerId = 0;
-        public static final int kOperatorControllerId = 1;
+        public static final int kOperatorJoystickLeftId = 1;
+        public static final int kOperatorJoystickRightId = 2;
+
+        public static final int kIntakeConeButton = 0;
+        public static final int kReleaseConeButton = 0;
+
+        public static final int kIntakeCubeButton = 0;
+        public static final int kReleaseCubeButton = 0;
     }
 }

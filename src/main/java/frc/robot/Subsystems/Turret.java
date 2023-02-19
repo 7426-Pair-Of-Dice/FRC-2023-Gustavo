@@ -4,8 +4,6 @@
 
 package frc.robot.Subsystems;
 
-import frc.robot.Utility.Units;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -13,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Units;
 
 public class Turret extends SubsystemBase {
 
@@ -85,9 +84,5 @@ public class Turret extends SubsystemBase {
 
   public double getAngle() {
     return Units.ticksToDegrees(getPosition(), Constants.Turret.kMotorToTurret, Constants.TalonFX.kEncoderResolution);
-  }
-
-  public void zero() {
-    m_turretMotor.setSelectedSensorPosition(0);
   }
 }

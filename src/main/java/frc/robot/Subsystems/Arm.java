@@ -13,16 +13,12 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Utility.Units;
+import frc.robot.Units;
 
 public class Arm extends SubsystemBase {
 
   private static TalonFX m_armMotor;
   private static TalonFX m_armMotorFollower;
-  private static TalonFX m_telescopeMotor;
-
-  private static double m_telescopeZeroPosition;
-  private static double m_armZeroPosition;
 
   private static double m_lastArmPosition;
 
@@ -31,13 +27,14 @@ public class Arm extends SubsystemBase {
 
     m_armMotor = new TalonFX(Constants.Arm.kLeftArmMotorId);
     m_armMotorFollower = new TalonFX(Constants.Arm.kRightArmMotorId);
-    m_telescopeMotor = new TalonFX(Constants.Arm.kTelescopeMotorId);
 
     // Arm Configuration
     m_armMotor.configFactoryDefault();
     m_armMotorFollower.configFactoryDefault();
 
     m_armMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, Constants.TalonFX.kTimeoutMs);
+
+    m_armMotor.setSelectedSensorPosition(0);
 
     m_armMotor.configNominalOutputForward(0, Constants.TalonFX.kTimeoutMs);
     m_armMotor.configNominalOutputReverse(0, Constants.TalonFX.kTimeoutMs);
@@ -46,8 +43,8 @@ public class Arm extends SubsystemBase {
 
     m_armMotor.configAllowableClosedloopError(0, 0, Constants.TalonFX.kTimeoutMs);
 
-    m_armMotor.configForwardSoftLimitThreshold(m_armZeroPosition + Units.degreesToTicks(100, Constants.Arm.kMotorToArm, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
-    m_armMotor.configReverseSoftLimitThreshold(m_armZeroPosition, Constants.TalonFX.kTimeoutMs);
+    m_armMotor.configForwardSoftLimitThreshold(Units.degreesToTicks(100, Constants.Arm.kMotorToArm, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
+    m_armMotor.configReverseSoftLimitThreshold(0, Constants.TalonFX.kTimeoutMs);
     m_armMotor.configForwardSoftLimitEnable(true);
     m_armMotor.configReverseSoftLimitEnable(true);
 
@@ -68,31 +65,6 @@ public class Arm extends SubsystemBase {
 
     m_armMotor.setNeutralMode(NeutralMode.Brake);
     m_armMotorFollower.setNeutralMode(NeutralMode.Brake);
-
-    // Telescope configuration
-    m_telescopeMotor.configFactoryDefault();
-
-    m_telescopeMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, Constants.TalonFX.kTimeoutMs);
-
-    m_telescopeMotor.configNominalOutputForward(0, Constants.TalonFX.kTimeoutMs);
-    m_telescopeMotor.configNominalOutputReverse(0, Constants.TalonFX.kTimeoutMs);
-    m_telescopeMotor.configPeakOutputForward(1, Constants.TalonFX.kTimeoutMs);
-    m_telescopeMotor.configPeakOutputReverse(-1, Constants.TalonFX.kTimeoutMs);
-
-    m_telescopeMotor.configReverseSoftLimitThreshold(m_telescopeZeroPosition);
-    m_telescopeMotor.configForwardSoftLimitThreshold(m_telescopeZeroPosition + Units.metersToTicks(Units.inchesToMeters(20), Constants.Arm.kMotorToTelescope, Constants.TalonFX.kEncoderResolution, Constants.Arm.kMetersPerRev));
-    m_telescopeMotor.configReverseSoftLimitEnable(true);
-    m_telescopeMotor.configForwardSoftLimitEnable(true);
-
-    m_telescopeMotor.configNeutralDeadband(0.05);
-
-    m_telescopeMotor.setNeutralMode(NeutralMode.Brake);
-
-    m_telescopeMotor.setInverted(true);
-
-    // Sets motor zero positions (where they are at the beginning of runtime)
-    m_armZeroPosition = getArmPosition();
-    m_telescopeZeroPosition = getTelescopePosition();
   }
 
   @Override
@@ -103,52 +75,29 @@ public class Arm extends SubsystemBase {
   @Override
   public void initSendable(SendableBuilder builder) {
       builder.setSmartDashboardType("Arm");
-      builder.addDoubleProperty("Telescope Position Ticks", this::getTelescopePosition, null);
-      builder.addDoubleProperty("Telescope Position Meters", this::getTelescopePositionMeters, null);
-      builder.addDoubleProperty("Arm Position", this::getArmPosition, null);
+      builder.addDoubleProperty("Arm Position", this::getPosition, null);
   }
 
-  public void setArmPercentOutput(double percentOutput) {
+  public void setPercentOutput(double percentOutput) {
     m_armMotor.set(ControlMode.PercentOutput, percentOutput);
-    m_lastArmPosition = getArmPosition();
+    m_lastArmPosition = getPosition();
   }
 
-  public void setArmPosition(double degrees) {
+  public void setPosition(double degrees) {
     double ticks = Units.degreesToTicks(degrees, Constants.Arm.kMotorToArm, Constants.TalonFX.kEncoderResolution);
     m_lastArmPosition = ticks;
     m_armMotor.set(ControlMode.MotionMagic, ticks);
   }
 
-  public void setArmLastPosition() {
+  public void setLastPosition() {
     m_armMotor.set(ControlMode.MotionMagic, m_lastArmPosition);
-  }
-
-  public void setTelescopePercentOutput(double percentOutput) {
-    m_telescopeMotor.set(ControlMode.PercentOutput, percentOutput);
   }
 
   public void stop() {
     m_armMotor.set(ControlMode.PercentOutput, 0);
   }
 
-  public double getArmPosition() {
+  public double getPosition() {
     return m_armMotor.getSelectedSensorPosition();
-  }
-
-  public double getTelescopePosition() {
-    return m_telescopeMotor.getSelectedSensorPosition();
-  }
-
-  public double getTelescopeOffset() {
-    return getTelescopePosition() - m_telescopeZeroPosition;
-  }
-
-  public double getTelescopePositionMeters() {
-    return Units.ticksToMeters(getTelescopeOffset(), 1, Constants.TalonFX.kEncoderResolution, Constants.Arm.kMetersPerRev);
-  }
-
-  public void zero() {
-    m_armMotor.setSelectedSensorPosition(0);
-    m_telescopeMotor.setSelectedSensorPosition(0);
   }
 }

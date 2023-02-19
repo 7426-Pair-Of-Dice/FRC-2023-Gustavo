@@ -106,11 +106,6 @@ public class Drivetrain extends SubsystemBase {
     m_rightDriveOne.set(0);
   }
 
-  public void zero() {
-    m_leftEncoder.setPosition(0);
-    m_rightEncoder.setPosition(0);
-  }
-
   public double getYaw() { return m_gyro.getYaw(); }
 
   public double getPitch() { return m_gyro.getPitch(); }
