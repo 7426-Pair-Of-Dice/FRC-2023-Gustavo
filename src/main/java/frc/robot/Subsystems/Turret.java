@@ -17,6 +17,8 @@ public class Turret extends SubsystemBase {
 
   private static TalonFX m_turretMotor;
 
+  private static double m_lastPosition;
+
   /** Creates a new Turret. */
   public Turret() {
     m_turretMotor = new TalonFX(Constants.Turret.kTurretMotorId);
@@ -44,7 +46,7 @@ public class Turret extends SubsystemBase {
 
     m_turretMotor.configMotionCruiseVelocity(10000, Constants.TalonFX.kTimeoutMs);
     m_turretMotor.configMotionAcceleration(5000, Constants.TalonFX.kTimeoutMs);
-    m_turretMotor.configMotionSCurveStrength(2);
+    m_turretMotor.configMotionSCurveStrength(1);
 
     m_turretMotor.configForwardSoftLimitThreshold(Units.degreesToTicks(360, Constants.Turret.kMotorToTurret, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
     m_turretMotor.configReverseSoftLimitThreshold(Units.degreesToTicks(-360, Constants.Turret.kMotorToTurret, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
@@ -53,6 +55,8 @@ public class Turret extends SubsystemBase {
     m_turretMotor.configReverseSoftLimitEnable(true);
 
     m_turretMotor.configNeutralDeadband(0.05);
+
+    m_lastPosition = getPosition();
   }
 
   @Override
@@ -67,11 +71,17 @@ public class Turret extends SubsystemBase {
 
   public void setPercentOutput(double percentOutput) {
     m_turretMotor.set(ControlMode.PercentOutput, percentOutput);
+    m_lastPosition = getPosition();
   }
 
   public void setPosition(double degrees) {
     double ticks = Units.degreesToTicks(degrees, Constants.Turret.kMotorToTurret, Constants.TalonFX.kEncoderResolution);
+    m_lastPosition = ticks;
     m_turretMotor.set(ControlMode.MotionMagic, ticks);
+  }
+
+  public void setLastPosition() {
+    m_turretMotor.set(ControlMode.MotionMagic, m_lastPosition);
   }
 
   public void stop() {

@@ -53,7 +53,7 @@ public class Constants {
 
         public static final double kMetersPerRev = 0.0127;
 
-        public static final double kMotorToArm = (1.0 / 100.0);
+        public static final double kMotorToArm = (1.0 / 100.0) * (1.0 / 3.0);
 
         public static final double kMotorToTelescope = (1.0 / 3.0);
     }
@@ -70,13 +70,14 @@ public class Constants {
 
     public static final class Input {
         public static final int kDriverControllerId = 0;
-        public static final int kOperatorJoystickLeftId = 1;
-        public static final int kOperatorJoystickRightId = 2;
+        public static final int kOperatorJoystick = 1;
 
-        public static final int kIntakeConeButton = 0;
-        public static final int kReleaseConeButton = 0;
+        public static final int kWristUpButton = 2;
+        public static final int kWristDownButton = 4;
 
-        public static final int kIntakeCubeButton = 0;
-        public static final int kReleaseCubeButton = 0;
+        public static final int kIntakeCubeButton = 5;
+        public static final int kIntakeConeFrontButton = 6;
+        public static final int kIntakeConeBottomButton = 7;
+        public static final int kIntakeReleaseButton = 1;
     }
 }

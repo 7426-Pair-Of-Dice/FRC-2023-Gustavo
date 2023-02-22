@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import frc.robot.Commands.*;
 import frc.robot.Subsystems.*;
 
 import edu.wpi.first.wpilibj.Joystick.AxisType;
@@ -22,8 +21,7 @@ public class RobotContainer {
 
   // Controllers
   private static CommandXboxController m_driverController;
-  private static CommandJoystick m_operatorJoystickLeft;
-  private static CommandJoystick m_operatorJoystickRight;
+  private static CommandJoystick m_operatorJoystick;
 
   // Subsystems
   private static Drivetrain m_driveTrain;
@@ -44,6 +42,7 @@ public class RobotContainer {
   private static RunCommand m_telescopeControl;
   private static InstantCommand m_stopTelescope;
 
+  private static RunCommand m_turretMaintain;
   private static RunCommand m_turretControl;
   private static InstantCommand m_stopTurret;
 
@@ -51,17 +50,19 @@ public class RobotContainer {
   private static RunCommand m_wristForward;
   private static RunCommand m_wristBackward;
 
-  private static WrapperCommand m_intakeCone;
-  private static WrapperCommand m_releaseCone;
   private static WrapperCommand m_intakeCube;
+  private static WrapperCommand m_intakeConeFront;
+  private static WrapperCommand m_intakeConeBottom;
   private static WrapperCommand m_releaseCube;
+  private static WrapperCommand m_releaseConeFront;
+  private static WrapperCommand m_releaseConeBottom;
+
   private static InstantCommand m_stopIntake;
 
   public RobotContainer() {
     // Input
     m_driverController = new CommandXboxController(Constants.Input.kDriverControllerId);
-    m_operatorJoystickLeft = new CommandJoystick(Constants.Input.kOperatorJoystickLeftId);
-    m_operatorJoystickRight = new CommandJoystick(Constants.Input.kOperatorJoystickRightId);
+    m_operatorJoystick = new CommandJoystick(Constants.Input.kOperatorJoystick);
 
     // Subsystems
     m_driveTrain = new Drivetrain();
@@ -72,29 +73,34 @@ public class RobotContainer {
     m_telescope = new Telescope();
 
     // Commands
-    m_tankDrive = new RunCommand(() -> m_driveTrain.tankDrive(-m_driverController.getLeftY() * 0.7, -m_driverController.getLeftY() * 0.7), m_driveTrain);
+    m_tankDrive = new RunCommand(() -> m_driveTrain.tankDrive(-m_driverController.getLeftY() * 0.7, -m_driverController.getRightY() * 0.7), m_driveTrain);
     m_stopDrive = new InstantCommand(() -> m_driveTrain.stop(), m_driveTrain);
 
     m_armMaintain = new RunCommand(() -> m_arm.setLastPosition(), m_arm);
-    m_armUp = new RunCommand(() -> m_arm.setPercentOutput(0.3), m_arm);
-    m_armDown = new RunCommand(() -> m_arm.setPercentOutput(-0.3), m_arm);
+    m_armUp = new RunCommand(() -> m_arm.setPercentOutput(0.5), m_arm);
+    m_armDown = new RunCommand(() -> m_arm.setPercentOutput(-0.25), m_arm);
 
-    m_telescopeControl = new RunCommand(() -> m_telescope.setPercentOutput(m_operatorJoystickLeft.getY() * 0.25), m_telescope);
+    m_telescopeControl = new RunCommand(() -> m_telescope.setPercentOutput(-m_operatorJoystick.getY() * 0.5), m_telescope);
     m_stopTelescope = new InstantCommand(() -> m_telescope.stop(), m_telescope);
 
-    m_turretControl = new RunCommand(() -> m_turret.setPercentOutput(m_operatorJoystickRight.getZ() * 0.25), m_turret);
+    m_turretMaintain = new RunCommand(() -> m_turret.setLastPosition(), m_turret);
+    m_turretControl = new RunCommand(() -> m_turret.setPercentOutput(-m_operatorJoystick.getZ() * 0.25), m_turret);
     m_stopTurret = new InstantCommand(() -> m_turret.stop(), m_turret);
 
     m_wristMaintain = new RunCommand(() -> m_wrist.setLastPosition(), m_wrist);
     m_wristForward = new RunCommand(() -> m_wrist.setPercentOutput(0.3), m_wrist);
     m_wristBackward = new RunCommand(() -> m_wrist.setPercentOutput(-0.3), m_wrist);
 
-    m_intakeCone = new RunCommand(() -> m_intake.setPercentOutput(Constants.Claw.kIntakePercentOutput, Constants.Claw.kIntakePercentOutput), m_intake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
-    m_releaseCone = new RunCommand(() -> m_intake.setPercentOutput(-Constants.Claw.kIntakePercentOutput, -Constants.Claw.kIntakePercentOutput), m_intake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
-    m_intakeCube = new RunCommand(() -> m_intake.setPercentOutput(-Constants.Claw.kIntakePercentOutput, -Constants.Claw.kIntakePercentOutput), m_intake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
-    m_releaseCube = new RunCommand(() -> m_intake.setPercentOutput(Constants.Claw.kIntakePercentOutput, Constants.Claw.kIntakePercentOutput), m_intake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    m_intakeCube = new RunCommand(() -> m_intake.setPercentOutput(Constants.Claw.kIntakePercentOutput, -Constants.Claw.kIntakePercentOutput), m_intake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    m_intakeConeFront = new RunCommand(() -> m_intake.setPercentOutput(-Constants.Claw.kIntakePercentOutput, -Constants.Claw.kIntakePercentOutput), m_intake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    m_intakeConeBottom = new RunCommand(() -> m_intake.setPercentOutput(-Constants.Claw.kIntakePercentOutput, Constants.Claw.kIntakePercentOutput), m_intake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    m_releaseCube = new RunCommand(() -> m_intake.setPercentOutput(-Constants.Claw.kIntakePercentOutput, Constants.Claw.kIntakePercentOutput), m_intake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    m_releaseConeFront = new RunCommand(() -> m_intake.setPercentOutput(Constants.Claw.kIntakePercentOutput, Constants.Claw.kIntakePercentOutput), m_intake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    m_releaseConeBottom = new RunCommand(() -> m_intake.setPercentOutput(Constants.Claw.kIntakePercentOutput, -Constants.Claw.kIntakePercentOutput), m_intake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     m_stopIntake = new InstantCommand(() -> m_intake.stopIntake(), m_intake);
 
+    m_driveTrain.setDefaultCommand(m_tankDrive);
+    m_turret.setDefaultCommand(m_turretMaintain);
     m_arm.setDefaultCommand(m_armMaintain);
     m_wrist.setDefaultCommand(m_wristMaintain);
 
@@ -104,19 +110,25 @@ public class RobotContainer {
   
 
   private void configureBindings() {
-    m_driverController.leftStick().or(m_driverController.rightStick()).whileTrue(m_tankDrive).onFalse(m_stopDrive);
+    //m_driverController.leftStick().or(m_driverController.rightStick()).whileTrue(m_tankDrive).onFalse(m_stopDrive);
 
-    m_operatorJoystickRight.povUp().whileTrue(m_armUp);
-    m_operatorJoystickRight.povDown().whileTrue(m_armDown);
-    m_operatorJoystickRight.axisGreaterThan(AxisType.kZ.value, 0.05).or(m_operatorJoystickRight.axisLessThan(AxisType.kZ.value, -0.05)).whileTrue(m_turretControl).onFalse(m_stopTurret);
-    m_operatorJoystickRight.button(Constants.Input.kIntakeConeButton).whileTrue(m_intakeCone).onFalse(m_stopIntake);
-    m_operatorJoystickRight.button(Constants.Input.kReleaseConeButton).whileTrue(m_releaseCone).onFalse(m_stopIntake);
+    m_operatorJoystick.povUp().whileTrue(m_armUp);
+    m_operatorJoystick.povDown().whileTrue(m_armDown);
 
-    m_operatorJoystickLeft.povUp().whileTrue(m_wristForward);
-    m_operatorJoystickLeft.povDown().whileTrue(m_wristBackward);
-    m_operatorJoystickLeft.axisGreaterThan(AxisType.kY.value, 0.05).or(m_operatorJoystickLeft.axisLessThan(AxisType.kY.value, -0.05)).whileTrue(m_telescopeControl).onFalse(m_stopTelescope);
-    m_operatorJoystickLeft.button(Constants.Input.kIntakeCubeButton).whileTrue(m_intakeCube).onFalse(m_stopIntake);
-    m_operatorJoystickLeft.button(Constants.Input.kReleaseCubeButton).whileTrue(m_releaseCube).onFalse(m_stopIntake);
+    m_operatorJoystick.axisGreaterThan(AxisType.kZ.value, 0.05).or(m_operatorJoystick.axisLessThan(AxisType.kZ.value, -0.05)).whileTrue(m_turretControl).onFalse(m_stopTurret);
+
+    m_operatorJoystick.axisGreaterThan(AxisType.kY.value, 0.05).or(m_operatorJoystick.axisLessThan(AxisType.kY.value, -0.05)).whileTrue(m_telescopeControl).onFalse(m_stopTelescope);
+
+    m_operatorJoystick.button(Constants.Input.kIntakeCubeButton).and(m_operatorJoystick.button(Constants.Input.kIntakeReleaseButton).negate()).whileTrue(m_intakeCube).onFalse(m_stopIntake);
+    m_operatorJoystick.button(Constants.Input.kIntakeConeFrontButton).and(m_operatorJoystick.button(Constants.Input.kIntakeReleaseButton).negate()).whileTrue(m_intakeConeFront).onFalse(m_stopIntake);
+    m_operatorJoystick.button(Constants.Input.kIntakeConeBottomButton).and(m_operatorJoystick.button(Constants.Input.kIntakeReleaseButton).negate()).whileTrue(m_intakeConeBottom).onFalse(m_stopIntake);
+
+    m_operatorJoystick.button(Constants.Input.kIntakeReleaseButton).and(m_operatorJoystick.button(Constants.Input.kIntakeCubeButton)).whileTrue(m_releaseCube).onFalse(m_stopIntake);
+    m_operatorJoystick.button(Constants.Input.kIntakeReleaseButton).and(m_operatorJoystick.button(Constants.Input.kIntakeConeFrontButton)).whileTrue(m_releaseConeFront).onFalse(m_stopIntake);
+    m_operatorJoystick.button(Constants.Input.kIntakeReleaseButton).and(m_operatorJoystick.button(Constants.Input.kIntakeConeBottomButton)).whileTrue(m_releaseConeBottom).onFalse(m_stopIntake);
+
+    m_operatorJoystick.button(Constants.Input.kWristUpButton).whileTrue(m_wristBackward);
+    m_operatorJoystick.button(Constants.Input.kWristDownButton).whileTrue(m_wristForward);
   }
 
   public void updateDashboard() {

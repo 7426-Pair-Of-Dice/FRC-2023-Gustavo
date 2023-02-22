@@ -63,6 +63,9 @@ public class Arm extends SubsystemBase {
     m_armMotorFollower.follow(m_armMotor);
     m_armMotorFollower.setInverted(TalonFXInvertType.OpposeMaster);
 
+    m_armMotor.configOpenloopRamp(0.25);
+    m_armMotorFollower.configOpenloopRamp(0.25);
+
     m_armMotor.setNeutralMode(NeutralMode.Brake);
     m_armMotorFollower.setNeutralMode(NeutralMode.Brake);
   }
