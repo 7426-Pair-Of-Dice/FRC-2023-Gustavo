@@ -63,7 +63,7 @@ public class Shoulder extends SubsystemBase {
     m_shoulderMotorFollower.follow(m_shoulderMotor);
     m_shoulderMotorFollower.setInverted(TalonFXInvertType.OpposeMaster);
 
-    m_shoulderMotor.configOpenloopRamp(0.25);
+    m_shoulderMotor.configOpenloopRamp(1.0);
 
     m_shoulderMotor.setNeutralMode(NeutralMode.Brake);
     m_shoulderMotorFollower.setNeutralMode(NeutralMode.Brake);

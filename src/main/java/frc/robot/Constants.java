@@ -28,6 +28,9 @@ public class Constants {
         public static final int kRightMotorOneId = 1;
         public static final int kRightMotorTwoId = 2;
         public static final int kRightMotorThreeId = 3;
+
+        public static final double kRampRate = 0.5;
+        public static final double kSpeedDivider = 0.5;
     }
 
     public static final class Turret {

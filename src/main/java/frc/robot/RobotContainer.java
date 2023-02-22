@@ -88,6 +88,7 @@ public class RobotContainer {
     m_joystickIntakeConeBottomButton = m_operatorJoystick.button(Constants.Input.kIntakeConeBottomButtonId);
     m_joystickWristForwardButton = m_operatorJoystick.button(Constants.Input.kWristForwardButton);
     m_joystickWristBackwardButton = m_operatorJoystick.button(Constants.Input.kWristBackwardButton);
+    m_joystickIntakeReleaseButton = m_operatorJoystick.button(Constants.Input.kIntakeReleaseButtonId);
     m_joystickHomePresetButton = m_operatorJoystick.button(Constants.Input.kHomePresetButtonId);
 
     // Subsystems
@@ -99,7 +100,7 @@ public class RobotContainer {
     m_telescope = new Telescope();
 
     // Commands
-    m_tankDrive = new RunCommand(() -> m_driveTrain.tankDrive(-m_driverController.getLeftY() * 0.7, -m_driverController.getRightY() * 0.7), m_driveTrain);
+    m_tankDrive = new RunCommand(() -> m_driveTrain.tankDrive(-m_driverController.getLeftY(), -m_driverController.getRightY()), m_driveTrain);
 
     m_shoulderMaintain = new RunCommand(() -> m_shoulder.setLastPosition(), m_shoulder);
     m_shoulderUp = new RunCommand(() -> m_shoulder.setPercentOutput(0.5), m_shoulder);

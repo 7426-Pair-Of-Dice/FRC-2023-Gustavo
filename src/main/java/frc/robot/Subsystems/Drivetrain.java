@@ -12,6 +12,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants;
@@ -31,6 +33,10 @@ public class Drivetrain extends SubsystemBase {
   private static DifferentialDrive m_drive;
 
   private static Pigeon2 m_gyro;
+
+  private SendableChooser<String> m_driveTypeChooser;
+  private SendableChooser<String> m_driveControlChooser;
+  private SendableChooser<Double> m_driveSpeedChooser;
 
   /** Creates a new Drivetrain. */
   public Drivetrain() {
@@ -64,6 +70,14 @@ public class Drivetrain extends SubsystemBase {
     m_rightDriveTwo.setInverted(true);
     m_rightDriveThree.setInverted(true);
 
+    m_leftDriveOne.setOpenLoopRampRate(Constants.Drive.kRampRate);
+    m_leftDriveTwo.setOpenLoopRampRate(Constants.Drive.kRampRate);
+    m_leftDriveThree.setOpenLoopRampRate(Constants.Drive.kRampRate);
+
+    m_rightDriveOne.setOpenLoopRampRate(Constants.Drive.kRampRate);
+    m_rightDriveTwo.setOpenLoopRampRate(Constants.Drive.kRampRate);
+    m_rightDriveThree.setOpenLoopRampRate(Constants.Drive.kRampRate);
+
     m_leftDriveOne.setIdleMode(IdleMode.kBrake);
     m_leftDriveTwo.setIdleMode(IdleMode.kBrake);
     m_leftDriveThree.setIdleMode(IdleMode.kBrake);
@@ -78,11 +92,30 @@ public class Drivetrain extends SubsystemBase {
     m_drive = new DifferentialDrive(m_leftDriveOne, m_rightDriveOne);
 
     m_gyro = new Pigeon2(Constants.Sensors.kDrivetrainGyroId);
+    
+    m_driveTypeChooser = new SendableChooser<>();
+    m_driveTypeChooser.setDefaultOption("Tank", "Tank");
+    m_driveTypeChooser.addOption("Arcade", "Arcade");
+    m_driveTypeChooser.addOption("Perspective (WIP)", "Perspective");
+
+    m_driveControlChooser = new SendableChooser<>();
+    m_driveControlChooser.setDefaultOption("Xbox", "Xbox");
+    m_driveControlChooser.addOption("Joystick", "Joystick");
+
+    m_driveSpeedChooser = new SendableChooser<>();
+    m_driveSpeedChooser.setDefaultOption("100%", 1.0);
+    m_driveSpeedChooser.addOption("90%", 0.9);
+    m_driveSpeedChooser.addOption("75%", 0.75);
+    m_driveSpeedChooser.addOption("50%", 0.5);
+    m_driveSpeedChooser.addOption("25%", 0.25);
   }
 
   @Override
   public void periodic() {
     m_drive.feed();
+    SmartDashboard.putData(m_driveTypeChooser);
+    SmartDashboard.putData(m_driveControlChooser);
+    SmartDashboard.putData(m_driveSpeedChooser);
   }
 
   @Override
@@ -93,12 +126,24 @@ public class Drivetrain extends SubsystemBase {
     builder.addDoubleProperty("Drivetrain Roll", this::getRoll, null);
   }
 
+  public String getDriveType() {
+    return m_driveTypeChooser.getSelected();
+  }
+
+  public String getControlType() {
+    return m_driveControlChooser.getSelected();
+  }
+
+  public double getDriveSpeed() {
+    return m_driveSpeedChooser.getSelected();
+  }
+
   public void tankDrive(double leftSpeed, double rightSpeed) {
-    m_drive.tankDrive(leftSpeed, rightSpeed);
+    m_drive.tankDrive(leftSpeed * getDriveSpeed(), rightSpeed * getDriveSpeed());
   }
 
   public void arcadeDrive(double speed, double rotation) {
-    m_drive.arcadeDrive(speed, rotation);
+    m_drive.arcadeDrive(speed * getDriveSpeed(), rotation * getDriveSpeed());
   }
 
   public void stop() {
