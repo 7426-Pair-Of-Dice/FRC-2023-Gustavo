@@ -22,13 +22,12 @@ public class Intake extends SubsystemBase {
   private static VictorSPX m_frontIntakeMotor;
 
   private static Rev2mDistanceSensor m_coneDistanceSensor;
-  
   private static Ultrasonic m_cubeDistanceSensor;
 
   /** Creates a new Intake. */
   public Intake() {
-    m_backIntakeMotor = new VictorSPX(Constants.Claw.kBackIntakeMotorId);
-    m_frontIntakeMotor = new VictorSPX(Constants.Claw.kFrontIntakeMotorId);
+    m_backIntakeMotor = new VictorSPX(Constants.Intake.kBackIntakeMotorId);
+    m_frontIntakeMotor = new VictorSPX(Constants.Intake.kFrontIntakeMotorId);
 
     m_coneDistanceSensor = new Rev2mDistanceSensor(Port.kOnboard, Unit.kInches, RangeProfile.kDefault);
     m_cubeDistanceSensor = new Ultrasonic(Constants.Sensors.kClawSonarPingChannel, Constants.Sensors.kClawSonarEchoChannel);

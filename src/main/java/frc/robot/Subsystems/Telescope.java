@@ -18,9 +18,11 @@ public class Telescope extends SubsystemBase {
 
   private static TalonFX m_telescopeMotor;
 
+  private static double m_setpoint;
+
   /** Creates a new Telescope. */
   public Telescope() {
-    m_telescopeMotor = new TalonFX(Constants.Arm.kTelescopeMotorId);
+    m_telescopeMotor = new TalonFX(Constants.Telescope.kTelescopeMotorId);
 
     m_telescopeMotor.configFactoryDefault();
 
@@ -34,15 +36,20 @@ public class Telescope extends SubsystemBase {
     m_telescopeMotor.configPeakOutputReverse(-1, Constants.TalonFX.kTimeoutMs);
 
     m_telescopeMotor.configReverseSoftLimitThreshold(0, Constants.TalonFX.kTimeoutMs);
-    m_telescopeMotor.configForwardSoftLimitThreshold(Units.metersToTicks(Units.inchesToMeters(20), Constants.Arm.kMotorToTelescope, Constants.TalonFX.kEncoderResolution, Constants.Arm.kMetersPerRev), Constants.TalonFX.kTimeoutMs);
+    m_telescopeMotor.configForwardSoftLimitThreshold(Units.metersToTicks(Units.inchesToMeters(20), Constants.Telescope.kMotorToTelescope, Constants.TalonFX.kEncoderResolution, Constants.Telescope.kMetersPerRev), Constants.TalonFX.kTimeoutMs);
     m_telescopeMotor.configReverseSoftLimitEnable(true);
     m_telescopeMotor.configForwardSoftLimitEnable(true);
 
     m_telescopeMotor.configNeutralDeadband(0.05);
 
+    m_telescopeMotor.configMotionCruiseVelocity(10000, Constants.TalonFX.kTimeoutMs);
+    m_telescopeMotor.configMotionAcceleration(5000, Constants.TalonFX.kTimeoutMs);
+
     m_telescopeMotor.setNeutralMode(NeutralMode.Brake);
 
     m_telescopeMotor.setInverted(true);
+
+    m_setpoint = getPosition();
   }
 
   @Override
@@ -59,6 +66,13 @@ public class Telescope extends SubsystemBase {
 
   public void setPercentOutput(double percentOutput) {
     m_telescopeMotor.set(ControlMode.PercentOutput, percentOutput);
+    m_setpoint = getPosition();
+  }
+
+  public void setPosition(double meters) {
+    double ticks = Units.metersToTicks(meters, Constants.Telescope.kMotorToTelescope, Constants.TalonFX.kEncoderResolution, Constants.Telescope.kMetersPerRev);
+    m_setpoint = ticks;
+    m_telescopeMotor.set(ControlMode.MotionMagic, ticks);
   }
 
   public void stop() {
@@ -70,6 +84,10 @@ public class Telescope extends SubsystemBase {
   }
 
   public double getPositionMeters() {
-    return Units.ticksToMeters(getPosition(), 1, Constants.TalonFX.kEncoderResolution, Constants.Arm.kMetersPerRev);
+    return Units.ticksToMeters(getPosition(), Constants.Telescope.kMotorToTelescope, Constants.TalonFX.kEncoderResolution, Constants.Telescope.kMetersPerRev);
+  }
+
+  public boolean atSetpoint() {
+    return Math.abs(getPosition() - m_setpoint) < 3.0;
   }
 }

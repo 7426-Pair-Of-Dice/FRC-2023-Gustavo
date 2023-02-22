@@ -22,11 +22,11 @@ public class Wrist extends SubsystemBase {
 
   private static Pigeon2 m_gyro;
 
-  private static double m_lastWristPosition;
+  private static double m_setpoint;
 
   /** Creates a new Wrist. */
   public Wrist() {
-    m_wristMotor = new TalonFX(Constants.Claw.kWristMotorId);
+    m_wristMotor = new TalonFX(Constants.Wrist.kWristMotorId);
 
     m_gyro = new Pigeon2(Constants.Sensors.kClawGyroId);
 
@@ -49,7 +49,7 @@ public class Wrist extends SubsystemBase {
 
     m_wristMotor.configAllowableClosedloopError(0, 0, Constants.TalonFX.kTimeoutMs);
 
-    m_wristMotor.configForwardSoftLimitThreshold(Units.degreesToTicks(120, Constants.Claw.kMotorToWrist, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
+    m_wristMotor.configForwardSoftLimitThreshold(Units.degreesToTicks(120, Constants.Wrist.kMotorToWrist, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
     m_wristMotor.configReverseSoftLimitThreshold(0, Constants.TalonFX.kTimeoutMs);
     
     m_wristMotor.configForwardSoftLimitEnable(true);
@@ -64,7 +64,7 @@ public class Wrist extends SubsystemBase {
 
     m_wristMotor.setInverted(true);
 
-    m_lastWristPosition = getPosition();
+    m_setpoint = getPosition();
   }
 
   @Override
@@ -84,17 +84,17 @@ public class Wrist extends SubsystemBase {
 
   public void setPercentOutput(double percentOutput) {
     m_wristMotor.set(ControlMode.PercentOutput, percentOutput);
-    m_lastWristPosition = getPosition();
+    m_setpoint = getPosition();
   }
 
   public void setPosition(double degrees) {
-    double ticks = Units.degreesToTicks(degrees, Constants.Claw.kMotorToWrist, Constants.TalonFX.kEncoderResolution);
-    m_lastWristPosition = ticks;
+    double ticks = Units.degreesToTicks(degrees, Constants.Wrist.kMotorToWrist, Constants.TalonFX.kEncoderResolution);
+    m_setpoint = ticks;
     m_wristMotor.set(ControlMode.MotionMagic, ticks);
   }
 
   public void setLastPosition() {
-    m_wristMotor.set(ControlMode.MotionMagic, m_lastWristPosition);
+    m_wristMotor.set(ControlMode.MotionMagic, m_setpoint);
   }
 
   public double getPosition() {
@@ -102,7 +102,7 @@ public class Wrist extends SubsystemBase {
   }
 
   public double getAngle() {
-    return Units.ticksToDegrees(getPosition(), Constants.Claw.kMotorToWrist, Constants.TalonFX.kEncoderResolution);
+    return Units.ticksToDegrees(getPosition(), Constants.Wrist.kMotorToWrist, Constants.TalonFX.kEncoderResolution);
   }
 
   public double getYaw() { 
@@ -115,5 +115,9 @@ public class Wrist extends SubsystemBase {
 
   public double getRoll() { 
     return m_gyro.getRoll(); 
+  }
+
+  public boolean atSetpoint() {
+    return Math.abs(m_setpoint - getPosition()) < 3.0;
   }
 }

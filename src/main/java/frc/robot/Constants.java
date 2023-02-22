@@ -45,39 +45,46 @@ public class Constants {
         public static final double kMotorToTurret = kMotorToDriving * kDrivingToTurret;
     }
 
-    public static final class Arm {
+    public static final class Shoulder {
         public static final int kLeftArmMotorId = 7;
         public static final int kRightArmMotorId = 8;
 
+        public static final double kMotorToArm = (1.0 / 100.0) * (1.0 / 3.0);
+    }
+
+    public static final class Telescope {
         public static final int kTelescopeMotorId = 9;
 
         public static final double kMetersPerRev = 0.0127;
 
-        public static final double kMotorToArm = (1.0 / 100.0) * (1.0 / 3.0);
-
         public static final double kMotorToTelescope = (1.0 / 3.0);
     }
 
-    public static final class Claw {
+    public static final class Wrist {
         public static final int kWristMotorId = 12;
-        public static final int kFrontIntakeMotorId = 13;
-        public static final int kBackIntakeMotorId = 14;
-
-        public static final double kIntakePercentOutput = 0.8;
 
         public static final double kMotorToWrist = (1.0 / 100.0);
     }
 
+    public static final class Intake {
+        public static final int kFrontIntakeMotorId = 13;
+        public static final int kBackIntakeMotorId = 14;
+
+        public static final double kIntakePercentOutput = 0.8;
+    }
+
     public static final class Input {
         public static final int kDriverControllerId = 0;
-        public static final int kOperatorJoystick = 1;
+        public static final int kOperatorJoystickId = 1;
 
-        public static final int kWristUpButton = 2;
-        public static final int kWristDownButton = 4;
+        public static final int kWristBackwardButton = 2;
+        public static final int kWristForwardButton = 4;
 
-        public static final int kIntakeCubeButton = 5;
-        public static final int kIntakeConeFrontButton = 6;
-        public static final int kIntakeConeBottomButton = 7;
-        public static final int kIntakeReleaseButton = 1;
+        public static final int kIntakeCubeButtonId = 5;
+        public static final int kIntakeConeFrontButtonId = 6;
+        public static final int kIntakeConeBottomButtonId = 7;
+        public static final int kIntakeReleaseButtonId = 1;
+
+        public static final int kHomePresetButtonId = 13;
     }
 }
