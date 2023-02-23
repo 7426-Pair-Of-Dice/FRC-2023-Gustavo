@@ -45,6 +45,7 @@ public class RobotContainer {
   private static Wrist m_wrist;
   private static Intake m_intake;
   private static Telescope m_telescope;
+  private static Limelight m_limelight;
 
   // Commands
   private static RunCommand m_tankDrive;
@@ -98,6 +99,7 @@ public class RobotContainer {
     m_wrist = new Wrist();
     m_intake = new Intake();
     m_telescope = new Telescope();
+    m_limelight = new Limelight();
 
     // Commands
     m_tankDrive = new RunCommand(() -> m_driveTrain.tankDrive(-m_driverController.getLeftY(), -m_driverController.getRightY()), m_driveTrain);
@@ -163,6 +165,7 @@ public class RobotContainer {
     SmartDashboard.putData(m_shoulder);
     SmartDashboard.putData(m_wrist);
     SmartDashboard.putData(m_intake);
+    SmartDashboard.putData(m_limelight);
   }
 
   public Command getAutonomousCommand() {
