@@ -40,6 +40,14 @@ public class Telescope extends SubsystemBase {
     m_telescopeMotor.configReverseSoftLimitEnable(true);
     m_telescopeMotor.configForwardSoftLimitEnable(true);
 
+    m_telescopeMotor.configAllowableClosedloopError(0, 0, Constants.TalonFX.kTimeoutMs);
+
+    m_telescopeMotor.selectProfileSlot(0, 0);
+    m_telescopeMotor.config_kF(0, 0.2);
+    m_telescopeMotor.config_kP(0, 0.08);
+    m_telescopeMotor.config_kI(0, 0.0);
+    m_telescopeMotor.config_kD(0, 0.0);
+
     m_telescopeMotor.configNeutralDeadband(0.05);
 
     m_telescopeMotor.configMotionCruiseVelocity(10000, Constants.TalonFX.kTimeoutMs);
@@ -62,6 +70,7 @@ public class Telescope extends SubsystemBase {
     builder.setSmartDashboardType("Telescope");
     builder.addDoubleProperty("Telescope Position Ticks", this::getPosition, null);
     builder.addDoubleProperty("Telescope Position Meters", this::getPositionMeters, null);
+    builder.addDoubleProperty("Telescope Setpoint", this::getSetpoint, null);
   }
 
   public void setPercentOutput(double percentOutput) {
@@ -85,6 +94,10 @@ public class Telescope extends SubsystemBase {
 
   public double getPositionMeters() {
     return Units.ticksToMeters(getPosition(), Constants.Telescope.kMotorToTelescope, Constants.TalonFX.kEncoderResolution, Constants.Telescope.kMetersPerRev);
+  }
+
+  public double getSetpoint() {
+    return m_setpoint;
   }
 
   public boolean atSetpoint() {

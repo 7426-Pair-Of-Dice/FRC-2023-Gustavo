@@ -19,6 +19,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Drivetrain extends SubsystemBase {
+
+  public static enum DriveType {
+    Arcade,
+    Tank,
+    Perspective
+  }
+
   private static CANSparkMax m_leftDriveOne;  
   private static CANSparkMax m_leftDriveTwo;
   private static CANSparkMax m_leftDriveThree;
@@ -34,9 +41,9 @@ public class Drivetrain extends SubsystemBase {
 
   private static Pigeon2 m_gyro;
 
-  private SendableChooser<String> m_driveTypeChooser;
-  private SendableChooser<String> m_driveControlChooser;
+  private SendableChooser<DriveType> m_driveTypeChooser;
   private SendableChooser<Double> m_driveSpeedChooser;
+
 
   /** Creates a new Drivetrain. */
   public Drivetrain() {
@@ -94,13 +101,9 @@ public class Drivetrain extends SubsystemBase {
     m_gyro = new Pigeon2(Constants.Sensors.kDrivetrainGyroId);
     
     m_driveTypeChooser = new SendableChooser<>();
-    m_driveTypeChooser.setDefaultOption("Tank", "Tank");
-    m_driveTypeChooser.addOption("Arcade", "Arcade");
-    m_driveTypeChooser.addOption("Perspective (WIP)", "Perspective");
-
-    m_driveControlChooser = new SendableChooser<>();
-    m_driveControlChooser.setDefaultOption("Xbox", "Xbox");
-    m_driveControlChooser.addOption("Joystick", "Joystick");
+    m_driveTypeChooser.setDefaultOption("Tank", DriveType.Tank);
+    m_driveTypeChooser.addOption("Arcade", DriveType.Arcade);
+    m_driveTypeChooser.addOption("Perspective (WIP)", DriveType.Perspective);
 
     m_driveSpeedChooser = new SendableChooser<>();
     m_driveSpeedChooser.setDefaultOption("100%", 1.0);
@@ -114,7 +117,6 @@ public class Drivetrain extends SubsystemBase {
   public void periodic() {
     m_drive.feed();
     SmartDashboard.putData(m_driveTypeChooser);
-    SmartDashboard.putData(m_driveControlChooser);
     SmartDashboard.putData(m_driveSpeedChooser);
   }
 
@@ -126,12 +128,8 @@ public class Drivetrain extends SubsystemBase {
     builder.addDoubleProperty("Drivetrain Roll", this::getRoll, null);
   }
 
-  public String getDriveType() {
+  public DriveType getDriveType() {
     return m_driveTypeChooser.getSelected();
-  }
-
-  public String getControlType() {
-    return m_driveControlChooser.getSelected();
   }
 
   public double getDriveSpeed() {

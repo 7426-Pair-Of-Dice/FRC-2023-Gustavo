@@ -6,13 +6,10 @@ package frc.robot.Commands;
 
 import frc.robot.Subsystems.*;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class ArmPreset extends SequentialCommandGroup {
+public class ArmPreset extends ParallelCommandGroup {
 
   private static ConditionalCommand m_shoulderPreset;
   private static ConditionalCommand m_telescopePreset;

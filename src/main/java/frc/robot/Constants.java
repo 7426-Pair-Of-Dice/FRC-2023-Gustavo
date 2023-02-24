@@ -88,6 +88,8 @@ public class Constants {
         public static final int kIntakeConeBottomButtonId = 7;
         public static final int kIntakeReleaseButtonId = 1;
 
-        public static final int kHomePresetButtonId = 13;
+        public static final int kHomePresetButtonId = 14;
+        public static final int kDriveStationPresetButtonId = 13;
+        public static final int kStartConfigPresetButtonId = 16;
     }
 }

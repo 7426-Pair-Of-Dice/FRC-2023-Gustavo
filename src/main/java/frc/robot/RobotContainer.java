@@ -5,7 +5,10 @@
 package frc.robot;
 
 import frc.robot.Commands.ArmPreset;
+import frc.robot.Commands.DriveTeleop;
 import frc.robot.Subsystems.*;
+
+import java.util.Map;
 
 import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.XboxController.Axis;
@@ -15,8 +18,13 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SelectCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WrapperCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 
@@ -37,6 +45,8 @@ public class RobotContainer {
   private static Trigger m_joystickWristForwardButton;
   private static Trigger m_joystickWristBackwardButton;
   private static Trigger m_joystickHomePresetButton;
+  private static Trigger m_joystickDriverStationPresetButton;
+  private static Trigger m_joystickStartConfigPresetButton;
 
   // Subsystems
   private static Drivetrain m_driveTrain;
@@ -47,7 +57,7 @@ public class RobotContainer {
   private static Telescope m_telescope;
 
   // Commands
-  private static RunCommand m_tankDrive;
+  private static DriveTeleop m_driveTeleop;
 
   private static RunCommand m_shoulderMaintain;
   private static RunCommand m_shoulderUp;
@@ -72,7 +82,9 @@ public class RobotContainer {
   private static WrapperCommand m_releaseConeBottom;
   private static InstantCommand m_stopIntake;
 
-  private static ArmPreset m_homePreset;
+  private static ParallelCommandGroup m_homePreset;
+  private static ArmPreset m_driveStationPreset;
+  private static ParallelCommandGroup m_startConfigPreset;
 
   public RobotContainer() {
     // Input
@@ -90,6 +102,8 @@ public class RobotContainer {
     m_joystickWristBackwardButton = m_operatorJoystick.button(Constants.Input.kWristBackwardButton);
     m_joystickIntakeReleaseButton = m_operatorJoystick.button(Constants.Input.kIntakeReleaseButtonId);
     m_joystickHomePresetButton = m_operatorJoystick.button(Constants.Input.kHomePresetButtonId);
+    m_joystickDriverStationPresetButton = m_operatorJoystick.button(Constants.Input.kDriveStationPresetButtonId);
+    m_joystickStartConfigPresetButton = m_operatorJoystick.button(Constants.Input.kStartConfigPresetButtonId);
 
     // Subsystems
     m_driveTrain = new Drivetrain();
@@ -100,7 +114,7 @@ public class RobotContainer {
     m_telescope = new Telescope();
 
     // Commands
-    m_tankDrive = new RunCommand(() -> m_driveTrain.tankDrive(-m_driverController.getLeftY(), -m_driverController.getRightY()), m_driveTrain);
+    m_driveTeleop = new DriveTeleop(m_driveTrain, m_driverController);
 
     m_shoulderMaintain = new RunCommand(() -> m_shoulder.setLastPosition(), m_shoulder);
     m_shoulderUp = new RunCommand(() -> m_shoulder.setPercentOutput(0.5), m_shoulder);
@@ -125,9 +139,19 @@ public class RobotContainer {
     m_releaseConeBottom = new RunCommand(() -> m_intake.setPercentOutput(Constants.Intake.kIntakePercentOutput, -Constants.Intake.kIntakePercentOutput), m_intake).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     m_stopIntake = new InstantCommand(() -> m_intake.stopIntake(), m_intake);
 
-    m_homePreset = new ArmPreset(m_shoulder, m_telescope, m_wrist, 0, 0, 0);
+    m_homePreset = new ParallelCommandGroup(
+      new ArmPreset(m_shoulder, m_telescope, m_wrist, 15, 0, 0), 
+      new RunCommand(() -> m_turret.setPosition(0), m_turret).unless(m_turret::atSetpoint)
+    );
 
-    m_driveTrain.setDefaultCommand(m_tankDrive);
+    m_driveStationPreset = new ArmPreset(m_shoulder, m_telescope, m_wrist, 70, 0, 100);
+
+    m_startConfigPreset = new ParallelCommandGroup(
+      new RunCommand(() -> m_turret.setPosition(0), m_turret).unless(m_turret::atSetpoint),
+      new ArmPreset(m_shoulder, m_telescope, m_wrist, 0, 0, 0)
+    );
+
+    m_driveTrain.setDefaultCommand(m_driveTeleop);
     m_turret.setDefaultCommand(m_turretMaintain);
     m_shoulder.setDefaultCommand(m_shoulderMaintain);
     m_wrist.setDefaultCommand(m_wristMaintain);
@@ -151,10 +175,12 @@ public class RobotContainer {
     m_joystickIntakeReleaseButton.and(m_joystickIntakeConeFrontButton).whileTrue(m_releaseConeFront).onFalse(m_stopIntake);
     m_joystickIntakeReleaseButton.and(m_joystickIntakeConeBottomButton).whileTrue(m_releaseConeBottom).onFalse(m_stopIntake);
 
-    m_joystickWristForwardButton.whileTrue(m_wristBackward);
-    m_joystickWristBackwardButton.whileTrue(m_wristForward);
+    m_joystickWristForwardButton.whileTrue(m_wristForward);
+    m_joystickWristBackwardButton.whileTrue(m_wristBackward);
 
     m_joystickHomePresetButton.onTrue(m_homePreset);
+    m_joystickDriverStationPresetButton.onTrue(m_driveStationPreset);
+    m_joystickStartConfigPresetButton.onTrue(m_startConfigPreset);
   }
 
   public void updateDashboard() {
@@ -163,6 +189,7 @@ public class RobotContainer {
     SmartDashboard.putData(m_shoulder);
     SmartDashboard.putData(m_wrist);
     SmartDashboard.putData(m_intake);
+    SmartDashboard.putData(m_telescope);
   }
 
   public Command getAutonomousCommand() {

@@ -17,7 +17,7 @@ public class Turret extends SubsystemBase {
 
   private static TalonFX m_turretMotor;
 
-  private static double m_lastPosition;
+  private static double m_setpoint;
 
   /** Creates a new Turret. */
   public Turret() {
@@ -56,7 +56,7 @@ public class Turret extends SubsystemBase {
 
     m_turretMotor.configNeutralDeadband(0.05);
 
-    m_lastPosition = getPosition();
+    m_setpoint = getPosition();
   }
 
   @Override
@@ -71,17 +71,17 @@ public class Turret extends SubsystemBase {
 
   public void setPercentOutput(double percentOutput) {
     m_turretMotor.set(ControlMode.PercentOutput, percentOutput);
-    m_lastPosition = getPosition();
+    m_setpoint = getPosition();
   }
 
   public void setPosition(double degrees) {
     double ticks = Units.degreesToTicks(degrees, Constants.Turret.kMotorToTurret, Constants.TalonFX.kEncoderResolution);
-    m_lastPosition = ticks;
+    m_setpoint = ticks;
     m_turretMotor.set(ControlMode.MotionMagic, ticks);
   }
 
   public void setLastPosition() {
-    m_turretMotor.set(ControlMode.MotionMagic, m_lastPosition);
+    m_turretMotor.set(ControlMode.MotionMagic, m_setpoint);
   }
 
   public void stop() {
@@ -94,5 +94,9 @@ public class Turret extends SubsystemBase {
 
   public double getAngle() {
     return Units.ticksToDegrees(getPosition(), Constants.Turret.kMotorToTurret, Constants.TalonFX.kEncoderResolution);
+  }
+
+  public boolean atSetpoint() {
+    return Math.abs(m_setpoint - getPosition()) < 3.0;
   }
 }

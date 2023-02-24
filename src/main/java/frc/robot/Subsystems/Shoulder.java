@@ -44,7 +44,7 @@ public class Shoulder extends SubsystemBase {
     m_shoulderMotor.configAllowableClosedloopError(0, 0, Constants.TalonFX.kTimeoutMs);
 
     m_shoulderMotor.configForwardSoftLimitThreshold(Units.degreesToTicks(100, Constants.Shoulder.kMotorToArm, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
-    m_shoulderMotor.configReverseSoftLimitThreshold(Units.degreesToTicks(15, Constants.Shoulder.kMotorToArm, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
+    m_shoulderMotor.configReverseSoftLimitThreshold(0, Constants.TalonFX.kTimeoutMs);
     m_shoulderMotor.configForwardSoftLimitEnable(true);
     m_shoulderMotor.configReverseSoftLimitEnable(true);
 
@@ -78,8 +78,9 @@ public class Shoulder extends SubsystemBase {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-      builder.setSmartDashboardType("Arm");
-      builder.addDoubleProperty("Arm Position", this::getPosition, null);
+      builder.setSmartDashboardType("Shoulder");
+      builder.addDoubleProperty("Shoulder Position", this::getPosition, null);
+      builder.addDoubleProperty("Shoulder Angle", this::getAngle, null);
   }
 
   public void setPercentOutput(double percentOutput) {
@@ -103,6 +104,10 @@ public class Shoulder extends SubsystemBase {
 
   public double getPosition() {
     return m_shoulderMotor.getSelectedSensorPosition();
+  }
+
+  public double getAngle() {
+    return Units.ticksToDegrees(getPosition(), Constants.Shoulder.kMotorToArm, Constants.TalonFX.kEncoderResolution);
   }
 
   public boolean atSetpoint() {
