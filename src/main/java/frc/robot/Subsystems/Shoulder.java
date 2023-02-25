@@ -56,6 +56,7 @@ public class Shoulder extends SubsystemBase {
 
     m_shoulderMotor.configMotionCruiseVelocity(10000, Constants.TalonFX.kTimeoutMs);
     m_shoulderMotor.configMotionAcceleration(5000, Constants.TalonFX.kTimeoutMs);
+    m_shoulderMotor.configMotionSCurveStrength(1);
 
     m_shoulderMotor.configNeutralDeadband(0.05);
     m_shoulderMotorFollower.configNeutralDeadband(0.05);
