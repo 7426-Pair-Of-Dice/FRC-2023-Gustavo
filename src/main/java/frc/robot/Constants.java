@@ -41,7 +41,7 @@ public class Constants {
         public static final double kI = 0.0;
         public static final double kD = 5;
 
-        public static final double kMotorToDriving = (1.0 / 10.0);
+        public static final double kMotorToDriving = (1.0 / 50.0);
 
         public static final double kDrivingToTurret = (14.0 / 70.0);
 
@@ -60,7 +60,7 @@ public class Constants {
 
         public static final double kMetersPerRev = 0.0127;
 
-        public static final double kMotorToTelescope = (1.0 / 3.0);
+        public static final double kMotorToTelescope = (1.0 / 10.0);
     }
 
     public static final class Wrist {
@@ -88,8 +88,13 @@ public class Constants {
         public static final int kIntakeConeBottomButtonId = 7;
         public static final int kIntakeReleaseButtonId = 1;
 
-        public static final int kHomePresetButtonId = 14;
+        public static final int kHomePresetButtonId = 8;
         public static final int kDriveStationPresetButtonId = 13;
-        public static final int kStartConfigPresetButtonId = 16;
+        public static final int kStartConfigPresetButtonId = 9;
+        public static final int kTopScorePresetButtonId = 12;
+        public static final int kMiddleScorePresetButtonId = 11;
+        public static final int kIntakeConeFrontPresetButtonId = 14;
+        public static final int kIntakeConeBottomPresetButtonId = 15;
+        public static final int kIntakeCubePresetButtonId = 16;
     }
 }

@@ -38,6 +38,7 @@ public class RobotContainer {
   private static Trigger m_joystickPovDown;
   private static Trigger m_joystickZAxis;
   private static Trigger m_joystickYAxis;
+  private static Trigger m_joystickXAxis;
   private static Trigger m_joystickIntakeCubeButton;
   private static Trigger m_joystickIntakeConeFrontButton;
   private static Trigger m_joystickIntakeConeBottomButton;
@@ -47,6 +48,11 @@ public class RobotContainer {
   private static Trigger m_joystickHomePresetButton;
   private static Trigger m_joystickDriverStationPresetButton;
   private static Trigger m_joystickStartConfigPresetButton;
+  private static Trigger m_joystickTopScorePresetButton;
+  private static Trigger m_joystickMiddleScorePresetButton;
+  private static Trigger m_joystickIntakeConeFrontPresetButton;
+  private static Trigger m_joystickIntakeConeButtomPresetButton;
+  private static Trigger m_joystickIntakeCubePresetButton;
 
   // Subsystems
   private static Drivetrain m_driveTrain;
@@ -86,6 +92,11 @@ public class RobotContainer {
   private static ParallelCommandGroup m_homePreset;
   private static ArmPreset m_driveStationPreset;
   private static ParallelCommandGroup m_startConfigPreset;
+  private static ArmPreset m_topScorePreset;
+  private static ArmPreset m_middleScorePreset;
+  private static ArmPreset m_intakeConeFrontPreset;
+  private static ArmPreset m_intakeConeBottomPreset;
+  private static ArmPreset m_intakeCubePreset;
 
   public RobotContainer() {
     // Input
@@ -95,7 +106,8 @@ public class RobotContainer {
     m_joystickPovUp = m_operatorJoystick.povUp();
     m_joystickPovDown = m_operatorJoystick.povDown();
     m_joystickZAxis = m_operatorJoystick.axisGreaterThan(AxisType.kZ.value, 0.05).or(m_operatorJoystick.axisLessThan(AxisType.kZ.value, -0.05));
-    m_joystickYAxis = m_operatorJoystick.axisGreaterThan(AxisType.kY.value, 0.05).or(m_operatorJoystick.axisLessThan(AxisType.kY.value, -0.05));
+    m_joystickYAxis = m_operatorJoystick.axisGreaterThan(AxisType.kY.value, 0.25).or(m_operatorJoystick.axisLessThan(AxisType.kY.value, -0.25));
+    m_joystickXAxis = m_operatorJoystick.axisGreaterThan(AxisType.kX.value, 0.25).or(m_operatorJoystick.axisLessThan(AxisType.kX.value, -0.25));
     m_joystickIntakeCubeButton =  m_operatorJoystick.button(Constants.Input.kIntakeCubeButtonId);
     m_joystickIntakeConeFrontButton = m_operatorJoystick.button(Constants.Input.kIntakeConeFrontButtonId);
     m_joystickIntakeConeBottomButton = m_operatorJoystick.button(Constants.Input.kIntakeConeBottomButtonId);
@@ -105,6 +117,11 @@ public class RobotContainer {
     m_joystickHomePresetButton = m_operatorJoystick.button(Constants.Input.kHomePresetButtonId);
     m_joystickDriverStationPresetButton = m_operatorJoystick.button(Constants.Input.kDriveStationPresetButtonId);
     m_joystickStartConfigPresetButton = m_operatorJoystick.button(Constants.Input.kStartConfigPresetButtonId);
+    m_joystickTopScorePresetButton = m_operatorJoystick.button(Constants.Input.kTopScorePresetButtonId);
+    m_joystickMiddleScorePresetButton = m_operatorJoystick.button(Constants.Input.kMiddleScorePresetButtonId);
+    m_joystickIntakeConeFrontPresetButton = m_operatorJoystick.button(Constants.Input.kIntakeConeFrontPresetButtonId);
+    m_joystickIntakeConeButtomPresetButton = m_operatorJoystick.button(Constants.Input.kIntakeConeBottomPresetButtonId);
+    m_joystickIntakeCubePresetButton = m_operatorJoystick.button(Constants.Input.kIntakeCubePresetButtonId);
 
     // Subsystems
     m_driveTrain = new Drivetrain();
@@ -122,11 +139,11 @@ public class RobotContainer {
     m_shoulderUp = new RunCommand(() -> m_shoulder.setPercentOutput(0.5), m_shoulder);
     m_shoulderDown = new RunCommand(() -> m_shoulder.setPercentOutput(-0.25), m_shoulder);
 
-    m_telescopeControl = new RunCommand(() -> m_telescope.setPercentOutput(-m_operatorJoystick.getY() * 0.5), m_telescope);
+    m_telescopeControl = new RunCommand(() -> m_telescope.setPercentOutput(-m_operatorJoystick.getY()), m_telescope);
     m_stopTelescope = new InstantCommand(() -> m_telescope.stop(), m_telescope);
 
     m_turretMaintain = new RunCommand(() -> m_turret.setLastPosition(), m_turret);
-    m_turretControl = new RunCommand(() -> m_turret.setPercentOutput(-m_operatorJoystick.getZ() * 0.25), m_turret);
+    m_turretControl = new RunCommand(() -> m_turret.setPosition(-m_operatorJoystick.getDirectionDegrees()), m_turret);
     m_stopTurret = new InstantCommand(() -> m_turret.stop(), m_turret);
 
     m_wristMaintain = new RunCommand(() -> m_wrist.setLastPosition(), m_wrist);
@@ -146,17 +163,27 @@ public class RobotContainer {
       new RunCommand(() -> m_turret.setPosition(0), m_turret).unless(m_turret::atSetpoint)
     );
 
-    m_driveStationPreset = new ArmPreset(m_shoulder, m_telescope, m_wrist, 70, 0, 100);
-
     m_startConfigPreset = new ParallelCommandGroup(
       new RunCommand(() -> m_turret.setPosition(0), m_turret).unless(m_turret::atSetpoint),
       new ArmPreset(m_shoulder, m_telescope, m_wrist, 0, 0, 0)
     );
 
+    m_driveStationPreset = new ArmPreset(m_shoulder, m_telescope, m_wrist, 70, 0, 100);
+
+    m_intakeConeFrontPreset = new ArmPreset(m_shoulder, m_telescope, m_wrist, 20, Units.inchesToMeters(10), 45);
+
     m_driveTrain.setDefaultCommand(m_driveTeleop);
     m_turret.setDefaultCommand(m_turretMaintain);
     m_shoulder.setDefaultCommand(m_shoulderMaintain);
     m_wrist.setDefaultCommand(m_wristMaintain);
+
+    SmartDashboard.putData(m_driveTrain);
+    SmartDashboard.putData(m_turret);
+    SmartDashboard.putData(m_shoulder);
+    SmartDashboard.putData(m_wrist);
+    // SmartDashboard.putData(m_intake);
+    SmartDashboard.putData(m_limelight);
+    SmartDashboard.putData(m_telescope);
 
     // Configures controller and joystick bindings
     configureBindings();
@@ -166,8 +193,9 @@ public class RobotContainer {
     m_joystickPovUp.whileTrue(m_shoulderUp);
     m_joystickPovDown.whileTrue(m_shoulderDown);
 
-    m_joystickZAxis.whileTrue(m_turretControl).onFalse(m_stopTurret);
-    m_joystickYAxis.whileTrue(m_telescopeControl).onFalse(m_stopTelescope);
+    m_joystickXAxis.or(m_joystickYAxis).whileTrue(m_turretControl).onFalse(m_stopTurret);
+
+    //m_joystickYAxis.whileTrue(m_telescopeControl).onFalse(m_stopTelescope);
 
     m_joystickIntakeCubeButton.and(m_joystickIntakeReleaseButton.negate()).whileTrue(m_intakeCube).onFalse(m_stopIntake);
     m_joystickIntakeConeFrontButton.and(m_joystickIntakeReleaseButton.negate()).whileTrue(m_intakeConeFront).onFalse(m_stopIntake);
@@ -183,16 +211,11 @@ public class RobotContainer {
     m_joystickHomePresetButton.onTrue(m_homePreset);
     m_joystickDriverStationPresetButton.onTrue(m_driveStationPreset);
     m_joystickStartConfigPresetButton.onTrue(m_startConfigPreset);
+    m_joystickIntakeConeFrontPresetButton.onTrue(m_intakeConeFrontPreset);
   }
 
   public void updateDashboard() {
-    SmartDashboard.putData(m_driveTrain);
-    SmartDashboard.putData(m_turret);
-    SmartDashboard.putData(m_shoulder);
-    SmartDashboard.putData(m_wrist);
-    SmartDashboard.putData(m_intake);
-    SmartDashboard.putData(m_limelight);
-    SmartDashboard.putData(m_telescope);
+    SmartDashboard.putNumber("Joystick Heading", m_operatorJoystick.getDirectionDegrees());
   }
 
   public Command getAutonomousCommand() {

@@ -5,6 +5,7 @@
 package frc.robot.Subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
@@ -44,8 +45,8 @@ public class Turret extends SubsystemBase {
     m_turretMotor.config_kI(0, Constants.Turret.kI);
     m_turretMotor.config_kD(0, Constants.Turret.kD);
 
-    m_turretMotor.configMotionCruiseVelocity(10000, Constants.TalonFX.kTimeoutMs);
-    m_turretMotor.configMotionAcceleration(5000, Constants.TalonFX.kTimeoutMs);
+    m_turretMotor.configMotionCruiseVelocity(20000, Constants.TalonFX.kTimeoutMs);
+    m_turretMotor.configMotionAcceleration(15000, Constants.TalonFX.kTimeoutMs);
     m_turretMotor.configMotionSCurveStrength(1);
 
     m_turretMotor.configForwardSoftLimitThreshold(Units.degreesToTicks(360, Constants.Turret.kMotorToTurret, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
@@ -55,6 +56,8 @@ public class Turret extends SubsystemBase {
     m_turretMotor.configReverseSoftLimitEnable(true);
 
     m_turretMotor.configNeutralDeadband(0.05);
+
+    m_turretMotor.setNeutralMode(NeutralMode.Brake);
 
     m_setpoint = getPosition();
   }
@@ -97,6 +100,6 @@ public class Turret extends SubsystemBase {
   }
 
   public boolean atSetpoint() {
-    return Math.abs(m_setpoint - getPosition()) < 3.0;
+    return Math.abs(m_setpoint - getPosition()) < 5.0;
   }
 }

@@ -55,8 +55,8 @@ public class Wrist extends SubsystemBase {
     m_wristMotor.configForwardSoftLimitEnable(true);
     m_wristMotor.configReverseSoftLimitEnable(true);
 
-    m_wristMotor.configMotionCruiseVelocity(10000, Constants.TalonFX.kTimeoutMs);
-    m_wristMotor.configMotionAcceleration(8000, Constants.TalonFX.kTimeoutMs); 
+    m_wristMotor.configMotionCruiseVelocity(20000, Constants.TalonFX.kTimeoutMs);
+    m_wristMotor.configMotionAcceleration(15000, Constants.TalonFX.kTimeoutMs); 
 
     m_wristMotor.configNeutralDeadband(0.05);
 
@@ -118,6 +118,6 @@ public class Wrist extends SubsystemBase {
   }
 
   public boolean atSetpoint() {
-    return Math.abs(m_setpoint - getPosition()) < 3.0;
+    return Math.abs(m_setpoint - getPosition()) < 5.0;
   }
 }

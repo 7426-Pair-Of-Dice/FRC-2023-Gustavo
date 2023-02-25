@@ -54,8 +54,8 @@ public class Shoulder extends SubsystemBase {
     m_shoulderMotor.config_kI(0, 0.0);
     m_shoulderMotor.config_kD(0, 0.0);
 
-    m_shoulderMotor.configMotionCruiseVelocity(10000, Constants.TalonFX.kTimeoutMs);
-    m_shoulderMotor.configMotionAcceleration(5000, Constants.TalonFX.kTimeoutMs);
+    m_shoulderMotor.configMotionCruiseVelocity(20000, Constants.TalonFX.kTimeoutMs);
+    m_shoulderMotor.configMotionAcceleration(10000, Constants.TalonFX.kTimeoutMs);
     m_shoulderMotor.configMotionSCurveStrength(1);
 
     m_shoulderMotor.configNeutralDeadband(0.05);
@@ -112,6 +112,6 @@ public class Shoulder extends SubsystemBase {
   }
 
   public boolean atSetpoint() {
-    return Math.abs(getPosition() - m_setpoint) < 3.0;
+    return Math.abs(getPosition() - m_setpoint) < 5.0;
   }
 }

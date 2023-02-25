@@ -50,8 +50,8 @@ public class Telescope extends SubsystemBase {
 
     m_telescopeMotor.configNeutralDeadband(0.05);
 
-    m_telescopeMotor.configMotionCruiseVelocity(10000, Constants.TalonFX.kTimeoutMs);
-    m_telescopeMotor.configMotionAcceleration(5000, Constants.TalonFX.kTimeoutMs);
+    m_telescopeMotor.configMotionCruiseVelocity(25000, Constants.TalonFX.kTimeoutMs);
+    m_telescopeMotor.configMotionAcceleration(15000, Constants.TalonFX.kTimeoutMs);
 
     m_telescopeMotor.setNeutralMode(NeutralMode.Brake);
 
@@ -101,6 +101,6 @@ public class Telescope extends SubsystemBase {
   }
 
   public boolean atSetpoint() {
-    return Math.abs(getPosition() - m_setpoint) < 3.0;
+    return Math.abs(getPosition() - m_setpoint) < 5.0;
   }
 }
