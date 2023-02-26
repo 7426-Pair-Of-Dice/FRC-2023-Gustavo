@@ -95,6 +95,11 @@ public class Shoulder extends SubsystemBase {
     m_shoulderMotor.set(ControlMode.MotionMagic, ticks);
   }
 
+  public void setSetpoint(double degrees) {
+    double ticks = Units.degreesToTicks(degrees, Constants.Shoulder.kMotorToArm, Constants.TalonFX.kEncoderResolution);
+    m_setpoint = ticks;
+  }
+
   public void setLastPosition() {
     m_shoulderMotor.set(ControlMode.MotionMagic, m_setpoint);
   }
