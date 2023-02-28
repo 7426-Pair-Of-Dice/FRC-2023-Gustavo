@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Limelight extends SubsystemBase {
 
   NetworkTable m_table;
+  NetworkTableEntry m_tv;
   NetworkTableEntry m_tx;
   NetworkTableEntry m_ty;
   NetworkTableEntry m_ta;
@@ -24,6 +25,7 @@ public class Limelight extends SubsystemBase {
   /** Creates a new Limelight. */
   public Limelight() {
     m_table = NetworkTableInstance.getDefault().getTable("limelight");
+    m_tv = m_table.getEntry("tv");
     m_tx = m_table.getEntry("tx");
     m_ty = m_table.getEntry("ty");
     m_ta = m_table.getEntry("ta");
@@ -55,5 +57,13 @@ public class Limelight extends SubsystemBase {
 
   public double getArea() {
     return m_area;
+  }
+
+  public boolean getTarget() {
+    return m_tv.getDouble(0.0) == 1;
+  }
+
+  public void setPipeline(int pipeline) {
+    m_table.getEntry("pipeline").setNumber(pipeline);
   }
 }

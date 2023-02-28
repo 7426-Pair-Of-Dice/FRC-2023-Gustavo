@@ -92,6 +92,5 @@ public class Constants {
         public static final int kJoystickRightBottomLeftButtonId = 14;
         public static final int kJoystickRightBottomMiddleButtonId = 15;
         public static final int kJoystickRightBottomRightButtonId = 16;
-
     }
 }
