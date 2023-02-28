@@ -22,8 +22,7 @@ public class Drivetrain extends SubsystemBase {
 
   public static enum DriveType {
     Arcade,
-    Tank,
-    Perspective
+    Tank
   }
 
   private static CANSparkMax m_leftDriveOne;  
@@ -37,13 +36,11 @@ public class Drivetrain extends SubsystemBase {
   private static RelativeEncoder m_leftEncoder;
   private static RelativeEncoder m_rightEncoder;
 
-  private static DifferentialDrive m_drive;
+  // private static DifferentialDrive m_drive;
 
   private static Pigeon2 m_gyro;
 
   private SendableChooser<DriveType> m_driveTypeChooser;
-  private SendableChooser<Double> m_driveSpeedChooser;
-
 
   /** Creates a new Drivetrain. */
   public Drivetrain() {
@@ -96,52 +93,46 @@ public class Drivetrain extends SubsystemBase {
     m_leftEncoder = m_leftDriveOne.getEncoder();
     m_rightEncoder = m_rightDriveOne.getEncoder();
 
-    m_drive = new DifferentialDrive(m_leftDriveOne, m_rightDriveOne);
+    // m_drive = new DifferentialDrive(m_leftDriveOne, m_rightDriveOne);
 
     m_gyro = new Pigeon2(Constants.Sensors.kDrivetrainGyroId);
     
     m_driveTypeChooser = new SendableChooser<>();
     m_driveTypeChooser.setDefaultOption("Tank", DriveType.Tank);
     m_driveTypeChooser.addOption("Arcade", DriveType.Arcade);
-    m_driveTypeChooser.addOption("Perspective (WIP)", DriveType.Perspective);
 
-    m_driveSpeedChooser = new SendableChooser<>();
-    m_driveSpeedChooser.setDefaultOption("100%", 1.0);
-    m_driveSpeedChooser.addOption("90%", 0.9);
-    m_driveSpeedChooser.addOption("75%", 0.75);
-    m_driveSpeedChooser.addOption("50%", 0.5);
-    m_driveSpeedChooser.addOption("25%", 0.25);
+    SmartDashboard.putData(m_driveTypeChooser);
   }
 
   @Override
-  public void periodic() {
-    m_drive.feed();
-    SmartDashboard.putData(m_driveTypeChooser);
-    SmartDashboard.putData(m_driveSpeedChooser);
-  }
+  public void periodic() {}
 
   @Override
   public void initSendable(SendableBuilder builder) {
     builder.setSmartDashboardType("Drivetrain");
-    builder.addDoubleProperty("Drivetrain Yaw", this::getYaw, null);
-    builder.addDoubleProperty("Drivetrain Pitch", this::getPitch, null);
-    builder.addDoubleProperty("Drivetrain Roll", this::getRoll, null);
+    builder.addDoubleProperty("Yaw", this::getYaw, null);
+    builder.addDoubleProperty("Pitch", this::getPitch, null);
+    builder.addDoubleProperty("Roll", this::getRoll, null);
+    builder.addDoubleProperty("Left Encoder Position", this::getLeftPosition, null);
+    builder.addDoubleProperty("Right Encoder Position", this::getRightPosition, null);
   }
 
   public DriveType getDriveType() {
     return m_driveTypeChooser.getSelected();
   }
 
-  public double getDriveSpeed() {
-    return m_driveSpeedChooser.getSelected();
-  }
-
   public void tankDrive(double leftSpeed, double rightSpeed) {
-    m_drive.tankDrive(leftSpeed * getDriveSpeed(), rightSpeed * getDriveSpeed());
+    m_leftDriveOne.set(leftSpeed);
+    m_rightDriveOne.set(rightSpeed);
+
+    // m_drive.tankDrive(leftSpeed, rightSpeed);
   }
 
   public void arcadeDrive(double speed, double rotation) {
-    m_drive.arcadeDrive(speed * getDriveSpeed(), rotation * getDriveSpeed());
+    m_leftDriveOne.set(speed + rotation);
+    m_rightDriveOne.set(speed - rotation);
+
+    // m_drive.arcadeDrive(speed, rotation);
   }
 
   public void stop() {
@@ -149,10 +140,24 @@ public class Drivetrain extends SubsystemBase {
     m_rightDriveOne.set(0);
   }
 
-  public double getYaw() { return m_gyro.getYaw(); }
+  public double getYaw() { 
+    return m_gyro.getYaw(); 
+  }
 
-  public double getPitch() { return m_gyro.getPitch(); }
+  public double getPitch() { 
+    return m_gyro.getPitch(); 
+  }
 
-  public double getRoll() { return m_gyro.getRoll(); }
+  public double getRoll() { 
+    return m_gyro.getRoll(); 
+  }
+
+  public double getLeftPosition() {
+    return m_leftEncoder.getPosition();
+  }
+
+  public double getRightPosition() {
+    return m_rightEncoder.getPosition();
+  }
 }
 

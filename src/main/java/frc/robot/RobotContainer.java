@@ -7,6 +7,8 @@ package frc.robot;
 import frc.robot.Subsystems.*;
 import frc.robot.Commands.*;
 
+import java.util.Map;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -16,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 public class RobotContainer {
@@ -50,7 +53,10 @@ public class RobotContainer {
   private static Limelight m_limelight;
 
   // Commands
-  private static DriveTeleop m_driveTeleop;
+  private static RunCommand m_tankDrive;
+  private static RunCommand m_arcadeDrive;
+
+  private static Command m_driveSelector;
 
   private static SequentialCommandGroup m_homePreset;
 
@@ -102,7 +108,16 @@ public class RobotContainer {
     m_limelight = new Limelight();
 
     // Commands
-    m_driveTeleop = new DriveTeleop(m_driveTrain, m_driverController);
+    m_tankDrive = new RunCommand(() -> m_driveTrain.tankDrive(-m_driverController.getLeftY() * 0.8, -m_driverController.getRightY() * 0.8), m_driveTrain);
+    m_arcadeDrive = new RunCommand(() -> m_driveTrain.arcadeDrive(-m_driverController.getLeftY() * 0.8, -m_driverController.getRightX() * 0.8), m_driveTrain);
+
+    m_driveSelector = new SelectCommand(
+      Map.ofEntries(
+        Map.entry(Drivetrain.DriveType.Tank, m_tankDrive),
+        Map.entry(Drivetrain.DriveType.Arcade, m_arcadeDrive)
+      ), 
+      m_driveTrain::getDriveType
+    );
 
     m_homePreset = new SequentialCommandGroup(
       new InstantCommand(() -> m_intake.stopIntake(), m_intake),
@@ -111,6 +126,7 @@ public class RobotContainer {
       new ShoulderPreset(m_shoulder, 0)
     );
 
+    // Cube grabbing presets
     m_doublePlayerStationCubePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCube(), m_intake),
       new SequentialCommandGroup(
@@ -136,6 +152,7 @@ public class RobotContainer {
       )
     );
 
+    // Cone grabbing presets
     m_doublePlayerStationConePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCone(), m_intake),
       new SequentialCommandGroup(
@@ -161,6 +178,7 @@ public class RobotContainer {
       )
     );
 
+    // Cube scoring presets
     m_topScoreCubePreset = new SequentialCommandGroup(
       new ShoulderPreset(m_shoulder, 0),
       new TelescopePreset(m_telescope, 0),
@@ -177,6 +195,7 @@ public class RobotContainer {
       new WristPreset(m_wrist, 0)
     );
 
+    // Cone scoring presets
     m_topScoreConePreset = new SequentialCommandGroup(
       new ShoulderPreset(m_shoulder, 0),
       new TelescopePreset(m_telescope, 0),
@@ -193,7 +212,7 @@ public class RobotContainer {
       new WristPreset(m_wrist, 0)
     );
 
-    m_driveTrain.setDefaultCommand(m_driveTeleop);
+    m_driveTrain.setDefaultCommand(m_driveSelector);
 
     SmartDashboard.putData(m_driveTrain);
     SmartDashboard.putData(m_turret);

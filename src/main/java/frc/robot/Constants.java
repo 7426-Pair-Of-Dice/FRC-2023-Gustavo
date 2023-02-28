@@ -30,7 +30,6 @@ public class Constants {
         public static final int kRightMotorThreeId = 3;
 
         public static final double kRampRate = 0.5;
-        public static final double kSpeedDivider = 0.5;
     }
 
     public static final class Turret {
@@ -72,30 +71,11 @@ public class Constants {
     public static final class Intake {
         public static final int kFrontIntakeMotorId = 13;
         public static final int kBackIntakeMotorId = 14;
-
-        public static final double kIntakePercentOutput = 0.8;
     }
 
     public static final class Input {
         public static final int kDriverControllerId = 0;
         public static final int kOperatorJoystickId = 1;
-
-        public static final int kWristBackwardButton = 2;
-        public static final int kWristForwardButton = 4;
-
-        public static final int kIntakeCubeButtonId = 5;
-        public static final int kIntakeConeFrontButtonId = 6;
-        public static final int kIntakeConeBottomButtonId = 7;
-        public static final int kIntakeReleaseButtonId = 1;
-
-        /* public static final int kHomePresetButtonId = 8;
-        public static final int kDriveStationPresetButtonId = 13;
-        public static final int kStartConfigPresetButtonId = 9;
-        public static final int kBottomScorePresetButtonId = 12;
-        public static final int kMiddleScorePresetButtonId = 11;
-        public static final int kIntakeConeFrontPresetButtonId = 14;
-        public static final int kIntakeConeBottomPresetButtonId = 15;
-        public static final int kIntakeCubePresetButtonId = 16; */
 
         public static final int kJoystickLeftTopLeftButtonId = 5;
         public static final int kJoystickLeftTopMiddleButtonId = 6;
