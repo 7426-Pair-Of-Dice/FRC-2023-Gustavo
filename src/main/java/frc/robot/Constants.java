@@ -30,6 +30,12 @@ public class Constants {
         public static final int kRightMotorThreeId = 3;
 
         public static final double kRampRate = 0.5;
+
+        public static final double kMotorToWheel =  1 / ((50.0 / 12.0) * (60.0 / 14.0));
+
+        public static final double kEncoderResolution = 42.0;
+
+        public static final double kWheelDiameter = 6.0; // in inches
     }
 
     public static final class Turret {

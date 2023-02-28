@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants;
+import frc.robot.Units;
 
 public class Drivetrain extends SubsystemBase {
 
@@ -92,6 +93,12 @@ public class Drivetrain extends SubsystemBase {
 
     m_leftEncoder = m_leftDriveOne.getEncoder();
     m_rightEncoder = m_rightDriveOne.getEncoder();
+
+    m_leftEncoder.setPositionConversionFactor(Constants.Drive.kMotorToWheel / Constants.Drive.kEncoderResolution * Units.inchesToMeters(Constants.Drive.kWheelDiameter) * Math.PI);
+    m_rightEncoder.setPositionConversionFactor(Constants.Drive.kMotorToWheel / Constants.Drive.kEncoderResolution * Units.inchesToMeters(Constants.Drive.kWheelDiameter) * Math.PI);
+
+    m_leftEncoder.setVelocityConversionFactor((Units.inchesToMeters(6) * Math.PI) / 60);
+    m_rightEncoder.setVelocityConversionFactor((Units.inchesToMeters(6) * Math.PI) / 60);
 
     // m_drive = new DifferentialDrive(m_leftDriveOne, m_rightDriveOne);
 
