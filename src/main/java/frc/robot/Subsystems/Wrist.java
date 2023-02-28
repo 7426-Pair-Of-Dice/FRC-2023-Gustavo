@@ -24,17 +24,11 @@ public class Wrist extends SubsystemBase {
 
   private static double m_setpoint;
 
-  private static double m_zeroPitch;
-
   /** Creates a new Wrist. */
   public Wrist() {
     m_wristMotor = new TalonFX(Constants.Wrist.kWristMotorId);
 
     m_gyro = new Pigeon2(Constants.Sensors.kClawGyroId);
-
-    m_gyro.configMountPose(0, -90, 0);
-
-    m_zeroPitch = m_gyro.getPitch();
 
     m_wristMotor.configFactoryDefault();
 
@@ -94,13 +88,12 @@ public class Wrist extends SubsystemBase {
   }
 
   public void setPosition(double degrees) {
-    double ticks = Units.degreesToTicks(degrees, Constants.Wrist.kMotorToWrist, Constants.TalonFX.kEncoderResolution);
-    m_setpoint = ticks;
-    m_wristMotor.set(ControlMode.MotionMagic, ticks + getOffset());
+    setSetpoint(degrees);
+    m_wristMotor.set(ControlMode.MotionMagic, m_setpoint);
   }
 
   public void setLastPosition() {
-    m_wristMotor.set(ControlMode.MotionMagic, m_setpoint + getOffset());
+    m_wristMotor.set(ControlMode.MotionMagic, m_setpoint);
   }
 
   public void setSetpoint(double degrees) {
@@ -126,10 +119,6 @@ public class Wrist extends SubsystemBase {
 
   public double getRoll() { 
     return m_gyro.getRoll(); 
-  }
-
-  public double getOffset() {
-    return Units.degreesToTicks((m_gyro.getPitch() - m_zeroPitch), 1, Constants.TalonFX.kEncoderResolution);
   }
 
   public boolean atSetpoint() {

@@ -13,6 +13,7 @@ import com.revrobotics.Rev2mDistanceSensor.Port;
 import com.revrobotics.Rev2mDistanceSensor.RangeProfile;
 import com.revrobotics.Rev2mDistanceSensor.Unit;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Ultrasonic;
 import frc.robot.Constants;
 
@@ -47,9 +48,24 @@ public class Intake extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  public void setPercentOutput(double backPercentOutput, double frontPercentOutput) {
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    builder.setSmartDashboardType("Intake");
+    builder.addDoubleProperty("Cone Range", this::getConeRange, null);
+    builder.addDoubleProperty("Cube Range", this::getCubeRange, null);
+  }
+
+  private void setPercentOutput(double backPercentOutput, double frontPercentOutput) {
     m_frontIntakeMotor.set(VictorSPXControlMode.PercentOutput, frontPercentOutput);
     m_backIntakeMotor.set(VictorSPXControlMode.PercentOutput, backPercentOutput);
+  }
+
+  public void intakeCone() {
+    setPercentOutput(1, 1);
+  }
+
+  public void intakeCube() {
+    setPercentOutput(-1, -1);
   }
 
   public void stopIntake() {
@@ -62,5 +78,13 @@ public class Intake extends SubsystemBase {
 
   public double getCubeRange() { 
     return m_cubeDistanceSensor.getRangeInches(); 
+  }
+
+  public boolean coneDetected() {
+    return getConeRange() < 10.0;
+  }
+
+  public boolean cubeDetected() {
+    return getCubeRange() < 10.0;
   }
 }

@@ -88,13 +88,30 @@ public class Constants {
         public static final int kIntakeConeBottomButtonId = 7;
         public static final int kIntakeReleaseButtonId = 1;
 
-        public static final int kHomePresetButtonId = 8;
+        /* public static final int kHomePresetButtonId = 8;
         public static final int kDriveStationPresetButtonId = 13;
         public static final int kStartConfigPresetButtonId = 9;
-        public static final int kTopScorePresetButtonId = 12;
+        public static final int kBottomScorePresetButtonId = 12;
         public static final int kMiddleScorePresetButtonId = 11;
         public static final int kIntakeConeFrontPresetButtonId = 14;
         public static final int kIntakeConeBottomPresetButtonId = 15;
-        public static final int kIntakeCubePresetButtonId = 16;
+        public static final int kIntakeCubePresetButtonId = 16; */
+
+        public static final int kJoystickLeftTopLeftButtonId = 5;
+        public static final int kJoystickLeftTopMiddleButtonId = 6;
+        public static final int kJoystickLeftTopRightButtonId = 7;
+
+        public static final int kJoystickLeftBottomLeftButtonId = 10;
+        public static final int kJoystickLeftBottomMiddleButtonId = 9;
+        public static final int kJoystickLeftBottomRightButtonId = 8;
+
+        public static final int kJoystickRightTopLeftButtonId = 13;
+        public static final int kJoystickRightTopMiddleButtonId = 12;
+        public static final int kJoystickRightTopRightButtonId = 11;
+
+        public static final int kJoystickRightBottomLeftButtonId = 14;
+        public static final int kJoystickRightBottomMiddleButtonId = 15;
+        public static final int kJoystickRightBottomRightButtonId = 16;
+
     }
 }

@@ -79,9 +79,8 @@ public class Telescope extends SubsystemBase {
   }
 
   public void setPosition(double meters) {
-    double ticks = Units.metersToTicks(meters, Constants.Telescope.kMotorToTelescope, Constants.TalonFX.kEncoderResolution, Constants.Telescope.kMetersPerRev);
-    m_setpoint = ticks;
-    m_telescopeMotor.set(ControlMode.MotionMagic, ticks);
+    setSetpoint(meters);
+    m_telescopeMotor.set(ControlMode.MotionMagic, m_setpoint);
   }
 
   public void setSetpoint(double meters) {
