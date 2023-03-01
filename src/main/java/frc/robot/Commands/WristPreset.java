@@ -11,7 +11,7 @@ public class WristPreset extends CommandBase {
 
   private static Wrist m_wrist;
 
-  private static double m_wristAngle;
+  private double m_wristAngle;
 
   /** Creates a new ShoulderPreset. */
   public WristPreset(Wrist wrist, double wristAngle) {
@@ -33,7 +33,7 @@ public class WristPreset extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_wrist.setSetpoint(m_wristAngle);
+    m_wrist.setPosition(m_wristAngle);
   }
 
   // Called once the command ends or is interrupted.
@@ -43,6 +43,6 @@ public class WristPreset extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_wrist.atSetpoint();
+    return m_wrist.atSetpoint(5.0);
   }
 }

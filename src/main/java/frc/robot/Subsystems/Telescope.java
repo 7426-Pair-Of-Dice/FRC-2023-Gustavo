@@ -104,7 +104,9 @@ public class Telescope extends SubsystemBase {
     return m_setpoint;
   }
 
-  public boolean atSetpoint() {
-    return Math.abs(getPosition() - m_setpoint) < 5.0;
+  public boolean atSetpoint(double tolerance) {
+    double setpointMeters = Units.ticksToMeters(m_setpoint, Constants.Telescope.kMotorToTelescope, Constants.TalonFX.kEncoderResolution, Constants.Telescope.kMetersPerRev);
+
+    return Math.abs(setpointMeters - getPositionMeters()) < tolerance;
   }
 }

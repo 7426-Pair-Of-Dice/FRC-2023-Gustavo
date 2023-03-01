@@ -49,7 +49,7 @@ public class Wrist extends SubsystemBase {
 
     m_wristMotor.configAllowableClosedloopError(0, 0, Constants.TalonFX.kTimeoutMs);
 
-    m_wristMotor.configForwardSoftLimitThreshold(Units.degreesToTicks(120, Constants.Wrist.kMotorToWrist, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
+    m_wristMotor.configForwardSoftLimitThreshold(Units.degreesToTicks(180, Constants.Wrist.kMotorToWrist, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
     m_wristMotor.configReverseSoftLimitThreshold(0, Constants.TalonFX.kTimeoutMs);
     
     m_wristMotor.configForwardSoftLimitEnable(true);
@@ -62,7 +62,7 @@ public class Wrist extends SubsystemBase {
 
     m_wristMotor.setNeutralMode(NeutralMode.Brake);
 
-    m_wristMotor.setInverted(true);
+    m_wristMotor.setInverted(false);
 
     m_setpoint = getPosition();
   }
@@ -101,6 +101,10 @@ public class Wrist extends SubsystemBase {
     m_setpoint = ticks;
   }
 
+  public void stop() {
+    setPercentOutput(0);
+  }
+
   public double getPosition() {
     return m_wristMotor.getSelectedSensorPosition();
   }
@@ -121,7 +125,9 @@ public class Wrist extends SubsystemBase {
     return m_gyro.getRoll(); 
   }
 
-  public boolean atSetpoint() {
-    return Math.abs(m_setpoint - getPosition()) < 5.0;
+  public boolean atSetpoint(double tolerance) {
+    double setpointAngle = Units.ticksToDegrees(m_setpoint, Constants.Wrist.kMotorToWrist, Constants.TalonFX.kEncoderResolution);
+
+    return Math.abs(setpointAngle - getAngle()) < tolerance;
   }
 }

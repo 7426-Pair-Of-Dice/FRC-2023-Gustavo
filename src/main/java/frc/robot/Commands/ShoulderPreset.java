@@ -11,7 +11,7 @@ public class ShoulderPreset extends CommandBase {
 
   private static Shoulder m_shoulder;
 
-  private static double m_shoulderAngle;
+  private double m_shoulderAngle;
 
   /** Creates a new ShoulderPreset. */
   public ShoulderPreset(Shoulder shoulder, double shoulderAngle) {
@@ -33,7 +33,7 @@ public class ShoulderPreset extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_shoulder.setSetpoint(m_shoulderAngle);
+    m_shoulder.setPosition(m_shoulderAngle);
   }
 
   // Called once the command ends or is interrupted.
@@ -43,6 +43,6 @@ public class ShoulderPreset extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_shoulder.atSetpoint();
+    return m_shoulder.atSetpoint(5.0);
   }
 }

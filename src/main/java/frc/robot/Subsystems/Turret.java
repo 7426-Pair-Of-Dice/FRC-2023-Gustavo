@@ -78,9 +78,13 @@ public class Turret extends SubsystemBase {
   }
 
   public void setPosition(double degrees) {
+    setSetpoint(degrees);
+    m_turretMotor.set(ControlMode.MotionMagic, m_setpoint);
+  }
+
+  public void setSetpoint(double degrees) {
     double ticks = Units.degreesToTicks(degrees, Constants.Turret.kMotorToTurret, Constants.TalonFX.kEncoderResolution);
     m_setpoint = ticks;
-    m_turretMotor.set(ControlMode.MotionMagic, ticks);
   }
 
   public void setLastPosition() {
@@ -99,7 +103,9 @@ public class Turret extends SubsystemBase {
     return Units.ticksToDegrees(getPosition(), Constants.Turret.kMotorToTurret, Constants.TalonFX.kEncoderResolution);
   }
 
-  public boolean atSetpoint() {
-    return Math.abs(m_setpoint - getPosition()) < 5.0;
+  public boolean atSetpoint(double tolerance) {
+    double setpointAngle = Units.ticksToDegrees(m_setpoint, Constants.Turret.kMotorToTurret, Constants.TalonFX.kEncoderResolution);
+
+    return Math.abs(setpointAngle - getAngle()) < tolerance;
   }
 }

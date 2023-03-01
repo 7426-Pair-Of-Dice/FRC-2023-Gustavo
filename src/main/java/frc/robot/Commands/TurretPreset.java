@@ -5,36 +5,35 @@
 package frc.robot.Commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Units;
-import frc.robot.Subsystems.Telescope;
+import frc.robot.Subsystems.Turret;
 
-public class TelescopePreset extends CommandBase {
+public class TurretPreset extends CommandBase {
 
-  private static Telescope m_telescope;
+  private static Turret m_turret;
 
-  private double m_telescopeDistance;
+  private double m_turretAngle;
 
   /** Creates a new ShoulderPreset. */
-  public TelescopePreset(Telescope telescope, double telescopeDistance) {
+  public TurretPreset(Turret turret, double turretAngle) {
 
-    m_telescope = telescope;
+    m_turret = turret;
 
-    m_telescopeDistance = telescopeDistance;
+    m_turretAngle = turretAngle;
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(telescope);
+    addRequirements(turret);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_telescope.setSetpoint(m_telescopeDistance);
+    m_turret.setSetpoint(m_turretAngle);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_telescope.setPosition(m_telescopeDistance);
+    m_turret.setPosition(m_turretAngle);
   }
 
   // Called once the command ends or is interrupted.
@@ -44,6 +43,6 @@ public class TelescopePreset extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_telescope.atSetpoint(Units.inchesToMeters(1.0));
+    return m_turret.atSetpoint(5.0);
   }
 }

@@ -29,7 +29,7 @@ public class Constants {
         public static final int kRightMotorTwoId = 2;
         public static final int kRightMotorThreeId = 3;
 
-        public static final double kRampRate = 0.5;
+        public static final double kRampRate = 0.8;
 
         public static final double kMotorToWheel =  1 / ((50.0 / 12.0) * (60.0 / 14.0));
 
@@ -46,11 +46,7 @@ public class Constants {
         public static final double kI = 0.0;
         public static final double kD = 5;
 
-        public static final double kMotorToDriving = (1.0 / 50.0);
-
-        public static final double kDrivingToTurret = (14.0 / 70.0);
-
-        public static final double kMotorToTurret = kMotorToDriving * kDrivingToTurret;
+        public static final double kMotorToTurret = (1.0 / 50.0) * (14.0 / 70.0);
     }
 
     public static final class Shoulder {
@@ -75,13 +71,18 @@ public class Constants {
     }
 
     public static final class Intake {
-        public static final int kFrontIntakeMotorId = 13;
-        public static final int kBackIntakeMotorId = 14;
+        public static final int kLeftIntakeMotorId = 14;
+        public static final int kRightIntakeMotorId = 13;
     }
 
     public static final class Input {
         public static final int kDriverControllerId = 0;
         public static final int kOperatorJoystickId = 1;
+
+        public static final int kJoystickTriggerButtonId = 1;
+        public static final int kJoystickCenterLeftButtonId = 3;
+        public static final int kJoystickCenterMiddleButtonId = 2;
+        public static final int kJoystickCenterRightButtonId = 4;
 
         public static final int kJoystickLeftTopLeftButtonId = 5;
         public static final int kJoystickLeftTopMiddleButtonId = 6;

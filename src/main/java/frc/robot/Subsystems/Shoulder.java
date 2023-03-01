@@ -79,9 +79,10 @@ public class Shoulder extends SubsystemBase {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-      builder.setSmartDashboardType("Shoulder");
-      builder.addDoubleProperty("Shoulder Position", this::getPosition, null);
-      builder.addDoubleProperty("Shoulder Angle", this::getAngle, null);
+    builder.setSmartDashboardType("Shoulder");
+    builder.addDoubleProperty("Shoulder Position", this::getPosition, null);
+    builder.addDoubleProperty("Shoulder Angle", this::getAngle, null);
+    builder.addDoubleProperty("Shoulder Setpoint", this::getSetpoint, null);
   }
 
   public void setPercentOutput(double percentOutput) {
@@ -115,7 +116,13 @@ public class Shoulder extends SubsystemBase {
     return Units.ticksToDegrees(getPosition(), Constants.Shoulder.kMotorToArm, Constants.TalonFX.kEncoderResolution);
   }
 
-  public boolean atSetpoint() {
-    return Math.abs(getPosition() - m_setpoint) < 5.0;
+  public double getSetpoint() {
+    return m_setpoint;
+  }
+
+  public boolean atSetpoint(double tolerance) {
+    double setpointAngle = Units.ticksToDegrees(m_setpoint, Constants.Shoulder.kMotorToArm, Constants.TalonFX.kEncoderResolution);
+
+    return Math.abs(setpointAngle - getAngle()) < tolerance;
   }
 }

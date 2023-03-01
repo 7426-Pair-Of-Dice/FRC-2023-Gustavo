@@ -19,16 +19,16 @@ import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
 
-  private static VictorSPX m_backIntakeMotor;
-  private static VictorSPX m_frontIntakeMotor;
+  private static VictorSPX m_leftIntakeMotor;
+  private static VictorSPX m_rightIntakeMotor;
 
   private static Rev2mDistanceSensor m_coneDistanceSensor;
   private static Ultrasonic m_cubeDistanceSensor;
 
   /** Creates a new Intake. */
   public Intake() {
-    m_backIntakeMotor = new VictorSPX(Constants.Intake.kBackIntakeMotorId);
-    m_frontIntakeMotor = new VictorSPX(Constants.Intake.kFrontIntakeMotorId);
+    m_leftIntakeMotor = new VictorSPX(Constants.Intake.kLeftIntakeMotorId);
+    m_rightIntakeMotor = new VictorSPX(Constants.Intake.kRightIntakeMotorId);
 
     m_coneDistanceSensor = new Rev2mDistanceSensor(Port.kOnboard, Unit.kInches, RangeProfile.kDefault);
     m_cubeDistanceSensor = new Ultrasonic(Constants.Sensors.kClawSonarPingChannel, Constants.Sensors.kClawSonarEchoChannel);
@@ -37,10 +37,10 @@ public class Intake extends SubsystemBase {
     
     Ultrasonic.setAutomaticMode(true);
 
-    m_backIntakeMotor.setInverted(true);
+    m_leftIntakeMotor.setInverted(true);
 
-    m_backIntakeMotor.configNeutralDeadband(0.05);
-    m_frontIntakeMotor.configNeutralDeadband(0.05);
+    m_leftIntakeMotor.configNeutralDeadband(0.05);
+    m_rightIntakeMotor.configNeutralDeadband(0.05);
   }
 
   @Override
@@ -55,17 +55,25 @@ public class Intake extends SubsystemBase {
     builder.addDoubleProperty("Cube Range", this::getCubeRange, null);
   }
 
-  private void setPercentOutput(double backPercentOutput, double frontPercentOutput) {
-    m_frontIntakeMotor.set(VictorSPXControlMode.PercentOutput, frontPercentOutput);
-    m_backIntakeMotor.set(VictorSPXControlMode.PercentOutput, backPercentOutput);
+  private void setPercentOutput(double leftPercentOutput, double rightPercentOutput) {
+    m_leftIntakeMotor.set(VictorSPXControlMode.PercentOutput, leftPercentOutput);
+    m_rightIntakeMotor.set(VictorSPXControlMode.PercentOutput, rightPercentOutput);
   }
 
   public void intakeCone() {
-    setPercentOutput(1, 1);
+    setPercentOutput(-1, 1);
   }
 
   public void intakeCube() {
-    setPercentOutput(-1, -1);
+    setPercentOutput(1, -1);
+  }
+
+  public void releaseCone() {
+    setPercentOutput(1, -1);
+  }
+
+  public void releaseCube() {
+    setPercentOutput(-1, 1);
   }
 
   public void stopIntake() {
