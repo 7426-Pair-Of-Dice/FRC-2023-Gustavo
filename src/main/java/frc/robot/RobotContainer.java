@@ -65,7 +65,7 @@ public class RobotContainer {
   private static RunCommand m_tankDrive;
   private static RunCommand m_arcadeDrive;
 
-  private static Command m_driveSelector;
+  // private static Command m_driveSelector;
 
   private static SequentialCommandGroup m_homePreset;
 
@@ -145,13 +145,13 @@ public class RobotContainer {
     m_tankDrive = new RunCommand(() -> m_driveTrain.tankDrive(-m_driverController.getLeftY() * 0.8, -m_driverController.getRightY() * 0.8), m_driveTrain);
     m_arcadeDrive = new RunCommand(() -> m_driveTrain.arcadeDrive(-m_driverController.getLeftY() * 0.8, m_driverController.getRightX() * 0.8), m_driveTrain);
 
-    m_driveSelector = new SelectCommand(
+    /* m_driveSelector = new SelectCommand(
       Map.ofEntries(
         Map.entry(Drivetrain.DriveType.Tank, m_tankDrive),
         Map.entry(Drivetrain.DriveType.Arcade, m_arcadeDrive)
       ), 
       m_driveTrain::getDriveType
-    );
+    ); */
 
     m_homePreset = new SequentialCommandGroup(
       new InstantCommand(() -> m_intake.stopIntake(), m_intake),
@@ -231,35 +231,35 @@ public class RobotContainer {
 
     // Cube scoring presets
     m_topScoreCubePreset = new SequentialCommandGroup(
-      new ShoulderPreset(m_shoulder, 0),
-      new TelescopePreset(m_telescope, 0),
-      new WristPreset(m_wrist, 0),
+      new ShoulderPreset(m_shoulder, 67.0),
+      new TelescopePreset(m_telescope, Units.inchesToMeters(3.0)),
+      new WristPreset(m_wrist, 115.0),
       new RunCommand(() -> m_intake.releaseCube(), m_intake)
     );
     m_middleScoreCubePreset = new SequentialCommandGroup(
-      new ShoulderPreset(m_shoulder, 0),
+      new ShoulderPreset(m_shoulder, 50.0),
       new TelescopePreset(m_telescope, 0),
-      new WristPreset(m_wrist, 0),
+      new WristPreset(m_wrist, 105.0),
       new RunCommand(() -> m_intake.releaseCube(), m_intake)
     );
     m_bottomScoreCubePreset = new SequentialCommandGroup(
       new ShoulderPreset(m_shoulder, 0),
       new TelescopePreset(m_telescope, 0),
-      new WristPreset(m_wrist, 0),
+      new WristPreset(m_wrist, 45.0),
       new RunCommand(() -> m_intake.releaseCube(), m_intake)
     );
 
     // Cone scoring presets
     m_topScoreConePreset = new SequentialCommandGroup(
-      new ShoulderPreset(m_shoulder, 0),
-      new TelescopePreset(m_telescope, 0),
-      new WristPreset(m_wrist, 0),
+      new ShoulderPreset(m_shoulder, 80.0),
+      new TelescopePreset(m_telescope, Units.inchesToMeters(3.0)),
+      new WristPreset(m_wrist, 80.0),
       new RunCommand(() -> m_intake.releaseCone(), m_intake)
     );
     m_middleScoreConePreset = new SequentialCommandGroup(
-      new ShoulderPreset(m_shoulder, 0),
+      new ShoulderPreset(m_shoulder, 53.0),
       new TelescopePreset(m_telescope, 0),
-      new WristPreset(m_wrist, 0),
+      new WristPreset(m_wrist, 45.0),
       new RunCommand(() -> m_intake.releaseCone(), m_intake)
     );
     m_bottomScoreConePreset = new SequentialCommandGroup(
@@ -269,7 +269,7 @@ public class RobotContainer {
       new RunCommand(() -> m_intake.releaseCone(), m_intake)
     );
 
-    m_driveTrain.setDefaultCommand(m_driveSelector);
+    m_driveTrain.setDefaultCommand(m_arcadeDrive);
     m_shoulder.setDefaultCommand(m_shoulderMaintain);
     m_telescope.setDefaultCommand(m_telescopeMaintain);
     m_wrist.setDefaultCommand(m_wristMaintain);
