@@ -10,6 +10,7 @@ import frc.robot.Commands.*;
 import java.util.Map;
 
 import edu.wpi.first.wpilibj.Joystick.AxisType;
+import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -29,6 +30,8 @@ public class RobotContainer {
   // Input
   private static CommandXboxController m_driverController;
   private static CommandJoystick m_operatorJoystick;
+
+  private static Trigger m_driveStraightTrigger;
 
   private static Trigger m_doublePlayerStationCubePresetTrigger;
   private static Trigger m_singlePlayerStationCubePresetTrigger;
@@ -67,9 +70,7 @@ public class RobotContainer {
 
   // Commands
   private static RunCommand m_arcadeDrive;
-  private static RunCommand m_arcadeDriveSlowed;
-
-  private static Command m_driveSelector;
+  private static DriveStraight m_driveStraight;
 
   private static SequentialCommandGroup m_homePreset;
 
@@ -114,6 +115,8 @@ public class RobotContainer {
     m_driverController = new CommandXboxController(Constants.Input.kDriverControllerId);
     m_operatorJoystick = new CommandJoystick(Constants.Input.kOperatorJoystickId);
 
+    m_driveStraightTrigger = m_driverController.rightTrigger();
+
     m_doublePlayerStationCubePresetTrigger = m_operatorJoystick.button(Constants.Input.kJoystickRightTopLeftButtonId);
     m_singlePlayerStationCubePresetTrigger = m_operatorJoystick.button(Constants.Input.kJoystickRightTopMiddleButtonId);
     m_floorCubePresetTrigger = m_operatorJoystick.button(Constants.Input.kJoystickRightTopRightButtonId);
@@ -149,16 +152,14 @@ public class RobotContainer {
     m_limelight = new Limelight();
 
     // Commands
-    m_arcadeDrive = new RunCommand(() -> m_driveTrain.arcadeDrive(-m_driverController.getLeftY() * 0.8, m_driverController.getRightX() * 0.8), m_driveTrain);
-    m_arcadeDriveSlowed = new RunCommand(() -> m_driveTrain.arcadeDrive(-m_driverController.getLeftY() * 0.4, m_driverController.getRightX() * 0.4), m_driveTrain);
-
-    m_driveSelector = new SelectCommand(
-      Map.ofEntries(
-        Map.entry(Shoulder.ShoulderState.HOME, m_arcadeDrive),
-        Map.entry(Shoulder.ShoulderState.NOT_HOME, m_arcadeDriveSlowed)
-      ), 
-      m_shoulder::getState
+    m_arcadeDrive = new RunCommand(
+      () -> {
+        m_driveTrain.arcadeDrive(-m_driverController.getLeftY() * (1 - (m_shoulder.getAngle() / 100.0)), m_driverController.getRightX() * (1 - (m_shoulder.getAngle() / 100.0 * 2.0)));
+      }, 
+      m_driveTrain
     );
+
+    m_driveStraight = new DriveStraight(m_driveTrain, m_driverController);
 
     m_telescopeControl = new RunCommand(() -> m_telescope.setPercentOutput(-m_operatorJoystick.getY()), m_telescope);
     m_turretControl = new RunCommand(() -> m_turret.setPercentOutput(-m_operatorJoystick.getZ()), m_turret);
@@ -248,7 +249,7 @@ public class RobotContainer {
       new WristPreset(m_wrist, 0)
     ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
 
-    m_driveTrain.setDefaultCommand(m_driveSelector);
+    m_driveTrain.setDefaultCommand(m_arcadeDrive);
     m_shoulder.setDefaultCommand(m_shoulderMaintain);
     m_telescope.setDefaultCommand(m_telescopeMaintain);
     m_wrist.setDefaultCommand(m_wristMaintain);
@@ -266,6 +267,8 @@ public class RobotContainer {
   }
   
   private void configureBindings() {
+    m_driveStraightTrigger.whileTrue(m_driveStraight);
+
     m_telescopeControlTrigger.whileTrue(m_telescopeControl).onFalse(m_telescopeStop);
     m_turretControlTrigger.whileTrue(m_turretControl).onFalse(m_turretStop);
     m_shoulderUpTrigger.whileTrue(m_shoulderUp).onFalse(m_shoulderStop);
