@@ -21,6 +21,8 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WrapperCommand;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 
 public class RobotContainer {
 
@@ -44,13 +46,15 @@ public class RobotContainer {
   private static Trigger m_middleScoreConePresetTrigger;
   private static Trigger m_bottomScoreConePresetTrigger;
 
-  private static Trigger m_turretLeftTrigger;
-  private static Trigger m_turretRightTrigger;
-  private static Trigger m_shoulderControlTrigger;
-  private static Trigger m_telescopeForwardTrigger;
-  private static Trigger m_telescopeBackwardTrigger;
-  private static Trigger m_wristForwardTrigger;
-  private static Trigger m_wristBackwardTrigger;
+  private static Trigger m_telescopeControlTrigger;
+  private static Trigger m_turretControlTrigger;
+
+  private static Trigger m_shoulderUpTrigger;
+  private static Trigger m_shoulderDownTrigger;
+  private static Trigger m_wristUpTrigger;
+  private static Trigger m_wristDownTrigger;
+
+  private static Trigger m_releaseTrigger;
 
   // Subsystems
   private static Drivetrain m_driveTrain;
@@ -62,45 +66,47 @@ public class RobotContainer {
   private static Limelight m_limelight;
 
   // Commands
-  private static RunCommand m_tankDrive;
   private static RunCommand m_arcadeDrive;
+  private static RunCommand m_arcadeDriveSlowed;
 
-  // private static Command m_driveSelector;
+  private static Command m_driveSelector;
 
   private static SequentialCommandGroup m_homePreset;
 
-  private static RunCommand m_turretLeft;
-  private static RunCommand m_turretRight;
-  private static RunCommand m_shoulderControl;
-  private static RunCommand m_telescopeForward;
-  private static RunCommand m_telescopeBackward;
-  private static RunCommand m_wristForward;
-  private static RunCommand m_wristBackward;
+  private static RunCommand m_shoulderUp;
+  private static RunCommand m_shoulderDown;
+  private static RunCommand m_wristUp;
+  private static RunCommand m_wristDown;
+  private static RunCommand m_telescopeControl;
+  private static RunCommand m_turretControl;
+  private static RunCommand m_releaseCube;
+  private static RunCommand m_releaseCone;
 
-  private static InstantCommand m_turretStop;
-  private static InstantCommand m_shoulderStop;
-  private static InstantCommand m_telescopeStop;
-  private static InstantCommand m_wristStop;
+  private static RunCommand m_turretStop;
+  private static RunCommand m_shoulderStop;
+  private static RunCommand m_telescopeStop;
+  private static RunCommand m_wristStop;
+  private static RunCommand m_intakeStop;
 
   private static RunCommand m_shoulderMaintain;
   private static RunCommand m_telescopeMaintain;
   private static RunCommand m_wristMaintain;
 
-  private static ParallelCommandGroup m_doublePlayerStationCubePreset;
-  private static ParallelCommandGroup m_singlePlayerStationCubePreset;
-  private static ParallelCommandGroup m_floorCubePreset;
+  private static WrapperCommand m_doublePlayerStationCubePreset;
+  private static WrapperCommand m_singlePlayerStationCubePreset;
+  private static WrapperCommand m_floorCubePreset;
 
-  private static ParallelCommandGroup m_doublePlayerStationConePreset;
-  private static ParallelCommandGroup m_singlePlayerStationConePreset;
-  private static ParallelCommandGroup m_floorConePreset;
+  private static WrapperCommand m_doublePlayerStationConePreset;
+  private static WrapperCommand m_singlePlayerStationConePreset;
+  private static WrapperCommand m_floorConePreset;
 
-  private static SequentialCommandGroup m_topScoreCubePreset;
-  private static SequentialCommandGroup m_middleScoreCubePreset;
-  private static SequentialCommandGroup m_bottomScoreCubePreset;
+  private static WrapperCommand m_topScoreCubePreset;
+  private static WrapperCommand m_middleScoreCubePreset;
+  private static WrapperCommand m_bottomScoreCubePreset;
 
-  private static SequentialCommandGroup m_topScoreConePreset;
-  private static SequentialCommandGroup m_middleScoreConePreset;
-  private static SequentialCommandGroup m_bottomScoreConePreset;
+  private static WrapperCommand m_topScoreConePreset;
+  private static WrapperCommand m_middleScoreConePreset;
+  private static WrapperCommand m_bottomScoreConePreset;
 
 
   public RobotContainer() {
@@ -124,13 +130,14 @@ public class RobotContainer {
     m_middleScoreConePresetTrigger = m_operatorJoystick.button(Constants.Input.kJoystickLeftBottomMiddleButtonId);
     m_bottomScoreConePresetTrigger = m_operatorJoystick.button(Constants.Input.kJoystickLeftBottomRightButtonId);
 
-    m_turretLeftTrigger = m_operatorJoystick.povLeft();
-    m_turretRightTrigger = m_operatorJoystick.povRight();
-    m_shoulderControlTrigger = m_operatorJoystick.axisGreaterThan(AxisType.kY.value, 0.05).or(m_operatorJoystick.axisLessThan(AxisType.kY.value, -0.05));
-    m_telescopeForwardTrigger = m_operatorJoystick.button(Constants.Input.kJoystickCenterLeftButtonId).and(m_operatorJoystick.button(Constants.Input.kJoystickTriggerButtonId).negate());
-    m_telescopeBackwardTrigger = m_operatorJoystick.button(Constants.Input.kJoystickCenterLeftButtonId).and(m_operatorJoystick.button(Constants.Input.kJoystickTriggerButtonId));
-    m_wristForwardTrigger = m_operatorJoystick.button(Constants.Input.kJoystickCenterRightButtonId).and(m_operatorJoystick.button(Constants.Input.kJoystickTriggerButtonId).negate());
-    m_wristBackwardTrigger = m_operatorJoystick.button(Constants.Input.kJoystickCenterRightButtonId).and(m_operatorJoystick.button(Constants.Input.kJoystickTriggerButtonId));
+    m_telescopeControlTrigger = m_operatorJoystick.axisGreaterThan(AxisType.kY.value, 0.1).or(m_operatorJoystick.axisLessThan(AxisType.kY.value, -0.1));
+    m_turretControlTrigger = m_operatorJoystick.axisGreaterThan(AxisType.kZ.value, 0.1).or(m_operatorJoystick.axisLessThan(AxisType.kZ.value, -0.1));
+
+    m_shoulderUpTrigger = m_operatorJoystick.button(Constants.Input.kJoystickCenterLeftButtonId).and(m_operatorJoystick.button(Constants.Input.kJoystickTriggerButtonId).negate());
+    m_shoulderDownTrigger = m_operatorJoystick.button(Constants.Input.kJoystickCenterLeftButtonId).and(m_operatorJoystick.button(Constants.Input.kJoystickTriggerButtonId));
+    m_wristUpTrigger = m_operatorJoystick.button(Constants.Input.kJoystickCenterRightButtonId).and(m_operatorJoystick.button(Constants.Input.kJoystickTriggerButtonId));
+    m_wristDownTrigger = m_operatorJoystick.button(Constants.Input.kJoystickCenterRightButtonId).and(m_operatorJoystick.button(Constants.Input.kJoystickTriggerButtonId).negate());
+    m_releaseTrigger = m_operatorJoystick.button(Constants.Input.kJoystickTriggerButtonId);
 
     // Subsystems
     m_driveTrain = new Drivetrain();
@@ -142,134 +149,106 @@ public class RobotContainer {
     m_limelight = new Limelight();
 
     // Commands
-    m_tankDrive = new RunCommand(() -> m_driveTrain.tankDrive(-m_driverController.getLeftY() * 0.8, -m_driverController.getRightY() * 0.8), m_driveTrain);
     m_arcadeDrive = new RunCommand(() -> m_driveTrain.arcadeDrive(-m_driverController.getLeftY() * 0.8, m_driverController.getRightX() * 0.8), m_driveTrain);
+    m_arcadeDriveSlowed = new RunCommand(() -> m_driveTrain.arcadeDrive(-m_driverController.getLeftY() * 0.4, m_driverController.getRightX() * 0.4), m_driveTrain);
 
-    /* m_driveSelector = new SelectCommand(
+    m_driveSelector = new SelectCommand(
       Map.ofEntries(
-        Map.entry(Drivetrain.DriveType.Tank, m_tankDrive),
-        Map.entry(Drivetrain.DriveType.Arcade, m_arcadeDrive)
+        Map.entry(Shoulder.ShoulderState.HOME, m_arcadeDrive),
+        Map.entry(Shoulder.ShoulderState.NOT_HOME, m_arcadeDriveSlowed)
       ), 
-      m_driveTrain::getDriveType
-    ); */
-
-    m_homePreset = new SequentialCommandGroup(
-      new InstantCommand(() -> m_intake.stopIntake(), m_intake),
-      new TelescopePreset(m_telescope, 0),
-      new WristPreset(m_wrist, 0),
-      new ShoulderPreset(m_shoulder, 0)
+      m_shoulder::getState
     );
 
-    m_turretLeft = new RunCommand(() -> m_turret.setPercentOutput(0.5), m_turret);
-    m_turretRight = new RunCommand(() -> m_turret.setPercentOutput(-0.5), m_turret);
-    m_shoulderControl = new RunCommand(() -> m_shoulder.setPercentOutput(-m_operatorJoystick.getY() * 0.5), m_shoulder);
-    m_telescopeForward = new RunCommand(() -> m_telescope.setPercentOutput(1.0), m_telescope);
-    m_telescopeBackward = new RunCommand(() -> m_telescope.setPercentOutput(-1.0), m_telescope);
-    m_wristForward = new RunCommand(() -> m_wrist.setPercentOutput(0.25), m_wrist);
-    m_wristBackward = new RunCommand(() -> m_wrist.setPercentOutput(-0.25), m_wrist);
+    m_telescopeControl = new RunCommand(() -> m_telescope.setPercentOutput(-m_operatorJoystick.getY()), m_telescope);
+    m_turretControl = new RunCommand(() -> m_turret.setPercentOutput(-m_operatorJoystick.getZ()), m_turret);
+    m_shoulderUp = new RunCommand(() -> m_shoulder.setPercentOutput(0.5), m_shoulder);
+    m_shoulderDown = new RunCommand(() -> m_shoulder.setPercentOutput(-0.5), m_shoulder);
+    m_wristUp = new RunCommand(() -> m_wrist.setPercentOutput(-0.25), m_wrist);
+    m_wristDown = new RunCommand(() -> m_wrist.setPercentOutput(0.25), m_wrist);
+    m_releaseCube = new RunCommand(() -> m_intake.releaseCube(), m_intake);
+    m_releaseCone = new RunCommand(() -> m_intake.releaseCone(), m_intake);
 
-    m_turretStop = new InstantCommand(() -> m_turret.stop(), m_turret);
-    m_shoulderStop = new InstantCommand(() -> m_shoulder.stop(), m_shoulder);
-    m_telescopeStop = new InstantCommand(() -> m_telescope.stop(), m_telescope);
-    m_wristStop = new InstantCommand(() -> m_wrist.stop(), m_wrist);
+    m_turretStop = new RunCommand(() -> m_turret.stop(), m_turret);
+    m_shoulderStop = new RunCommand(() -> m_shoulder.stop(), m_shoulder);
+    m_telescopeStop = new RunCommand(() -> m_telescope.stop(), m_telescope);
+    m_wristStop = new RunCommand(() -> m_wrist.stop(), m_wrist);
+    m_intakeStop = new RunCommand(() -> m_intake.stop(), m_intake);
 
     m_shoulderMaintain = new RunCommand(() -> m_shoulder.setLastPosition(), m_shoulder);
     m_telescopeMaintain = new RunCommand(() -> m_shoulder.setLastPosition(), m_telescope);
     m_wristMaintain = new RunCommand(() -> m_wrist.setLastPosition(), m_wrist);
 
+    m_homePreset = new SequentialCommandGroup(
+      new InstantCommand(() -> m_intake.stop(), m_intake),
+      new TelescopePreset(m_telescope, 0),
+      new WristPreset(m_wrist, 0),
+      new ShoulderPreset(m_shoulder, 0)
+    );
+
     // Cube grabbing presets
     m_doublePlayerStationCubePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCube(), m_intake),
-      new SequentialCommandGroup(
-        new ShoulderPreset(m_shoulder, 62.0),
-        new TelescopePreset(m_telescope, 0.0),
-        new WristPreset(m_wrist, 124.0)
-      )
-    );
+      new ShoulderPreset(m_shoulder, 65.0),
+      new WristPreset(m_wrist, 124.0)
+    ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     m_singlePlayerStationCubePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCube(), m_intake),
-      new SequentialCommandGroup(
-        new ShoulderPreset(m_shoulder, 0),
-        new TelescopePreset(m_telescope, 0),
-        new WristPreset(m_wrist, 0)
-      )
-    );
+      new ShoulderPreset(m_shoulder, 30.0),
+      new WristPreset(m_wrist, 0)
+    ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     m_floorCubePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCube(), m_intake),
-      new SequentialCommandGroup(
-        new ShoulderPreset(m_shoulder, 0),
-        new TelescopePreset(m_telescope, 0),
-        new WristPreset(m_wrist, 115.0)
-      )
-    );
+      new ShoulderPreset(m_shoulder, 10),
+      new WristPreset(m_wrist, 125.0)
+    ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
 
     // Cone grabbing presets
     m_doublePlayerStationConePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCone(), m_intake),
-      new SequentialCommandGroup(
-        new ShoulderPreset(m_shoulder, 53.0),
-        new TelescopePreset(m_telescope, 0),
-        new WristPreset(m_wrist, 43.0)
-      )
-    );
+      new ShoulderPreset(m_shoulder, 63.0),
+      new WristPreset(m_wrist, 78.0)
+    ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     m_singlePlayerStationConePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCone(), m_intake),
-      new SequentialCommandGroup(
-        new ShoulderPreset(m_shoulder, 0),
-        new TelescopePreset(m_telescope, 0),
-        new WristPreset(m_wrist, 0)
-      )
-    );
+      new ShoulderPreset(m_shoulder, 40.0),
+      new WristPreset(m_wrist,22.0)
+    ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     m_floorConePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCone(), m_intake),
-      new SequentialCommandGroup(
-        new ShoulderPreset(m_shoulder, 0),
-        new TelescopePreset(m_telescope, 0),
-        new WristPreset(m_wrist, 50.0)
-      )
-    );
+      new ShoulderPreset(m_shoulder, 0),
+      new WristPreset(m_wrist, 40.0)
+    ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
 
     // Cube scoring presets
     m_topScoreCubePreset = new SequentialCommandGroup(
       new ShoulderPreset(m_shoulder, 67.0),
-      new TelescopePreset(m_telescope, Units.inchesToMeters(3.0)),
-      new WristPreset(m_wrist, 115.0),
-      new RunCommand(() -> m_intake.releaseCube(), m_intake)
-    );
+      new WristPreset(m_wrist, 115.0)
+    ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     m_middleScoreCubePreset = new SequentialCommandGroup(
       new ShoulderPreset(m_shoulder, 50.0),
-      new TelescopePreset(m_telescope, 0),
-      new WristPreset(m_wrist, 105.0),
-      new RunCommand(() -> m_intake.releaseCube(), m_intake)
-    );
+      new WristPreset(m_wrist, 105.0)
+    ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     m_bottomScoreCubePreset = new SequentialCommandGroup(
-      new ShoulderPreset(m_shoulder, 0),
-      new TelescopePreset(m_telescope, 0),
-      new WristPreset(m_wrist, 45.0),
-      new RunCommand(() -> m_intake.releaseCube(), m_intake)
-    );
+      new ShoulderPreset(m_shoulder, 0.0),
+      new WristPreset(m_wrist, 55.0)
+    ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
 
     // Cone scoring presets
     m_topScoreConePreset = new SequentialCommandGroup(
       new ShoulderPreset(m_shoulder, 80.0),
-      new TelescopePreset(m_telescope, Units.inchesToMeters(3.0)),
-      new WristPreset(m_wrist, 80.0),
-      new RunCommand(() -> m_intake.releaseCone(), m_intake)
-    );
+      new WristPreset(m_wrist, 80.0)
+    ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     m_middleScoreConePreset = new SequentialCommandGroup(
-      new ShoulderPreset(m_shoulder, 53.0),
-      new TelescopePreset(m_telescope, 0),
-      new WristPreset(m_wrist, 45.0),
-      new RunCommand(() -> m_intake.releaseCone(), m_intake)
-    );
+      new ShoulderPreset(m_shoulder, 57.0),
+      new WristPreset(m_wrist, 53.0)
+    ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     m_bottomScoreConePreset = new SequentialCommandGroup(
       new ShoulderPreset(m_shoulder, 0),
-      new TelescopePreset(m_telescope, 0),
-      new WristPreset(m_wrist, 0),
-      new RunCommand(() -> m_intake.releaseCone(), m_intake)
-    );
+      new WristPreset(m_wrist, 0)
+    ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
 
-    m_driveTrain.setDefaultCommand(m_arcadeDrive);
+    m_driveTrain.setDefaultCommand(m_driveSelector);
     m_shoulder.setDefaultCommand(m_shoulderMaintain);
     m_telescope.setDefaultCommand(m_telescopeMaintain);
     m_wrist.setDefaultCommand(m_wristMaintain);
@@ -287,6 +266,13 @@ public class RobotContainer {
   }
   
   private void configureBindings() {
+    m_telescopeControlTrigger.whileTrue(m_telescopeControl).onFalse(m_telescopeStop);
+    m_turretControlTrigger.whileTrue(m_turretControl).onFalse(m_turretStop);
+    m_shoulderUpTrigger.whileTrue(m_shoulderUp).onFalse(m_shoulderStop);
+    m_shoulderDownTrigger.whileTrue(m_shoulderDown).onFalse(m_shoulderStop);
+    m_wristUpTrigger.whileTrue(m_wristUp).onFalse(m_wristStop);
+    m_wristDownTrigger.whileTrue(m_wristDown).onFalse(m_wristStop);
+
     m_doublePlayerStationCubePresetTrigger.whileTrue(m_doublePlayerStationCubePreset).onFalse(m_homePreset);
     m_singlePlayerStationCubePresetTrigger.whileTrue(m_singlePlayerStationCubePreset).onFalse(m_homePreset);
     m_floorCubePresetTrigger.whileTrue(m_floorCubePreset).onFalse(m_homePreset);
@@ -299,21 +285,21 @@ public class RobotContainer {
     m_middleScoreCubePresetTrigger.whileTrue(m_middleScoreCubePreset).onFalse(m_homePreset);
     m_bottomScoreCubePresetTrigger.whileTrue(m_bottomScoreCubePreset).onFalse(m_homePreset);
 
+    m_topScoreCubePresetTrigger.and(m_releaseTrigger).whileTrue(m_releaseCube).onFalse(m_intakeStop);
+    m_middleScoreCubePresetTrigger.and(m_releaseTrigger).whileTrue(m_releaseCube).onFalse(m_intakeStop);
+    m_bottomScoreCubePresetTrigger.and(m_releaseTrigger).whileTrue(m_releaseCube).onFalse(m_intakeStop);
+
     m_topScoreConePresetTrigger.whileTrue(m_topScoreConePreset).onFalse(m_homePreset);
     m_middleScoreConePresetTrigger.whileTrue(m_middleScoreConePreset).onFalse(m_homePreset);
     m_bottomScoreConePresetTrigger.whileTrue(m_bottomScoreConePreset).onFalse(m_homePreset);
 
-    m_turretLeftTrigger.whileTrue(m_turretLeft).onFalse(m_turretStop);
-    m_turretRightTrigger.whileTrue(m_turretRight).onFalse(m_turretStop);
-    m_shoulderControlTrigger.whileTrue(m_shoulderControl).onFalse(m_shoulderStop);
-    m_telescopeForwardTrigger.whileTrue(m_telescopeForward).onFalse(m_telescopeStop);
-    m_telescopeBackwardTrigger.whileTrue(m_telescopeBackward).onFalse(m_telescopeStop);
-    m_wristForwardTrigger.whileTrue(m_wristForward).onFalse(m_wristStop);
-    m_wristBackwardTrigger.whileTrue(m_wristBackward).onFalse(m_wristStop);
+    m_topScoreConePresetTrigger.and(m_releaseTrigger).whileTrue(m_releaseCone).onFalse(m_intakeStop);
+    m_middleScoreConePresetTrigger.and(m_releaseTrigger).whileTrue(m_releaseCone).onFalse(m_intakeStop);
+    m_bottomScoreConePresetTrigger.and(m_releaseTrigger).whileTrue(m_releaseCone).onFalse(m_intakeStop);
   }
 
   public void updateDashboard() {
-    SmartDashboard.putNumber("Joystick Heading", m_operatorJoystick.getDirectionDegrees());
+    // SmartDashboard.putNumber("Joystick Y", m_operatorJoystick.getY());
   }
 
   public Command getAutonomousCommand() {

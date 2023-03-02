@@ -76,7 +76,7 @@ public class Intake extends SubsystemBase {
     setPercentOutput(-1, 1);
   }
 
-  public void stopIntake() {
+  public void stop() {
     setPercentOutput(0, 0);
   }
 

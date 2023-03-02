@@ -17,6 +17,13 @@ import frc.robot.Units;
 
 public class Shoulder extends SubsystemBase {
 
+  public enum ShoulderState {
+    HOME,
+    NOT_HOME
+  }
+
+  private static ShoulderState m_shoulderState;
+
   private static TalonFX m_shoulderMotor;
   private static TalonFX m_shoulderMotorFollower;
 
@@ -75,6 +82,12 @@ public class Shoulder extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    if (getAngle() > 15.0) {
+      m_shoulderState = ShoulderState.NOT_HOME;
+    }
+    else {
+      m_shoulderState = ShoulderState.HOME;
+    }
   }
 
   @Override
@@ -118,6 +131,10 @@ public class Shoulder extends SubsystemBase {
 
   public double getSetpoint() {
     return m_setpoint;
+  }
+
+  public ShoulderState getState() {
+    return m_shoulderState;
   }
 
   public boolean atSetpoint(double tolerance) {

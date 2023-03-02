@@ -41,8 +41,6 @@ public class Drivetrain extends SubsystemBase {
 
   private static Pigeon2 m_gyro;
 
-  private SendableChooser<DriveType> m_driveTypeChooser;
-
   /** Creates a new Drivetrain. */
   public Drivetrain() {
     m_leftDriveOne = new CANSparkMax(Constants.Drive.kLeftMotorOneId, MotorType.kBrushless);
@@ -103,12 +101,6 @@ public class Drivetrain extends SubsystemBase {
     // m_drive = new DifferentialDrive(m_leftDriveOne, m_rightDriveOne);
 
     m_gyro = new Pigeon2(Constants.Sensors.kDrivetrainGyroId);
-    
-    m_driveTypeChooser = new SendableChooser<>();
-    m_driveTypeChooser.setDefaultOption("Tank", DriveType.Tank);
-    m_driveTypeChooser.addOption("Arcade", DriveType.Arcade);
-
-    SmartDashboard.putData(m_driveTypeChooser);
   }
 
   @Override
@@ -122,10 +114,6 @@ public class Drivetrain extends SubsystemBase {
     builder.addDoubleProperty("Roll", this::getRoll, null);
     builder.addDoubleProperty("Left Encoder Position", this::getLeftPosition, null);
     builder.addDoubleProperty("Right Encoder Position", this::getRightPosition, null);
-  }
-
-  public DriveType getDriveType() {
-    return m_driveTypeChooser.getSelected();
   }
 
   public void tankDrive(double leftSpeed, double rightSpeed) {
