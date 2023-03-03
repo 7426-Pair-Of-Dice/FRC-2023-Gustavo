@@ -165,5 +165,9 @@ public class Drivetrain extends SubsystemBase {
   public double getRightPosition() {
     return m_rightEncoder.getPosition();
   }
+
+  public double getAverageDistance() {
+    return (getLeftPosition() + getRightPosition()) / 2;
+  }
 }
 

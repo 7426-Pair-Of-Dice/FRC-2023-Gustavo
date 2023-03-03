@@ -12,6 +12,7 @@ import java.util.Map;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.XboxController.Axis;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -21,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -96,6 +98,7 @@ public class RobotContainer {
   private static InstantCommand m_wristStop;
   private static InstantCommand m_intakeStop;
   private static InstantCommand m_driveStop;
+  private static InstantCommand m_limelightReset;
 
   private static RunCommand m_shoulderMaintain;
   private static RunCommand m_telescopeMaintain;
@@ -116,6 +119,11 @@ public class RobotContainer {
   private static WrapperCommand m_topScoreConePreset;
   private static WrapperCommand m_middleScoreConePreset;
   private static WrapperCommand m_bottomScoreConePreset;
+
+  private static PrintCommand m_defaultAuto;
+  private static SequentialCommandGroup m_testAuto;
+
+  private static SendableChooser<Command> m_autoChooser;
 
 
   public RobotContainer() {
@@ -165,7 +173,7 @@ public class RobotContainer {
     // Commands
     m_arcadeDrive = new RunCommand(
       () -> {
-        m_driveTrain.arcadeDrive(-m_driverController.getLeftY() * (1 - (m_shoulder.getAngle() / 100.0)), m_driverController.getRightX() * (1 - (m_shoulder.getAngle() / 100.0 * 2.0)));
+        m_driveTrain.arcadeDrive(-m_driverController.getLeftY() * (1 - (m_shoulder.getAngle() / (100.0 * 2))), m_driverController.getRightX() * (1 - (m_shoulder.getAngle() / (100.0 * 2.0))));
       }, 
       m_driveTrain
     );
@@ -190,6 +198,7 @@ public class RobotContainer {
     m_wristStop = new InstantCommand(() -> m_wrist.stop(), m_wrist);
     m_intakeStop = new InstantCommand(() -> m_intake.stop(), m_intake);
     m_driveStop = new InstantCommand(() -> m_driveTrain.stop(), m_driveTrain);
+    m_limelightReset = new InstantCommand(() -> m_limelight.setPipeline(0), m_limelight);
 
     m_shoulderMaintain = new RunCommand(() -> m_shoulder.setLastPosition(), m_shoulder);
     m_telescopeMaintain = new RunCommand(() -> m_shoulder.setLastPosition(), m_telescope);
@@ -264,6 +273,17 @@ public class RobotContainer {
       new WristPreset(m_wrist, 0)
     ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
 
+    m_defaultAuto = new PrintCommand("Default Autonomous");
+
+    m_testAuto = new SequentialCommandGroup(
+      new DriveToDistance(m_driveTrain, Units.inchesToMeters(48.0), Units.inchesToMeters(2.0)),
+      new RotateToAngle(m_driveTrain, -20.0, 1.0)
+    );
+
+    m_autoChooser = new SendableChooser<Command>();
+    m_autoChooser.setDefaultOption("Default Auto", m_defaultAuto);
+    m_autoChooser.addOption("Test Auto", m_testAuto);
+
     m_driveTrain.setDefaultCommand(m_arcadeDrive);
     m_shoulder.setDefaultCommand(m_shoulderMaintain);
     m_telescope.setDefaultCommand(m_telescopeMaintain);
@@ -291,8 +311,8 @@ public class RobotContainer {
     m_wristUpTrigger.whileTrue(m_wristUp).onFalse(m_wristStop);
     m_wristDownTrigger.whileTrue(m_wristDown).onFalse(m_wristStop);
 
-    m_turretConeTrackingTrigger.and(m_turretCubeTrackingTrigger.negate()).whileTrue(m_turretTrackingCone).onFalse(m_turretStop);
-    m_turretCubeTrackingTrigger.and(m_turretConeTrackingTrigger).whileTrue(m_turretTrackingCube).onFalse(m_turretStop);
+    m_turretConeTrackingTrigger.and(m_turretCubeTrackingTrigger.negate()).whileTrue(m_turretTrackingCone).onFalse(m_turretStop).onFalse(m_limelightReset);
+    m_turretCubeTrackingTrigger.and(m_turretConeTrackingTrigger).whileTrue(m_turretTrackingCube).onFalse(m_turretStop).onFalse(m_limelightReset);
 
     m_doublePlayerStationCubePresetTrigger.whileTrue(m_doublePlayerStationCubePreset).onFalse(m_homePreset);
     m_singlePlayerStationCubePresetTrigger.whileTrue(m_singlePlayerStationCubePreset).onFalse(m_homePreset);
@@ -319,11 +339,9 @@ public class RobotContainer {
     m_bottomScoreConePresetTrigger.and(m_releaseTrigger).whileTrue(m_releaseCone).onFalse(m_intakeStop);
   }
 
-  public void updateDashboard() {
-    // SmartDashboard.putNumber("Joystick Y", m_operatorJoystick.getY());
-  }
+  public void updateDashboard() {}
 
   public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
+    return m_autoChooser.getSelected();
   }
 }
