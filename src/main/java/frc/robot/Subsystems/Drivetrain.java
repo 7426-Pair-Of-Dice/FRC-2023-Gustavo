@@ -135,7 +135,6 @@ public class Drivetrain extends SubsystemBase {
       stop();
       return;
     }
-
     m_leftDriveOne.set(speed + rotation);
     m_rightDriveOne.set(speed - rotation);
 

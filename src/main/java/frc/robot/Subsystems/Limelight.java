@@ -9,6 +9,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class Limelight extends SubsystemBase {
 
@@ -37,6 +38,10 @@ public class Limelight extends SubsystemBase {
     m_xOffset = m_tx.getDouble(0.0);
     m_yOffset = m_ty.getDouble(0.0);
     m_area = m_ta.getDouble(0.0);
+
+    if (this.getCurrentCommand() == null) {
+      setPipeline(Constants.Limelight.kCameraPipeline);
+    }
   }
 
   @Override

@@ -100,4 +100,10 @@ public class Constants {
         public static final int kJoystickRightBottomMiddleButtonId = 15;
         public static final int kJoystickRightBottomRightButtonId = 16;
     }
+
+    public static final class Limelight {
+        public static final int kRetroReflectivePipeline = 0;
+        public static final int kAprilTagPipeline = 1;
+        public static final int kCameraPipeline = 2;
+    }
 }
