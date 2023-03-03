@@ -33,6 +33,8 @@ public class Intake extends SubsystemBase {
     m_coneDistanceSensor = new Rev2mDistanceSensor(Port.kOnboard, Unit.kInches, RangeProfile.kDefault);
     m_cubeDistanceSensor = new Ultrasonic(Constants.Sensors.kClawSonarPingChannel, Constants.Sensors.kClawSonarEchoChannel);
     
+    m_coneDistanceSensor.setEnabled(true);
+
     m_coneDistanceSensor.setAutomaticMode(true);
     
     Ultrasonic.setAutomaticMode(true);

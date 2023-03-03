@@ -9,6 +9,7 @@ import frc.robot.Commands.*;
 
 import java.util.Map;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -18,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
@@ -56,8 +58,9 @@ public class RobotContainer {
   private static Trigger m_shoulderDownTrigger;
   private static Trigger m_wristUpTrigger;
   private static Trigger m_wristDownTrigger;
-
   private static Trigger m_releaseTrigger;
+
+  private static Trigger m_turretTrackingTrigger;
 
   // Subsystems
   private static Drivetrain m_driveTrain;
@@ -83,11 +86,14 @@ public class RobotContainer {
   private static RunCommand m_releaseCube;
   private static RunCommand m_releaseCone;
 
-  private static RunCommand m_turretStop;
-  private static RunCommand m_shoulderStop;
-  private static RunCommand m_telescopeStop;
-  private static RunCommand m_wristStop;
-  private static RunCommand m_intakeStop;
+  private static PIDCommand m_turretTracking;
+
+  private static InstantCommand m_turretStop;
+  private static InstantCommand m_shoulderStop;
+  private static InstantCommand m_telescopeStop;
+  private static InstantCommand m_wristStop;
+  private static InstantCommand m_intakeStop;
+  private static InstantCommand m_driveStop;
 
   private static RunCommand m_shoulderMaintain;
   private static RunCommand m_telescopeMaintain;
@@ -142,6 +148,8 @@ public class RobotContainer {
     m_wristDownTrigger = m_operatorJoystick.button(Constants.Input.kJoystickCenterRightButtonId).and(m_operatorJoystick.button(Constants.Input.kJoystickTriggerButtonId).negate());
     m_releaseTrigger = m_operatorJoystick.button(Constants.Input.kJoystickTriggerButtonId);
 
+    m_turretTrackingTrigger = m_operatorJoystick.button(Constants.Input.kJoystickCenterMiddleButtonId);
+
     // Subsystems
     m_driveTrain = new Drivetrain();
     m_turret = new Turret();
@@ -161,7 +169,7 @@ public class RobotContainer {
 
     m_driveStraight = new DriveStraight(m_driveTrain, m_driverController);
 
-    m_telescopeControl = new RunCommand(() -> m_telescope.setPercentOutput(-m_operatorJoystick.getY()), m_telescope);
+    m_telescopeControl = new RunCommand(() -> m_telescope.setPercentOutput(-m_operatorJoystick.getY() * 0.6), m_telescope);
     m_turretControl = new RunCommand(() -> m_turret.setPercentOutput(-m_operatorJoystick.getZ()), m_turret);
     m_shoulderUp = new RunCommand(() -> m_shoulder.setPercentOutput(0.5), m_shoulder);
     m_shoulderDown = new RunCommand(() -> m_shoulder.setPercentOutput(-0.5), m_shoulder);
@@ -170,11 +178,21 @@ public class RobotContainer {
     m_releaseCube = new RunCommand(() -> m_intake.releaseCube(), m_intake);
     m_releaseCone = new RunCommand(() -> m_intake.releaseCone(), m_intake);
 
-    m_turretStop = new RunCommand(() -> m_turret.stop(), m_turret);
-    m_shoulderStop = new RunCommand(() -> m_shoulder.stop(), m_shoulder);
-    m_telescopeStop = new RunCommand(() -> m_telescope.stop(), m_telescope);
-    m_wristStop = new RunCommand(() -> m_wrist.stop(), m_wrist);
-    m_intakeStop = new RunCommand(() -> m_intake.stop(), m_intake);
+    m_turretTracking = new PIDCommand(
+      new PIDController(0.04, 0.0, 0.0), 
+      m_limelight::getXOffset, 
+      0, 
+      m_turret::setPercentOutput, 
+      m_turret, 
+      m_limelight
+    );
+
+    m_turretStop = new InstantCommand(() -> m_turret.stop(), m_turret);
+    m_shoulderStop = new InstantCommand(() -> m_shoulder.stop(), m_shoulder);
+    m_telescopeStop = new InstantCommand(() -> m_telescope.stop(), m_telescope);
+    m_wristStop = new InstantCommand(() -> m_wrist.stop(), m_wrist);
+    m_intakeStop = new InstantCommand(() -> m_intake.stop(), m_intake);
+    m_driveStop = new InstantCommand(() -> m_driveTrain.stop(), m_driveTrain);
 
     m_shoulderMaintain = new RunCommand(() -> m_shoulder.setLastPosition(), m_shoulder);
     m_telescopeMaintain = new RunCommand(() -> m_shoulder.setLastPosition(), m_telescope);
@@ -267,7 +285,7 @@ public class RobotContainer {
   }
   
   private void configureBindings() {
-    m_driveStraightTrigger.whileTrue(m_driveStraight);
+    m_driveStraightTrigger.whileTrue(m_driveStraight).onFalse(m_driveStop);
 
     m_telescopeControlTrigger.whileTrue(m_telescopeControl).onFalse(m_telescopeStop);
     m_turretControlTrigger.whileTrue(m_turretControl).onFalse(m_turretStop);
@@ -275,6 +293,8 @@ public class RobotContainer {
     m_shoulderDownTrigger.whileTrue(m_shoulderDown).onFalse(m_shoulderStop);
     m_wristUpTrigger.whileTrue(m_wristUp).onFalse(m_wristStop);
     m_wristDownTrigger.whileTrue(m_wristDown).onFalse(m_wristStop);
+
+    m_turretTrackingTrigger.whileTrue(m_turretTracking);
 
     m_doublePlayerStationCubePresetTrigger.whileTrue(m_doublePlayerStationCubePreset).onFalse(m_homePreset);
     m_singlePlayerStationCubePresetTrigger.whileTrue(m_singlePlayerStationCubePreset).onFalse(m_homePreset);
