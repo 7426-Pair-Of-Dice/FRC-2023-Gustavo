@@ -28,6 +28,8 @@ public class RotateToAngle extends CommandBase {
 
     m_driveTrain = driveTrain;
 
+    m_pidController = new PIDController(kP, kI, kD);
+
     m_inputAngle = angleInDegrees;
 
     m_tolerance = tolerance;
@@ -39,7 +41,7 @@ public class RotateToAngle extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_setpointAngle = m_driveTrain.getYaw() + m_setpointAngle;
+    m_setpointAngle = m_driveTrain.getYaw() + m_inputAngle;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
