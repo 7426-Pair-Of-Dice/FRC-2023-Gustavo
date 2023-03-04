@@ -90,11 +90,11 @@ public class Intake extends SubsystemBase {
     return m_cubeDistanceSensor.getRangeInches(); 
   }
 
-  public boolean coneDetected() {
-    return getConeRange() < 10.0;
+  public boolean getConeDetected() {
+    return getConeRange() < 7.0;
   }
 
-  public boolean cubeDetected() {
+  public boolean getCubeDetected() {
     return getCubeRange() < 10.0;
   }
 }

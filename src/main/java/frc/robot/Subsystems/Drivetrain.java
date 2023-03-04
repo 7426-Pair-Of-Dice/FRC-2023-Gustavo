@@ -34,8 +34,6 @@ public class Drivetrain extends SubsystemBase {
   private static RelativeEncoder m_leftEncoder;
   private static RelativeEncoder m_rightEncoder;
 
-  // private static DifferentialDrive m_drive;
-
   private static Pigeon2 m_gyro;
 
   /** Creates a new Drivetrain. */
@@ -115,27 +113,20 @@ public class Drivetrain extends SubsystemBase {
 
   public void tankDrive(double leftSpeed, double rightSpeed) {
 
-    if (Math.abs(leftSpeed) < 0.05 && Math.abs(rightSpeed) < 0.05) {
-      stop();
-      return;
-    }
+    double inputLeftSpeed = Math.abs(leftSpeed) > 0.1 ? leftSpeed : 0;
+    double inputRightSpeed = Math.abs(rightSpeed) > 0.1 ? rightSpeed : 0 ;
 
-    m_leftDriveOne.set(leftSpeed);
-    m_rightDriveOne.set(rightSpeed);
-
-    // m_drive.tankDrive(leftSpeed, rightSpeed);
+    m_leftDriveOne.set(inputLeftSpeed);
+    m_rightDriveOne.set(inputRightSpeed);
   }
 
   public void arcadeDrive(double speed, double rotation) {
 
-    if (Math.abs(speed) < 0.05 && Math.abs(rotation) < 0.05) {
-      stop();
-      return;
-    }
-    m_leftDriveOne.set(speed + rotation);
-    m_rightDriveOne.set(speed - rotation);
+    double inputSpeed = Math.abs(speed) > 0.1 ? speed : 0;
+    double inputRotation = Math.abs(rotation) > 0.1 ? rotation : 0 ;
 
-    // m_drive.arcadeDrive(speed, rotation);
+    m_leftDriveOne.set(inputSpeed + inputRotation);
+    m_rightDriveOne.set(inputSpeed - inputRotation);
   }
 
   public void stop() {

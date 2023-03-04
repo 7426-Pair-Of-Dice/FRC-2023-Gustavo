@@ -14,7 +14,7 @@ public class TurretTracking extends CommandBase {
 
   private static Limelight m_limelight;
 
-  private double kP = 0.02;
+  private double kP = 0.04;
 
   private double m_minCommand = 0.05;
 
@@ -44,7 +44,7 @@ public class TurretTracking extends CommandBase {
   public void execute() {
     double error = -m_limelight.getXOffset();
 
-    if (Math.abs(error) > 1.0) {
+    if (Math.abs(error) > 0.5) {
       m_turret.setPercentOutput(error * kP - Math.signum(error) * m_minCommand);
     } else {
       m_turret.setPercentOutput(0.0);

@@ -29,7 +29,7 @@ public class Constants {
         public static final int kRightMotorTwoId = 2;
         public static final int kRightMotorThreeId = 3;
 
-        public static final double kRampRate = 0.5;
+        public static final double kRampRate = 0.8;
 
         public static final double kMotorToWheel =  1 / ((50.0 / 12.0) * (60.0 / 14.0));
 
