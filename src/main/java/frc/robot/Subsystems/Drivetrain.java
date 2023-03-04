@@ -112,21 +112,13 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void tankDrive(double leftSpeed, double rightSpeed) {
-
-    double inputLeftSpeed = Math.abs(leftSpeed) > 0.1 ? leftSpeed : 0;
-    double inputRightSpeed = Math.abs(rightSpeed) > 0.1 ? rightSpeed : 0 ;
-
-    m_leftDriveOne.set(inputLeftSpeed);
-    m_rightDriveOne.set(inputRightSpeed);
+    m_leftDriveOne.set(leftSpeed);
+    m_rightDriveOne.set(rightSpeed);
   }
 
   public void arcadeDrive(double speed, double rotation) {
-
-    double inputSpeed = Math.abs(speed) > 0.1 ? speed : 0;
-    double inputRotation = Math.abs(rotation) > 0.1 ? rotation : 0 ;
-
-    m_leftDriveOne.set(inputSpeed + inputRotation);
-    m_rightDriveOne.set(inputSpeed - inputRotation);
+    m_leftDriveOne.set(speed + rotation);
+    m_rightDriveOne.set(speed - rotation);
   }
 
   public void stop() {

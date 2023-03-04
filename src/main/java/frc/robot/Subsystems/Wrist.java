@@ -32,7 +32,7 @@ public class Wrist extends SubsystemBase {
 
     m_wristMotor.configFactoryDefault();
 
-    m_wristMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
+    m_wristMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, Constants.TalonFX.kTimeoutMs);
 
     m_wristMotor.setSelectedSensorPosition(0);
 
@@ -42,23 +42,23 @@ public class Wrist extends SubsystemBase {
     m_wristMotor.configPeakOutputReverse(-1, Constants.TalonFX.kTimeoutMs);
 
     m_wristMotor.selectProfileSlot(0, 0);
-    m_wristMotor.config_kF(0, 0.2);
-    m_wristMotor.config_kP(0, 0.08);
-    m_wristMotor.config_kI(0, 0);
-    m_wristMotor.config_kD(0,0);
+    m_wristMotor.config_kF(0, Constants.Wrist.kF);
+    m_wristMotor.config_kP(0, Constants.Wrist.kP);
+    m_wristMotor.config_kI(0, Constants.Wrist.kI);
+    m_wristMotor.config_kD(0,Constants.Wrist.kD);
 
     m_wristMotor.configAllowableClosedloopError(0, 0, Constants.TalonFX.kTimeoutMs);
 
-    m_wristMotor.configForwardSoftLimitThreshold(Units.degreesToTicks(180, Constants.Wrist.kMotorToWrist, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
-    m_wristMotor.configReverseSoftLimitThreshold(0, Constants.TalonFX.kTimeoutMs);
+    m_wristMotor.configForwardSoftLimitThreshold(Units.degreesToTicks(Constants.Wrist.kForwardSoftLimit, Constants.Wrist.kMotorToWrist, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
+    m_wristMotor.configReverseSoftLimitThreshold(Constants.Wrist.kReverseSoftLimit, Constants.TalonFX.kTimeoutMs);
     
     m_wristMotor.configForwardSoftLimitEnable(true);
     m_wristMotor.configReverseSoftLimitEnable(true);
 
-    m_wristMotor.configMotionCruiseVelocity(20000, Constants.TalonFX.kTimeoutMs);
-    m_wristMotor.configMotionAcceleration(15000, Constants.TalonFX.kTimeoutMs); 
+    m_wristMotor.configMotionCruiseVelocity(Constants.Wrist.kMotionCruiseVelocity, Constants.TalonFX.kTimeoutMs);
+    m_wristMotor.configMotionAcceleration(Constants.Wrist.kMotionAcceleration, Constants.TalonFX.kTimeoutMs); 
 
-    m_wristMotor.configNeutralDeadband(0.05);
+    m_wristMotor.configNeutralDeadband(Constants.Wrist.kDeadband);
 
     m_wristMotor.setNeutralMode(NeutralMode.Brake);
 

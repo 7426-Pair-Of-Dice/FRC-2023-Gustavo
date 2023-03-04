@@ -4,8 +4,10 @@
 
 package frc.robot.Commands;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Subsystems.Turret;
+import frc.robot.Constants;
 import frc.robot.Subsystems.Limelight;
 
 public class TurretTracking extends CommandBase {
@@ -14,7 +16,7 @@ public class TurretTracking extends CommandBase {
 
   private static Limelight m_limelight;
 
-  private double kP = 0.04;
+  private PIDController m_pidController;
 
   private double m_minCommand = 0.05;
 
@@ -26,6 +28,8 @@ public class TurretTracking extends CommandBase {
     m_turret = turret;
 
     m_limelight = limelight;
+
+    m_pidController = new PIDController(Constants.TurretTrackingCommand.kP, Constants.TurretTrackingCommand.kI, Constants.TurretTrackingCommand.kD);
 
     m_pipeline = pipeline;
 
@@ -45,7 +49,7 @@ public class TurretTracking extends CommandBase {
     double error = -m_limelight.getXOffset();
 
     if (Math.abs(error) > 0.5) {
-      m_turret.setPercentOutput(error * kP - Math.signum(error) * m_minCommand);
+      m_turret.setPercentOutput(m_pidController.calculate(m_limelight.getXOffset(), 0.0) - Math.signum(error) * m_minCommand);
     } else {
       m_turret.setPercentOutput(0.0);
     }

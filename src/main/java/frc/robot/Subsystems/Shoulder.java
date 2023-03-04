@@ -17,13 +17,6 @@ import frc.robot.Units;
 
 public class Shoulder extends SubsystemBase {
 
-  public enum ShoulderState {
-    HOME,
-    NOT_HOME
-  }
-
-  private static ShoulderState m_shoulderState;
-
   private static TalonFX m_shoulderMotor;
   private static TalonFX m_shoulderMotorFollower;
 
@@ -50,44 +43,38 @@ public class Shoulder extends SubsystemBase {
 
     m_shoulderMotor.configAllowableClosedloopError(0, 0, Constants.TalonFX.kTimeoutMs);
 
-    m_shoulderMotor.configForwardSoftLimitThreshold(Units.degreesToTicks(100, Constants.Shoulder.kMotorToArm, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
-    m_shoulderMotor.configReverseSoftLimitThreshold(0, Constants.TalonFX.kTimeoutMs);
+    m_shoulderMotor.configForwardSoftLimitThreshold(Units.degreesToTicks(Constants.Shoulder.kForwardSoftLimit, Constants.Shoulder.kMotorToArm, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
+    m_shoulderMotor.configReverseSoftLimitThreshold(Constants.Shoulder.kReverseSoftLimit, Constants.TalonFX.kTimeoutMs);
     m_shoulderMotor.configForwardSoftLimitEnable(true);
     m_shoulderMotor.configReverseSoftLimitEnable(true);
 
     m_shoulderMotor.selectProfileSlot(0, 0);
-    m_shoulderMotor.config_kF(0, 0.2);
-    m_shoulderMotor.config_kP(0, 0.08);
-    m_shoulderMotor.config_kI(0, 0.0);
-    m_shoulderMotor.config_kD(0, 0.0);
+    m_shoulderMotor.config_kF(0, Constants.Shoulder.kF);
+    m_shoulderMotor.config_kP(0, Constants.Shoulder.kP);
+    m_shoulderMotor.config_kI(0, Constants.Shoulder.kI);
+    m_shoulderMotor.config_kD(0, Constants.Shoulder.kD);
 
-    m_shoulderMotor.configMotionCruiseVelocity(20000, Constants.TalonFX.kTimeoutMs);
-    m_shoulderMotor.configMotionAcceleration(10000, Constants.TalonFX.kTimeoutMs);
-    m_shoulderMotor.configMotionSCurveStrength(1);
+    m_shoulderMotor.configMotionCruiseVelocity(Constants.Shoulder.kMotionCruiseVelocity, Constants.TalonFX.kTimeoutMs);
+    m_shoulderMotor.configMotionAcceleration(Constants.Shoulder.kMotionAcceleration, Constants.TalonFX.kTimeoutMs);
+    m_shoulderMotor.configMotionSCurveStrength(Constants.Shoulder.kMotionSCurveStrength);
 
-    m_shoulderMotor.configNeutralDeadband(0.05);
-    m_shoulderMotorFollower.configNeutralDeadband(0.05);
+    m_shoulderMotor.configNeutralDeadband(Constants.Shoulder.kDeadband);
+    m_shoulderMotorFollower.configNeutralDeadband(Constants.Shoulder.kDeadband);
 
     m_shoulderMotorFollower.follow(m_shoulderMotor);
     m_shoulderMotorFollower.setInverted(TalonFXInvertType.OpposeMaster);
 
-    m_shoulderMotor.configOpenloopRamp(1.0);
+    m_shoulderMotor.configOpenloopRamp(Constants.Shoulder.kRampRate);
 
     m_shoulderMotor.setNeutralMode(NeutralMode.Brake);
     m_shoulderMotorFollower.setNeutralMode(NeutralMode.Brake);
 
-    m_setpoint = Units.degreesToTicks(15, Constants.Shoulder.kMotorToArm, Constants.TalonFX.kEncoderResolution);
+    m_setpoint = getPosition();
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    if (getAngle() > 15.0) {
-      m_shoulderState = ShoulderState.NOT_HOME;
-    }
-    else {
-      m_shoulderState = ShoulderState.HOME;
-    }
   }
 
   @Override
@@ -131,10 +118,6 @@ public class Shoulder extends SubsystemBase {
 
   public double getSetpoint() {
     return m_setpoint;
-  }
-
-  public ShoulderState getState() {
-    return m_shoulderState;
   }
 
   public boolean atSetpoint(double tolerance) {

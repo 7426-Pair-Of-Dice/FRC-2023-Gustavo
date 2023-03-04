@@ -6,6 +6,7 @@ package frc.robot.Commands;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.Subsystems.Drivetrain;
 
 public class RotateToAngle extends CommandBase {
@@ -13,10 +14,6 @@ public class RotateToAngle extends CommandBase {
   private static Drivetrain m_driveTrain;
 
   private PIDController m_pidController;
-
-  private double kP = 0.02;
-  private double kI = 0.0;
-  private double kD = 0.0;
 
   private double m_inputAngle;
   private double m_setpointAngle;
@@ -28,7 +25,7 @@ public class RotateToAngle extends CommandBase {
 
     m_driveTrain = driveTrain;
 
-    m_pidController = new PIDController(kP, kI, kD);
+    m_pidController = new PIDController(Constants.RotateToAngleCommand.kP, Constants.RotateToAngleCommand.kI, Constants.RotateToAngleCommand.kD);
 
     m_inputAngle = angleInDegrees;
 

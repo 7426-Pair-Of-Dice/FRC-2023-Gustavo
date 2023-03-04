@@ -166,7 +166,10 @@ public class RobotContainer {
     // Commands
     m_arcadeDrive = new RunCommand(
       () -> {
-        m_driveTrain.arcadeDrive(-m_driverController.getLeftY() * (1 - (m_shoulder.getAngle() / (100.0 * 2))), m_driverController.getRightX() * (1 - (m_shoulder.getAngle() / (100.0 * 2.0))));
+        double speedInput = Math.abs(m_driverController.getLeftY()) > 0.1 ? -m_driverController.getLeftY() * (1 - (m_shoulder.getAngle() / (100.0 * 2))) : 0;
+        double rotationInput = Math.abs(m_driverController.getRightX()) > 0.1 ? -m_driverController.getRightX() * (1 - (m_shoulder.getAngle() / (100.0 * 2))) : 0;
+
+        m_driveTrain.arcadeDrive(speedInput, rotationInput);
       }, 
       m_driveTrain
     );
@@ -282,6 +285,7 @@ public class RobotContainer {
     m_telescope.setDefaultCommand(m_telescopeMaintain);
     m_wrist.setDefaultCommand(m_wristMaintain);
 
+    SmartDashboard.putData(m_autoChooser);
     SmartDashboard.putData(m_driveTrain);
     SmartDashboard.putData(m_turret);
     SmartDashboard.putData(m_shoulder);

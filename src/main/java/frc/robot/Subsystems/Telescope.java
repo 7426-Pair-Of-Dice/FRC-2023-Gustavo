@@ -35,23 +35,23 @@ public class Telescope extends SubsystemBase {
     m_telescopeMotor.configPeakOutputForward(1, Constants.TalonFX.kTimeoutMs);
     m_telescopeMotor.configPeakOutputReverse(-1, Constants.TalonFX.kTimeoutMs);
 
-    m_telescopeMotor.configReverseSoftLimitThreshold(0, Constants.TalonFX.kTimeoutMs);
-    m_telescopeMotor.configForwardSoftLimitThreshold(Units.metersToTicks(Units.inchesToMeters(12.0), Constants.Telescope.kMotorToTelescope, Constants.TalonFX.kEncoderResolution, Constants.Telescope.kMetersPerRev), Constants.TalonFX.kTimeoutMs);
+    m_telescopeMotor.configReverseSoftLimitThreshold(Constants.Telescope.kReverseSoftLimit, Constants.TalonFX.kTimeoutMs);
+    m_telescopeMotor.configForwardSoftLimitThreshold(Units.metersToTicks(Constants.Telescope.kForwardSoftLimit, Constants.Telescope.kMotorToTelescope, Constants.TalonFX.kEncoderResolution, Constants.Telescope.kMetersPerRev), Constants.TalonFX.kTimeoutMs);
     m_telescopeMotor.configReverseSoftLimitEnable(true);
     m_telescopeMotor.configForwardSoftLimitEnable(true);
 
     m_telescopeMotor.configAllowableClosedloopError(0, 0, Constants.TalonFX.kTimeoutMs);
 
     m_telescopeMotor.selectProfileSlot(0, 0);
-    m_telescopeMotor.config_kF(0, 0.2);
-    m_telescopeMotor.config_kP(0, 0.08);
-    m_telescopeMotor.config_kI(0, 0.0);
-    m_telescopeMotor.config_kD(0, 0.0);
+    m_telescopeMotor.config_kF(0, Constants.Telescope.kF);
+    m_telescopeMotor.config_kP(0, Constants.Telescope.kP);
+    m_telescopeMotor.config_kI(0, Constants.Telescope.kI);
+    m_telescopeMotor.config_kD(0, Constants.Telescope.kD);
 
-    m_telescopeMotor.configNeutralDeadband(0.05);
+    m_telescopeMotor.configNeutralDeadband(Constants.Telescope.kDeadband);
 
-    m_telescopeMotor.configMotionCruiseVelocity(25000, Constants.TalonFX.kTimeoutMs);
-    m_telescopeMotor.configMotionAcceleration(15000, Constants.TalonFX.kTimeoutMs);
+    m_telescopeMotor.configMotionCruiseVelocity(Constants.Telescope.kMotionCruiseVelocity, Constants.TalonFX.kTimeoutMs);
+    m_telescopeMotor.configMotionAcceleration(Constants.Telescope.kMotionAcceleration, Constants.TalonFX.kTimeoutMs);
 
     m_telescopeMotor.setNeutralMode(NeutralMode.Brake);
 

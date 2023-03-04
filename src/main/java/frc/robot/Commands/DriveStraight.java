@@ -7,6 +7,7 @@ package frc.robot.Commands;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants;
 import frc.robot.Subsystems.Drivetrain;
 
 public class DriveStraight extends CommandBase {
@@ -19,10 +20,6 @@ public class DriveStraight extends CommandBase {
 
   private double m_setAngle;
 
-  private double kP = 0.002;
-  private double kI = 0.0;
-  private double kD = 0.0;
-
   /** Creates a new DriveStraight. */
   public DriveStraight(Drivetrain driveTrain, CommandXboxController xboxController) {
 
@@ -30,7 +27,7 @@ public class DriveStraight extends CommandBase {
 
     m_xboxController = xboxController;
 
-    m_pidController = new PIDController(kP, kI, kD);
+    m_pidController = new PIDController(Constants.DriveStraightCommand.kP, Constants.DriveStraightCommand.kI, Constants.DriveStraightCommand.kD);
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(driveTrain);
@@ -45,7 +42,9 @@ public class DriveStraight extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_driveTrain.arcadeDrive(-m_xboxController.getLeftY(), m_pidController.calculate(m_driveTrain.getYaw(), m_setAngle));
+    double speed = Math.abs(m_xboxController.getLeftY()) > 0.1 ? -m_xboxController.getLeftY() : 0;
+
+    m_driveTrain.arcadeDrive(speed, m_pidController.calculate(m_driveTrain.getYaw(), m_setAngle));
   }
 
   // Called once the command ends or is interrupted.

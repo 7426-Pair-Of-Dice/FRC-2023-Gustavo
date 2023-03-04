@@ -45,17 +45,17 @@ public class Turret extends SubsystemBase {
     m_turretMotor.config_kI(0, Constants.Turret.kI);
     m_turretMotor.config_kD(0, Constants.Turret.kD);
 
-    m_turretMotor.configMotionCruiseVelocity(20000, Constants.TalonFX.kTimeoutMs);
-    m_turretMotor.configMotionAcceleration(15000, Constants.TalonFX.kTimeoutMs);
-    m_turretMotor.configMotionSCurveStrength(1);
+    m_turretMotor.configMotionCruiseVelocity(Constants.Turret.kMotionCruiseVelocity, Constants.TalonFX.kTimeoutMs);
+    m_turretMotor.configMotionAcceleration(Constants.Turret.kMotionAcceleration, Constants.TalonFX.kTimeoutMs);
+    m_turretMotor.configMotionSCurveStrength(Constants.Turret.kMotionSCurveStrength);
 
-    m_turretMotor.configForwardSoftLimitThreshold(Units.degreesToTicks(360, Constants.Turret.kMotorToTurret, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
-    m_turretMotor.configReverseSoftLimitThreshold(Units.degreesToTicks(-360, Constants.Turret.kMotorToTurret, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
+    m_turretMotor.configForwardSoftLimitThreshold(Units.degreesToTicks(Constants.Turret.kForwardSoftLimit, Constants.Turret.kMotorToTurret, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
+    m_turretMotor.configReverseSoftLimitThreshold(Units.degreesToTicks(Constants.Turret.kReverseSoftLimit, Constants.Turret.kMotorToTurret, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
 
     m_turretMotor.configForwardSoftLimitEnable(true);
     m_turretMotor.configReverseSoftLimitEnable(true);
 
-    m_turretMotor.configNeutralDeadband(0.05);
+    m_turretMotor.configNeutralDeadband(Constants.Turret.kDeadband);
 
     m_turretMotor.setNeutralMode(NeutralMode.Brake);
 

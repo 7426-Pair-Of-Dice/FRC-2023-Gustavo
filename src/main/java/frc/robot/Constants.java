@@ -44,7 +44,16 @@ public class Constants {
         public static final double kF = 0.0;
         public static final double kP = 0.05;
         public static final double kI = 0.0;
-        public static final double kD = 5;
+        public static final double kD = 5.0;
+
+        public static final double kDeadband = 0.05;
+
+        public static final double kMotionCruiseVelocity = 20000;
+        public static final double kMotionAcceleration = 15000;
+        public static final int kMotionSCurveStrength = 1;
+
+        public static final double kForwardSoftLimit = 360;
+        public static final double kReverseSoftLimit = -360;
 
         public static final double kMotorToTurret = (1.0 / 50.0) * (14.0 / 70.0);
     }
@@ -53,11 +62,40 @@ public class Constants {
         public static final int kLeftArmMotorId = 7;
         public static final int kRightArmMotorId = 8;
 
+        public static final double kF = 0.2;
+        public static final double kP = 0.08;
+        public static final double kI = 0.0;
+        public static final double kD = 0.0;
+
+        public static final double kRampRate = 1.0;
+
+        public static final double kDeadband = 0.05;
+
+        public static final double kMotionCruiseVelocity = 20000;
+        public static final double kMotionAcceleration = 10000;
+        public static final int kMotionSCurveStrength = 1;
+
+        public static final double kForwardSoftLimit = 100.0;
+        public static final double kReverseSoftLimit = 0.0;
+
         public static final double kMotorToArm = (1.0 / 100.0) * (1.0 / 3.0);
     }
 
     public static final class Telescope {
         public static final int kTelescopeMotorId = 9;
+
+        public static final double kF = 0.0;
+        public static final double kP = 0.08;
+        public static final double kI = 0.0;
+        public static final double kD = 0.0;
+
+        public static final double kDeadband = 0.05;
+
+        public static final double kMotionCruiseVelocity = 25000;
+        public static final double kMotionAcceleration = 15000;
+
+        public static final double kForwardSoftLimit = Units.inchesToMeters(12.0);
+        public static final double kReverseSoftLimit = 0.0;
 
         public static final double kMetersPerRev = 0.0127;
 
@@ -66,6 +104,19 @@ public class Constants {
 
     public static final class Wrist {
         public static final int kWristMotorId = 12;
+
+        public static final double kF = 0.2;
+        public static final double kP = 0.08;
+        public static final double kI = 0.0;
+        public static final double kD = 0.0;
+
+        public static final double kDeadband = 0.05;
+
+        public static final double kMotionCruiseVelocity = 20000;
+        public static final double kMotionAcceleration = 15000;
+
+        public static final double kForwardSoftLimit = 180.0;
+        public static final double kReverseSoftLimit = 0.0;
 
         public static final double kMotorToWrist = (1.0 / 100.0);
     }
@@ -105,5 +156,33 @@ public class Constants {
         public static final int kRetroReflectivePipeline = 0;
         public static final int kAprilTagPipeline = 1;
         public static final int kCameraPipeline = 2;
+    }
+
+    public static final class DriveStraightCommand {
+        public static final double kP = 0.002;
+        public static final double kI = 0.0;
+        public static final double kD = 0.0;
+    }
+
+    public static final class DriveToDistanceCommand {
+        public static final double kPDist = 0.3;
+        public static final double kIDist = 0.0;
+        public static final double kDDist = 0.0;
+
+        public static final double kPAngle = 0.02;
+        public static final double kIAngle = 0.0;
+        public static final double kDAngle = 0.0;
+    }
+
+    public static final class RotateToAngleCommand {
+        public static final double kP = 0.02;
+        public static final double kI = 0.0;
+        public static final double kD = 0.0;
+    }
+
+    public static final class TurretTrackingCommand {
+        public static final double kP = 0.04;
+        public static final double kI = 0.0;
+        public static final double kD = 0.0;
     }
 }

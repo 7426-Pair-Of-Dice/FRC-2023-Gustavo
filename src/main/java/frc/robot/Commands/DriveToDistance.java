@@ -6,6 +6,7 @@ package frc.robot.Commands;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.Subsystems.Drivetrain;
 
 public class DriveToDistance extends CommandBase {
@@ -14,14 +15,6 @@ public class DriveToDistance extends CommandBase {
 
   private PIDController m_distPidController;
   private PIDController m_anglePidController;
-
-  private double kPDist = 0.3;
-  private double kIDist = 0.0;
-  private double kDDist = 0.0;
-
-  private double kPAngle = 0.02;
-  private double kIAngle = 0.0;
-  private double kDAngle = 0.0;
 
   private double m_inputDistance;
   private double m_setpointDistance;
@@ -35,8 +28,8 @@ public class DriveToDistance extends CommandBase {
 
     m_driveTrain = driveTrain;
 
-    m_distPidController = new PIDController(kPDist, kIDist, kDDist);
-    m_anglePidController = new PIDController(kPAngle, kIAngle, kDAngle);
+    m_distPidController = new PIDController(Constants.DriveToDistanceCommand.kPDist, Constants.DriveToDistanceCommand.kIDist, Constants.DriveToDistanceCommand.kDDist);
+    m_anglePidController = new PIDController(Constants.DriveToDistanceCommand.kPAngle, Constants.DriveToDistanceCommand.kIAngle, Constants.DriveToDistanceCommand.kDAngle);
 
     m_inputDistance = distanceInMeters;
 
