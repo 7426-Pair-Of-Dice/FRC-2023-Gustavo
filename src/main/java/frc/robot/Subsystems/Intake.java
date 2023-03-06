@@ -25,6 +25,9 @@ public class Intake extends SubsystemBase {
   private static Rev2mDistanceSensor m_coneDistanceSensor;
   private static Ultrasonic m_cubeDistanceSensor;
 
+  private static double m_coneRange;
+  private static double m_cubeRange;
+
   /** Creates a new Intake. */
   public Intake() {
     m_leftIntakeMotor = new VictorSPX(Constants.Intake.kLeftIntakeMotorId);
@@ -33,8 +36,6 @@ public class Intake extends SubsystemBase {
     m_coneDistanceSensor = new Rev2mDistanceSensor(Port.kOnboard, Unit.kInches, RangeProfile.kDefault);
     m_cubeDistanceSensor = new Ultrasonic(Constants.Sensors.kClawSonarPingChannel, Constants.Sensors.kClawSonarEchoChannel);
     
-    m_coneDistanceSensor.setEnabled(true);
-
     m_coneDistanceSensor.setAutomaticMode(true);
     
     Ultrasonic.setAutomaticMode(true);
@@ -48,6 +49,8 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    m_coneRange = m_coneDistanceSensor.getRange();
+    m_cubeRange = m_cubeDistanceSensor.getRangeInches();
   }
 
   @Override
@@ -83,18 +86,18 @@ public class Intake extends SubsystemBase {
   }
 
   public double getConeRange() { 
-    return m_coneDistanceSensor.GetRange(); 
+    return m_coneRange; 
   }
 
   public double getCubeRange() { 
-    return m_cubeDistanceSensor.getRangeInches(); 
+    return m_cubeRange; 
   }
 
   public boolean getConeDetected() {
-    return getConeRange() < 7.0;
+    return false;
   }
 
   public boolean getCubeDetected() {
-    return getCubeRange() < 10.0;
+    return m_cubeRange < 10.0;
   }
 }

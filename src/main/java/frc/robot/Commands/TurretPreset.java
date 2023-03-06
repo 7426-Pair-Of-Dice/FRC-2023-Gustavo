@@ -13,12 +13,16 @@ public class TurretPreset extends CommandBase {
 
   private double m_turretAngle;
 
+  private double m_tolerance;
+
   /** Creates a new ShoulderPreset. */
-  public TurretPreset(Turret turret, double turretAngle) {
+  public TurretPreset(Turret turret, double turretAngle, double tolerance) {
 
     m_turret = turret;
 
     m_turretAngle = turretAngle;
+
+    m_tolerance = tolerance;
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(turret);
@@ -43,6 +47,6 @@ public class TurretPreset extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_turret.atSetpoint(5.0);
+    return m_turret.atSetpoint(m_tolerance);
   }
 }

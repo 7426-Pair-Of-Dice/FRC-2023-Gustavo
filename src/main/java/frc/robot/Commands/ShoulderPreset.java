@@ -13,12 +13,16 @@ public class ShoulderPreset extends CommandBase {
 
   private double m_shoulderAngle;
 
+  private double m_tolerance;
+
   /** Creates a new ShoulderPreset. */
-  public ShoulderPreset(Shoulder shoulder, double shoulderAngle) {
+  public ShoulderPreset(Shoulder shoulder, double shoulderAngle, double tolerance) {
 
     m_shoulder = shoulder;
 
     m_shoulderAngle = shoulderAngle;
+
+    m_tolerance = tolerance;
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(shoulder);
@@ -43,6 +47,6 @@ public class ShoulderPreset extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_shoulder.atSetpoint(5.0);
+    return m_shoulder.atSetpoint(m_tolerance);
   }
 }

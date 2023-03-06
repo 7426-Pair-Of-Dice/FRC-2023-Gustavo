@@ -48,8 +48,8 @@ public class Constants {
 
         public static final double kDeadband = 0.05;
 
-        public static final double kMotionCruiseVelocity = 20000;
-        public static final double kMotionAcceleration = 15000;
+        public static final double kMotionCruiseVelocity = 40000;
+        public static final double kMotionAcceleration = 30000;
         public static final int kMotionSCurveStrength = 1;
 
         public static final double kForwardSoftLimit = 360;
@@ -63,7 +63,7 @@ public class Constants {
         public static final int kRightArmMotorId = 8;
 
         public static final double kF = 0.2;
-        public static final double kP = 0.08;
+        public static final double kP = 0.1;
         public static final double kI = 0.0;
         public static final double kD = 0.0;
 
@@ -71,8 +71,8 @@ public class Constants {
 
         public static final double kDeadband = 0.05;
 
-        public static final double kMotionCruiseVelocity = 20000;
-        public static final double kMotionAcceleration = 10000;
+        public static final double kMotionCruiseVelocity = 40000;
+        public static final double kMotionAcceleration = 20000;
         public static final int kMotionSCurveStrength = 1;
 
         public static final double kForwardSoftLimit = 100.0;
@@ -112,8 +112,8 @@ public class Constants {
 
         public static final double kDeadband = 0.05;
 
-        public static final double kMotionCruiseVelocity = 20000;
-        public static final double kMotionAcceleration = 15000;
+        public static final double kMotionCruiseVelocity = 40000;
+        public static final double kMotionAcceleration = 20000;
 
         public static final double kForwardSoftLimit = 180.0;
         public static final double kReverseSoftLimit = 0.0;

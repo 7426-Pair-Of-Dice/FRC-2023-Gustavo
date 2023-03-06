@@ -13,12 +13,16 @@ public class WristPreset extends CommandBase {
 
   private double m_wristAngle;
 
+  private double m_tolerance;
+
   /** Creates a new ShoulderPreset. */
-  public WristPreset(Wrist wrist, double wristAngle) {
+  public WristPreset(Wrist wrist, double wristAngle, double tolerance) {
 
     m_wrist = wrist;
 
     m_wristAngle = wristAngle;
+
+    m_tolerance = tolerance;
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(wrist);
@@ -43,6 +47,6 @@ public class WristPreset extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_wrist.atSetpoint(5.0);
+    return m_wrist.atSetpoint(m_tolerance);
   }
 }
