@@ -18,11 +18,6 @@ import frc.robot.Units;
 
 public class Drivetrain extends SubsystemBase {
 
-  public static enum DriveType {
-    Arcade,
-    Tank
-  }
-
   private static CANSparkMax m_leftDriveOne;  
   private static CANSparkMax m_leftDriveTwo;
   private static CANSparkMax m_leftDriveThree;
@@ -90,11 +85,6 @@ public class Drivetrain extends SubsystemBase {
     m_leftEncoder.setPosition(0);
     m_rightEncoder.setPosition(0);
 
-    m_leftEncoder.setVelocityConversionFactor((Units.inchesToMeters(6) * Math.PI) / 60);
-    m_rightEncoder.setVelocityConversionFactor((Units.inchesToMeters(6) * Math.PI) / 60);
-
-    // m_drive = new DifferentialDrive(m_leftDriveOne, m_rightDriveOne);
-
     m_gyro = new Pigeon2(Constants.Sensors.kDrivetrainGyroId);
   }
 
@@ -109,6 +99,8 @@ public class Drivetrain extends SubsystemBase {
     builder.addDoubleProperty("Roll", this::getRoll, null);
     builder.addDoubleProperty("Left Encoder Position", this::getLeftPosition, null);
     builder.addDoubleProperty("Right Encoder Position", this::getRightPosition, null);
+    builder.addDoubleProperty("Left Encoder Velocity", this::getLeftVelocity, null);
+    builder.addDoubleProperty("Right Encoder Velocity", this::getRightVelocity, null);
   }
 
   public void tankDrive(double leftSpeed, double rightSpeed) {
@@ -152,6 +144,14 @@ public class Drivetrain extends SubsystemBase {
 
   public double getRightPosition() {
     return (m_rightEncoder.getPosition() * Constants.Drive.kMotorToWheel) / Constants.Drive.kEncoderResolution * Units.inchesToMeters(Constants.Drive.kWheelDiameter) * Math.PI;
+  }
+
+  public double getLeftVelocity() {
+    return (m_leftEncoder.getVelocity() / 60.0) * Units.inchesToMeters(Constants.Drive.kWheelDiameter) * Math.PI;
+  }
+
+  public double getRightVelocity() {
+    return (m_rightEncoder.getVelocity() / 60.0) * Units.inchesToMeters(Constants.Drive.kWheelDiameter) * Math.PI;
   }
 
   public double getAverageDistance() {

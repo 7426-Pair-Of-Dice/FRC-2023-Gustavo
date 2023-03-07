@@ -98,7 +98,6 @@ public class Intake extends SubsystemBase {
   }
 
   public boolean getCubeDetected() {
-    // return m_cubeRange < 10.0;
-    return false;
+    return m_cubeRange < 10.0;
   }
 }

@@ -31,7 +31,7 @@ public class Constants {
 
         public static final double kRampRate = 0.8;
 
-        public static final double kMotorToWheel = ((50.0 / 12.0) * (60.0 / 14.0)) / 4.0;
+        public static final double kMotorToWheel = (12.0 / 50.0) * (60.0 / 14.0);
 
         public static final double kEncoderResolution = 42.0;
 
