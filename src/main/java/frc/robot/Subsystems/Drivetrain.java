@@ -87,8 +87,8 @@ public class Drivetrain extends SubsystemBase {
     m_leftEncoder = m_leftDriveOne.getEncoder();
     m_rightEncoder = m_rightDriveOne.getEncoder();
 
-    m_leftEncoder.setPositionConversionFactor(Constants.Drive.kMotorToWheel / Constants.Drive.kEncoderResolution * Units.inchesToMeters(Constants.Drive.kWheelDiameter) * Math.PI);
-    m_rightEncoder.setPositionConversionFactor(Constants.Drive.kMotorToWheel / Constants.Drive.kEncoderResolution * Units.inchesToMeters(Constants.Drive.kWheelDiameter) * Math.PI);
+    m_leftEncoder.setPosition(0);
+    m_rightEncoder.setPosition(0);
 
     m_leftEncoder.setVelocityConversionFactor((Units.inchesToMeters(6) * Math.PI) / 60);
     m_rightEncoder.setVelocityConversionFactor((Units.inchesToMeters(6) * Math.PI) / 60);
@@ -147,11 +147,11 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public double getLeftPosition() {
-    return m_leftEncoder.getPosition();
+    return ((m_leftEncoder.getPosition() * Constants.Drive.kMotorToWheel) / Constants.Drive.kEncoderResolution) * Units.inchesToMeters(Constants.Drive.kWheelDiameter) * Math.PI;
   }
 
   public double getRightPosition() {
-    return m_rightEncoder.getPosition();
+    return (m_rightEncoder.getPosition() * Constants.Drive.kMotorToWheel) / Constants.Drive.kEncoderResolution * Units.inchesToMeters(Constants.Drive.kWheelDiameter) * Math.PI;
   }
 
   public double getAverageDistance() {

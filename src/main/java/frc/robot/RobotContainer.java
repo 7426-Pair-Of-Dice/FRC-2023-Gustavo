@@ -243,7 +243,6 @@ public class RobotContainer {
     m_wristMaintain = new RunCommand(() -> m_wrist.setLastPosition(), m_wrist);
 
     m_homePreset = new SequentialCommandGroup(
-      new InstantCommand(() -> m_intake.stop(), m_intake),
       new TurretPreset(m_turret, 0.0, 5.0),
       new WristPreset(m_wrist, 0.0, 5.0),
       new ShoulderPreset(m_shoulder, 0.0, 5.0)
