@@ -4,6 +4,7 @@
 
 package frc.robot.Subsystems;
 
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
@@ -22,7 +23,7 @@ public class Intake extends SubsystemBase {
   private static VictorSPX m_leftIntakeMotor;
   private static VictorSPX m_rightIntakeMotor;
 
-  private static Rev2mDistanceSensor m_coneDistanceSensor;
+  private static Ultrasonic m_coneDistanceSensor;
   private static Ultrasonic m_cubeDistanceSensor;
 
   private static double m_coneRange;
@@ -33,10 +34,8 @@ public class Intake extends SubsystemBase {
     m_leftIntakeMotor = new VictorSPX(Constants.Intake.kLeftIntakeMotorId);
     m_rightIntakeMotor = new VictorSPX(Constants.Intake.kRightIntakeMotorId);
 
-    m_coneDistanceSensor = new Rev2mDistanceSensor(Port.kOnboard, Unit.kInches, RangeProfile.kDefault);
+    m_coneDistanceSensor = new Ultrasonic(Constants.Sensors.kConeSonarPingChannel, Constants.Sensors.kConeSonarEchoChannel);
     m_cubeDistanceSensor = new Ultrasonic(Constants.Sensors.kClawSonarPingChannel, Constants.Sensors.kClawSonarEchoChannel);
-    
-    m_coneDistanceSensor.setAutomaticMode(true);
     
     Ultrasonic.setAutomaticMode(true);
 
@@ -49,7 +48,7 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    m_coneRange = m_coneDistanceSensor.getRange();
+    m_coneRange = m_coneDistanceSensor.getRangeInches();
     m_cubeRange = m_cubeDistanceSensor.getRangeInches();
   }
 
@@ -94,10 +93,12 @@ public class Intake extends SubsystemBase {
   }
 
   public boolean getConeDetected() {
+    //return m_coneRange < 8.0;
     return false;
   }
 
   public boolean getCubeDetected() {
-    return m_cubeRange < 10.0;
+    //return m_cubeRange < 8.0;
+    return false;
   }
 }

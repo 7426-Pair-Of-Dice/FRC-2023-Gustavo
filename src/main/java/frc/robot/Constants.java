@@ -18,6 +18,9 @@ public class Constants {
 
         public static final int kClawSonarPingChannel = 1;
         public static final int kClawSonarEchoChannel = 0;
+
+        public static final int kConeSonarPingChannel = 3;
+        public static final int kConeSonarEchoChannel = 2;
     }
 
     public static final class Drive {
@@ -31,7 +34,7 @@ public class Constants {
 
         public static final double kRampRate = 0.8;
 
-        public static final double kMotorToWheel = (12.0 / 50.0) * (60.0 / 14.0);
+        public static final double kMotorToWheel = ((50.0 / 12.0) * (60.0 / 14.0)) / 4.0;
 
         public static final double kEncoderResolution = 42.0;
 
@@ -81,7 +84,7 @@ public class Constants {
         public static final double kMotorToArm = (1.0 / 100.0) * (1.0 / 3.0);
     }
 
-    public static final class Telescope {
+    /* public static final class Telescope {
         public static final int kTelescopeMotorId = 9;
 
         public static final double kF = 0.0;
@@ -100,7 +103,7 @@ public class Constants {
         public static final double kMetersPerRev = 0.0127;
 
         public static final double kMotorToTelescope = (1.0 / 10.0);
-    }
+    } */
 
     public static final class Wrist {
         public static final int kWristMotorId = 12;
@@ -165,23 +168,34 @@ public class Constants {
     }
 
     public static final class DriveToDistanceCommand {
-        public static final double kPDist = 0.3;
+        public static final double kMinCommand = 0.2;
+
+        public static final double kPDist = 0.8;
         public static final double kIDist = 0.0;
         public static final double kDDist = 0.0;
 
-        public static final double kPAngle = 0.02;
+        public static final double kPAngle = 0.002;
         public static final double kIAngle = 0.0;
         public static final double kDAngle = 0.0;
     }
 
     public static final class RotateToAngleCommand {
-        public static final double kP = 0.02;
+        public static final double kMinCommand = 0.05;
+
+        public static final double kP = 0.013;
         public static final double kI = 0.0;
         public static final double kD = 0.0;
     }
 
     public static final class TurretTrackingCommand {
         public static final double kP = 0.04;
+        public static final double kI = 0.0;
+        public static final double kD = 0.0;
+    }
+
+    public static final class AutoBalanceCommand {
+        public static final double kMaxPower = 0.12;
+        public static final double kP = 0.08;
         public static final double kI = 0.0;
         public static final double kD = 0.0;
     }

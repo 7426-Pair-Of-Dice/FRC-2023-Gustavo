@@ -284,45 +284,6 @@
               "_showGlyph": false
             }
           },
-          "1,2": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Telescope/Telescope Position Ticks",
-              "_title": "Telescope/Telescope Position Ticks",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "2,2": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Telescope/Telescope Position Meters",
-              "_title": "Telescope/Telescope Position Meters",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "3,2": {
-            "size": [
-              1,
-              1
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Telescope/Telescope Setpoint",
-              "_title": "Telescope/Telescope Setpoint",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
           "4,2": {
             "size": [
               1,
@@ -361,6 +322,32 @@
               "_glyph": 148,
               "_showGlyph": false
             }
+          },
+          "7,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Drivetrain/Left Encoder Velocity",
+              "_title": "Drivetrain/Left Encoder Velocity",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,2": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Drivetrain/Right Encoder Velocity",
+              "_title": "Drivetrain/Right Encoder Velocity",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
           }
         }
       }
@@ -379,7 +366,7 @@
       }
     },
     {
-      "title": "Limelight",
+      "title": "Vision",
       "autoPopulate": false,
       "autoPopulatePrefix": "",
       "widgetPane": {
@@ -391,13 +378,34 @@
         "tiles": {
           "0,0": {
             "size": [
-              10,
+              5,
               4
             ],
             "content": {
               "_type": "Camera Stream",
               "_source0": "camera_server://limelight",
               "_title": "limelight",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Crosshair/Show crosshair": true,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": true,
+              "Controls/Rotation": "NONE",
+              "compression": -1.0,
+              "fps": -1,
+              "imageWidth": -1,
+              "imageHeight": -1
+            }
+          },
+          "5,0": {
+            "size": [
+              5,
+              4
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://USB Camera 0",
+              "_title": "USB Camera 0",
               "_glyph": 148,
               "_showGlyph": false,
               "Crosshair/Show crosshair": true,

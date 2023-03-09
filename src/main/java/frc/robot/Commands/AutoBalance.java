@@ -9,27 +9,18 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.Subsystems.Drivetrain;
 
-public class RotateToAngle extends CommandBase {
+public class AutoBalance extends CommandBase {
 
   private static Drivetrain m_driveTrain;
 
   private PIDController m_pidController;
 
-  private double m_inputAngle;
-  private double m_setpointAngle;
-
-  private double m_tolerance;
-
-  /** Creates a new RotateToAngle. */
-  public RotateToAngle(Drivetrain driveTrain, double angleInDegrees, double tolerance) {
+  /** Creates a new AutoBalance. */
+  public AutoBalance(Drivetrain driveTrain) {
 
     m_driveTrain = driveTrain;
 
-    m_pidController = new PIDController(Constants.RotateToAngleCommand.kP, Constants.RotateToAngleCommand.kI, Constants.RotateToAngleCommand.kD);
-
-    m_inputAngle = angleInDegrees;
-
-    m_tolerance = tolerance;
+    m_pidController = new PIDController(Constants.AutoBalanceCommand.kP, Constants.AutoBalanceCommand.kI, Constants.AutoBalanceCommand.kD);
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(driveTrain);
@@ -37,16 +28,15 @@ public class RotateToAngle extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    m_setpointAngle = m_driveTrain.getYaw() + m_inputAngle;
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double rotation = m_pidController.calculate(m_driveTrain.getYaw(), m_setpointAngle) - Constants.RotateToAngleCommand.kMinCommand;
+    double speed = m_pidController.calculate(m_driveTrain.getPitch(), 0.0);
+    speed = Math.max(-Constants.AutoBalanceCommand.kMaxPower, Math.min(Constants.AutoBalanceCommand.kMaxPower, speed));
 
-    m_driveTrain.arcadeDrive(0.0, -rotation);
+    m_driveTrain.arcadeDrive(speed, 0);
   }
 
   // Called once the command ends or is interrupted.
@@ -58,6 +48,6 @@ public class RotateToAngle extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Math.abs(m_driveTrain.getYaw() - m_setpointAngle) < m_tolerance;
+    return false;
   }
 }
