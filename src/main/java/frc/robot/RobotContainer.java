@@ -86,7 +86,6 @@ public class RobotContainer {
   private static RunCommand m_shoulderDown;
   private static RunCommand m_wristUp;
   private static RunCommand m_wristDown;
-  private static RunCommand m_telescopeControl;
   private static RunCommand m_turretControl;
   private static RunCommand m_turretSlowLeft;
   private static RunCommand m_turretSlowRight;
@@ -98,7 +97,6 @@ public class RobotContainer {
 
   private static InstantCommand m_turretStop;
   private static InstantCommand m_shoulderStop;
-  private static InstantCommand m_telescopeStop;
   private static InstantCommand m_wristStop;
   private static InstantCommand m_intakeStop;
   private static InstantCommand m_driveStop;
@@ -107,21 +105,21 @@ public class RobotContainer {
   private static RunCommand m_shoulderMaintain;
   private static RunCommand m_wristMaintain;
 
-  private static WrapperCommand m_doublePlayerStationCubePreset;
-  private static WrapperCommand m_singlePlayerStationCubePreset;
-  private static WrapperCommand m_floorCubePreset;
+  private static ParallelCommandGroup m_doublePlayerStationCubePreset;
+  private static ParallelCommandGroup m_singlePlayerStationCubePreset;
+  private static ParallelCommandGroup m_floorCubePreset;
 
-  private static WrapperCommand m_doublePlayerStationConePreset;
-  private static WrapperCommand m_singlePlayerStationConePreset;
-  private static WrapperCommand m_floorConePreset;
+  private static ParallelCommandGroup m_doublePlayerStationConePreset;
+  private static ParallelCommandGroup m_singlePlayerStationConePreset;
+  private static ParallelCommandGroup m_floorConePreset;
 
-  private static WrapperCommand m_topScoreCubePreset;
-  private static WrapperCommand m_middleScoreCubePreset;
-  private static WrapperCommand m_bottomScoreCubePreset;
+  private static ParallelCommandGroup m_topScoreCubePreset;
+  private static ParallelCommandGroup m_middleScoreCubePreset;
+  private static ParallelCommandGroup m_bottomScoreCubePreset;
 
-  private static WrapperCommand m_topScoreConePreset;
-  private static WrapperCommand m_middleScoreConePreset;
-  private static WrapperCommand m_bottomScoreConePreset;
+  private static ParallelCommandGroup m_topScoreConePreset;
+  private static ParallelCommandGroup m_middleScoreConePreset;
+  private static ParallelCommandGroup m_bottomScoreConePreset;
 
   private static PrintCommand m_defaultAuto;
   private static SequentialCommandGroup m_testAuto;
@@ -249,64 +247,64 @@ public class RobotContainer {
     // Cube grabbing presets
     m_doublePlayerStationCubePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCube(), m_intake).until(m_intake::getCubeDetected).andThen(new InstantCommand(() -> m_intake.stop(), m_intake)),
-      new ShoulderPreset(m_shoulder, 71.0, 5.0),
+      new ShoulderPreset(m_shoulder, 69.0, 5.0),
       new WristPreset(m_wrist, 124.0, 5.0)
-    ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    );
     m_singlePlayerStationCubePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCube(), m_intake).until(m_intake::getCubeDetected).andThen(new InstantCommand(() -> m_intake.stop(), m_intake)),
       new ShoulderPreset(m_shoulder, 31.0, 5.0),
       new WristPreset(m_wrist, 0, 34.0)
-    ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    );
     m_floorCubePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCube(), m_intake).until(m_intake::getCubeDetected).andThen(new InstantCommand(() -> m_intake.stop(), m_intake)),
-      new ShoulderPreset(m_shoulder, 12, 5.0),
-      new WristPreset(m_wrist, 125.0, 5.0)
-    ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+      new ShoulderPreset(m_shoulder, 14.0, 5.0),
+      new WristPreset(m_wrist, 110.0, 5.0)
+    );
 
     // Cone grabbing presets
     m_doublePlayerStationConePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCone(), m_intake).until(m_intake::getConeDetected).andThen(new InstantCommand(() -> m_intake.stop(), m_intake)),
-      new ShoulderPreset(m_shoulder, 62.0, 5.0),
+      new ShoulderPreset(m_shoulder, 60.0, 5.0),
       new WristPreset(m_wrist, 65.0, 5.0)
-    ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    );
     m_singlePlayerStationConePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCone(), m_intake).until(m_intake::getConeDetected).andThen(new InstantCommand(() -> m_intake.stop(), m_intake)),
       new ShoulderPreset(m_shoulder, 38.0, 5.0),
       new WristPreset(m_wrist, 0.0, 5.0)
-    ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    );
     m_floorConePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCone(), m_intake).until(m_intake::getConeDetected).andThen(new InstantCommand(() -> m_intake.stop(), m_intake)),
-      new ShoulderPreset(m_shoulder, 10.0, 5.0),
-      new WristPreset(m_wrist, 61.0, 5.0)
-    ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+      new ShoulderPreset(m_shoulder, 8.0, 5.0),
+      new WristPreset(m_wrist, 51.0, 5.0)
+    );
 
     // Cube scoring presets
     m_topScoreCubePreset = new ParallelCommandGroup(
       new ShoulderPreset(m_shoulder, 71.0, 5.0),
       new WristPreset(m_wrist, 122.0, 5.0)
-    ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    );
     m_middleScoreCubePreset = new ParallelCommandGroup(
       new ShoulderPreset(m_shoulder, 65.0, 5.0),
-      new WristPreset(m_wrist, 122.0, 5.0)
-    ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+      new WristPreset(m_wrist, 150.0, 5.0)
+    );
     m_bottomScoreCubePreset = new ParallelCommandGroup(
       new ShoulderPreset(m_shoulder, 10.0, 5.0),
       new WristPreset(m_wrist, 0.0, 5.0)
-    ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    );
 
     // Cone scoring presets
     m_topScoreConePreset = new ParallelCommandGroup(
-      new ShoulderPreset(m_shoulder, 88.0, 5.0),
-      new WristPreset(m_wrist, 80.0, 5.0)
-    ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+      new ShoulderPreset(m_shoulder, 95.0, 5.0),
+      new WristPreset(m_wrist, 125.0, 5.0)
+    );
     m_middleScoreConePreset = new ParallelCommandGroup(
-      new ShoulderPreset(m_shoulder, 65.0, 5.0),
-      new WristPreset(m_wrist, 73.0, 5.0)
-    ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+      new ShoulderPreset(m_shoulder, 75.0, 5.0),
+      new WristPreset(m_wrist, 120.0, 5.0)
+    );
     m_bottomScoreConePreset = new ParallelCommandGroup(
       new ShoulderPreset(m_shoulder, 10.0, 5.0),
       new WristPreset(m_wrist, 0.0, 5.0)
-    ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    );
 
     m_defaultAuto = new PrintCommand("Default Autonomous");
 

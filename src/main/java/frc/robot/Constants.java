@@ -58,7 +58,7 @@ public class Constants {
         public static final double kForwardSoftLimit = 360;
         public static final double kReverseSoftLimit = -360;
 
-        public static final double kMotorToTurret = (1.0 / 50.0) * (14.0 / 70.0);
+        public static final double kMotorToTurret = (1.0 / 100.0) * (14.0 / 70.0);
     }
 
     public static final class Shoulder {
@@ -81,7 +81,7 @@ public class Constants {
         public static final double kForwardSoftLimit = 100.0;
         public static final double kReverseSoftLimit = 0.0;
 
-        public static final double kMotorToArm = (1.0 / 100.0) * (1.0 / 3.0);
+        public static final double kMotorToArm = (1.0 / 125.0) * (1.0 / 3.0);
     }
 
     /* public static final class Telescope {

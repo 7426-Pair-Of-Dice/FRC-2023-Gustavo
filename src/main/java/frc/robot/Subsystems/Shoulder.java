@@ -5,10 +5,12 @@
 package frc.robot.Subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -20,6 +22,8 @@ public class Shoulder extends SubsystemBase {
   private static TalonFX m_shoulderMotor;
   private static TalonFX m_shoulderMotorFollower;
 
+  /* private static TalonSRX m_shoulderAngle; */
+
   private static double m_setpoint;
 
   /** Creates a new Arm. */
@@ -27,6 +31,13 @@ public class Shoulder extends SubsystemBase {
 
     m_shoulderMotor = new TalonFX(Constants.Shoulder.kLeftArmMotorId);
     m_shoulderMotorFollower = new TalonFX(Constants.Shoulder.kRightArmMotorId);
+
+    /* m_shoulderAngle = new TalonSRX(16);
+
+    m_shoulderAngle.configFactoryDefault();
+
+    m_shoulderAngle.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute); */
+
 
     // Arm Configuration
     m_shoulderMotor.configFactoryDefault();
@@ -75,6 +86,7 @@ public class Shoulder extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    /* System.out.println(m_shoulderAngle.getSelectedSensorPosition()); */
   }
 
   @Override

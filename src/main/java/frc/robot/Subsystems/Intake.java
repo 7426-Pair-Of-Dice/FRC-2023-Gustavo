@@ -65,19 +65,19 @@ public class Intake extends SubsystemBase {
   }
 
   public void intakeCone() {
-    setPercentOutput(-1, 1);
+    setPercentOutput(1, -1);
   }
 
   public void intakeCube() {
-    setPercentOutput(1, -1);
+    setPercentOutput(-1, 1);
   }
 
   public void releaseCone() {
-    setPercentOutput(1, -1);
+    setPercentOutput(-1, 1);
   }
 
   public void releaseCube() {
-    setPercentOutput(-1, 1);
+    setPercentOutput(1, -1);
   }
 
   public void stop() {
@@ -93,12 +93,12 @@ public class Intake extends SubsystemBase {
   }
 
   public boolean getConeDetected() {
-    //return m_coneRange < 8.0;
+    // return m_coneRange < 8.0;
     return false;
   }
 
   public boolean getCubeDetected() {
-    //return m_cubeRange < 8.0;
-    return false;
+    return m_cubeRange < 8.0 && !m_cubeDistanceSensor.isRangeValid();
+    //return false;
   }
 }
