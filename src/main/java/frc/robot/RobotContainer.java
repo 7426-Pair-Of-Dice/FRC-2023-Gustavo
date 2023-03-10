@@ -102,7 +102,6 @@ public class RobotContainer {
   private static RunCommand m_shoulderDown;
   private static RunCommand m_wristUp;
   private static RunCommand m_wristDown;
-  private static RunCommand m_telescopeControl;
   private static RunCommand m_turretControl;
   private static RunCommand m_turretSlowLeft;
   private static RunCommand m_turretSlowRight;
@@ -114,7 +113,6 @@ public class RobotContainer {
 
   private static InstantCommand m_turretStop;
   private static InstantCommand m_shoulderStop;
-  private static InstantCommand m_telescopeStop;
   private static InstantCommand m_wristStop;
   private static InstantCommand m_intakeStop;
   private static InstantCommand m_driveStop;
