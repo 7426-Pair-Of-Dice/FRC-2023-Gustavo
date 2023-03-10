@@ -142,8 +142,6 @@ public class RobotContainer {
   private static SequentialCommandGroup m_oneCubeTaxiBalance;
   private static SequentialCommandGroup m_oneCubeTaxi;
 
-  private static SelectCommand m_autoCommandSelector;
-
   private static SendableChooser<Alliance> m_allianceChooser;
   private static SendableChooser<AutoRoutine> m_autoChooser;
 
@@ -358,60 +356,6 @@ public class RobotContainer {
       new DriveToDistance(m_driveTrain, Units.inchesToMeters(-72.0), Units.inchesToMeters(2.0))
     );
 
-    m_autoCommandSelector = new SelectCommand(
-      Map.ofEntries(
-        Map.entry(
-          Alliance.BLUE, 
-          new SelectCommand(
-            Map.ofEntries(
-              Map.entry(
-                AutoRoutine.DEFAULT,
-                m_defaultAuto
-              ),
-              Map.entry(
-                AutoRoutine.ONECUBE_BALANCE,
-                m_oneCubeBalance
-              ),
-              Map.entry(
-                AutoRoutine.ONECUBE_TAXI_BALANCE,
-                m_oneCubeTaxiBalance
-              ),
-              Map.entry(
-                AutoRoutine.ONECUBE_TAXI,
-                m_oneCubeTaxi
-              )
-            ), 
-            this::getAutoRoutine
-          )
-        ),
-        Map.entry(
-          Alliance.RED, 
-          new SelectCommand(
-            Map.ofEntries(
-              Map.entry(
-                AutoRoutine.DEFAULT,
-                m_defaultAuto
-              ),
-              Map.entry(
-                AutoRoutine.ONECUBE_BALANCE,
-                m_oneCubeBalance
-              ),
-              Map.entry(
-                AutoRoutine.ONECUBE_TAXI_BALANCE,
-                m_oneCubeTaxiBalance
-              ),
-              Map.entry(
-                AutoRoutine.ONECUBE_TAXI,
-                m_oneCubeTaxi
-              )
-            ), 
-            this::getAutoRoutine
-          )
-        )
-      ), 
-      this::getAlliance
-    );
-
     m_allianceChooser = new SendableChooser<Alliance>();
     m_allianceChooser.setDefaultOption("Blue", Alliance.BLUE);
     m_allianceChooser.addOption("Red", Alliance.RED);
@@ -485,7 +429,7 @@ public class RobotContainer {
   public void updateDashboard() {}
 
   public Command getAutonomousCommand() {
-    return m_autoCommandSelector;
+    return m_defaultAuto;
   }
 
   public Alliance getAlliance() {
