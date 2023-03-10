@@ -157,5 +157,9 @@ public class Drivetrain extends SubsystemBase {
   public double getAverageDistance() {
     return (getLeftPosition() + getRightPosition()) / 2;
   }
+
+  public boolean isTipped() {
+    return Math.abs(m_gyro.getPitch()) > 10.0;
+  }
 }
 

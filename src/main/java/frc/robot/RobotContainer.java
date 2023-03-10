@@ -7,6 +7,8 @@ package frc.robot;
 import frc.robot.Subsystems.*;
 import frc.robot.Commands.*;
 
+import java.util.Map;
+
 import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -18,11 +20,25 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WrapperCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 
 public class RobotContainer {
+
+  public enum Alliance {
+    BLUE,
+    RED
+  }
+
+  public enum AutoRoutine {
+    DEFAULT,
+    ONECUBE_BALANCE,
+    ONECUBE_TAXI_BALANCE,
+    ONECUBE_TAXI
+  }
 
   // Input
   private static CommandXboxController m_driverController;
@@ -124,9 +140,14 @@ public class RobotContainer {
   private static WrapperCommand m_bottomScoreConePreset;
 
   private static PrintCommand m_defaultAuto;
-  private static SequentialCommandGroup m_testAuto;
+  private static SequentialCommandGroup m_oneCubeBalance;
+  private static SequentialCommandGroup m_oneCubeTaxiBalance;
+  private static SequentialCommandGroup m_oneCubeTaxi;
 
-  private static SendableChooser<Command> m_autoChooser;
+  private static SelectCommand m_autoCommandSelector;
+
+  private static SendableChooser<Alliance> m_allianceChooser;
+  private static SendableChooser<AutoRoutine> m_autoChooser;
 
   public RobotContainer() {
     // Input
@@ -308,21 +329,106 @@ public class RobotContainer {
       new WristPreset(m_wrist, 0.0, 5.0)
     ).withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
 
-    m_defaultAuto = new PrintCommand("Default Autonomous");
+    // Autonomous Commands
+    m_defaultAuto = new PrintCommand("Default Auto");
 
-    m_testAuto = new SequentialCommandGroup(
-      new DriveToDistance(m_driveTrain, Units.inchesToMeters(48.0), Units.inchesToMeters(2.0)),
-      new RotateToAngle(m_driveTrain, -20.0, 1.0)
+    m_oneCubeBalance = new SequentialCommandGroup(
+      new ShoulderPreset(m_shoulder, 71.0, 5.0),
+      new WristPreset(m_wrist, 122.0, 5.0),
+      new RunCommand(() -> m_intake.releaseCube(), m_intake).raceWith(new WaitCommand(1.0)),
+      new DriveToDistance(m_driveTrain, Units.inchesToMeters(-24.0), Units.inchesToMeters(2.0)),
+      new RunCommand(() -> m_driveTrain.arcadeDrive(-0.5, 0), m_driveTrain).until(m_driveTrain::isTipped),
+      new AutoBalance(m_driveTrain)
     );
 
-    m_autoChooser = new SendableChooser<Command>();
-    m_autoChooser.setDefaultOption("Default Auto", m_defaultAuto);
-    m_autoChooser.addOption("Test Auto", m_testAuto);
+    m_oneCubeTaxiBalance = new SequentialCommandGroup(
+      new ShoulderPreset(m_shoulder, 71.0, 5.0),
+      new WristPreset(m_wrist, 122.0, 5.0),
+      new RunCommand(() -> m_intake.releaseCube(), m_intake).raceWith(new WaitCommand(1.0)),
+      new DriveToDistance(m_driveTrain, Units.inchesToMeters(-24.0), Units.inchesToMeters(2.0)),
+      new RunCommand(() -> m_driveTrain.arcadeDrive(-0.5, 0), m_driveTrain).until(m_driveTrain::isTipped),
+      new AutoBalance(m_driveTrain),
+      new RunCommand(() -> m_driveTrain.arcadeDrive(-0.5, 0), m_driveTrain).raceWith(new WaitCommand(3.0)),
+      new RunCommand(() -> m_driveTrain.arcadeDrive(0.5, 0), m_driveTrain).until(m_driveTrain::isTipped),
+      new AutoBalance(m_driveTrain)
+    );
+
+    m_oneCubeTaxi = new SequentialCommandGroup(
+      new ShoulderPreset(m_shoulder, 71.0, 5.0),
+      new WristPreset(m_wrist, 122.0, 5.0),
+      new RunCommand(() -> m_intake.releaseCube(), m_intake).raceWith(new WaitCommand(1.0)),
+      new DriveToDistance(m_driveTrain, Units.inchesToMeters(-72.0), Units.inchesToMeters(2.0))
+    );
+
+    m_autoCommandSelector = new SelectCommand(
+      Map.ofEntries(
+        Map.entry(
+          Alliance.BLUE, 
+          new SelectCommand(
+            Map.ofEntries(
+              Map.entry(
+                AutoRoutine.DEFAULT,
+                m_defaultAuto
+              ),
+              Map.entry(
+                AutoRoutine.ONECUBE_BALANCE,
+                m_oneCubeBalance
+              ),
+              Map.entry(
+                AutoRoutine.ONECUBE_TAXI_BALANCE,
+                m_oneCubeTaxiBalance
+              ),
+              Map.entry(
+                AutoRoutine.ONECUBE_TAXI,
+                m_oneCubeTaxi
+              )
+            ), 
+            this::getAutoRoutine
+          )
+        ),
+        Map.entry(
+          Alliance.RED, 
+          new SelectCommand(
+            Map.ofEntries(
+              Map.entry(
+                AutoRoutine.DEFAULT,
+                m_defaultAuto
+              ),
+              Map.entry(
+                AutoRoutine.ONECUBE_BALANCE,
+                m_oneCubeBalance
+              ),
+              Map.entry(
+                AutoRoutine.ONECUBE_TAXI_BALANCE,
+                m_oneCubeTaxiBalance
+              ),
+              Map.entry(
+                AutoRoutine.ONECUBE_TAXI,
+                m_oneCubeTaxi
+              )
+            ), 
+            this::getAutoRoutine
+          )
+        )
+      ), 
+      this::getAlliance
+    );
+
+    m_allianceChooser = new SendableChooser<Alliance>();
+    m_allianceChooser.setDefaultOption("Blue", Alliance.BLUE);
+    m_allianceChooser.addOption("Red", Alliance.RED);
+
+    m_autoChooser = new SendableChooser<AutoRoutine>();
+    m_autoChooser.setDefaultOption("Default", AutoRoutine.DEFAULT);
+    m_autoChooser.addOption("OneCube-Balance", AutoRoutine.ONECUBE_BALANCE);
+    m_autoChooser.addOption("OneCube-Taxi-Balance", AutoRoutine.ONECUBE_TAXI_BALANCE);
+    m_autoChooser.addOption("OneCube-Taxi", AutoRoutine.ONECUBE_TAXI);
 
     m_driveTrain.setDefaultCommand(m_arcadeDrive);
     m_shoulder.setDefaultCommand(m_shoulderMaintain);
     m_wrist.setDefaultCommand(m_wristMaintain);
 
+    SmartDashboard.putData(m_allianceChooser);
     SmartDashboard.putData(m_autoChooser);
     SmartDashboard.putData(m_driveTrain);
     SmartDashboard.putData(m_turret);
@@ -381,6 +487,14 @@ public class RobotContainer {
   public void updateDashboard() {}
 
   public Command getAutonomousCommand() {
+    return m_autoCommandSelector;
+  }
+
+  public Alliance getAlliance() {
+    return m_allianceChooser.getSelected();
+  }
+
+  public AutoRoutine getAutoRoutine() {
     return m_autoChooser.getSelected();
   }
 }
