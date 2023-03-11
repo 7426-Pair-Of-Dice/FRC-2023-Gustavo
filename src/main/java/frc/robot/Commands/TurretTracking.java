@@ -49,7 +49,7 @@ public class TurretTracking extends CommandBase {
     double error = -m_limelight.getXOffset();
 
     if (Math.abs(error) > 0.5) {
-      m_turret.setPercentOutput(m_pidController.calculate(m_limelight.getXOffset(), 0.0) - Math.signum(error) * m_minCommand);
+      m_turret.setPercentOutput(m_pidController.calculate(m_limelight.getXOffset(), 0.0) + Math.signum(error) * m_minCommand);
     } else {
       m_turret.setPercentOutput(0.0);
     }
