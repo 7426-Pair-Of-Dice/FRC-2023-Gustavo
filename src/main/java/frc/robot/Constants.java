@@ -47,7 +47,7 @@ public class Constants {
         public static final double kF = 0.0;
         public static final double kP = 0.05;
         public static final double kI = 0.0;
-        public static final double kD = 5.0;
+        public static final double kD = 0.0;
 
         public static final double kDeadband = 0.05;
 
@@ -83,27 +83,6 @@ public class Constants {
 
         public static final double kMotorToArm = (1.0 / 125.0) * (1.0 / 3.0);
     }
-
-    /* public static final class Telescope {
-        public static final int kTelescopeMotorId = 9;
-
-        public static final double kF = 0.0;
-        public static final double kP = 0.08;
-        public static final double kI = 0.0;
-        public static final double kD = 0.0;
-
-        public static final double kDeadband = 0.05;
-
-        public static final double kMotionCruiseVelocity = 25000;
-        public static final double kMotionAcceleration = 15000;
-
-        public static final double kForwardSoftLimit = Units.inchesToMeters(12.0);
-        public static final double kReverseSoftLimit = 0.0;
-
-        public static final double kMetersPerRev = 0.0127;
-
-        public static final double kMotorToTelescope = (1.0 / 10.0);
-    } */
 
     public static final class Wrist {
         public static final int kWristMotorId = 12;

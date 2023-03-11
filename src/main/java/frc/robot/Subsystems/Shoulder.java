@@ -38,7 +38,6 @@ public class Shoulder extends SubsystemBase {
 
     m_shoulderAngle.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute); */
 
-
     // Arm Configuration
     m_shoulderMotor.configFactoryDefault();
     m_shoulderMotorFollower.configFactoryDefault();
