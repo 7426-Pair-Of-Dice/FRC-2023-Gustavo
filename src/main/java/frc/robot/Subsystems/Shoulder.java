@@ -72,6 +72,12 @@ public class Shoulder extends SubsystemBase {
     m_shoulderMotor.configNeutralDeadband(Constants.Shoulder.kDeadband);
     m_shoulderMotorFollower.configNeutralDeadband(Constants.Shoulder.kDeadband);
 
+    m_shoulderMotor.configVoltageCompSaturation(12.0);
+    m_shoulderMotorFollower.configVoltageCompSaturation(12.0);
+
+    m_shoulderMotor.enableVoltageCompensation(true);
+    m_shoulderMotorFollower.enableVoltageCompensation(true);
+
     m_shoulderMotorFollower.follow(m_shoulderMotor);
     m_shoulderMotorFollower.setInverted(TalonFXInvertType.OpposeMaster);
 

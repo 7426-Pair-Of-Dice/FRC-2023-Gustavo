@@ -168,7 +168,7 @@ public class Constants {
     }
 
     public static final class DriveToDistanceCommand {
-        public static final double kMinCommand = 0.2;
+        public static final double kMinCommand = 0.12;
 
         public static final double kPDist = 0.8;
         public static final double kIDist = 0.0;
@@ -180,7 +180,7 @@ public class Constants {
     }
 
     public static final class RotateToAngleCommand {
-        public static final double kMinCommand = 0.05;
+        public static final double kMinCommand = 0.12;
 
         public static final double kP = 0.013;
         public static final double kI = 0.0;

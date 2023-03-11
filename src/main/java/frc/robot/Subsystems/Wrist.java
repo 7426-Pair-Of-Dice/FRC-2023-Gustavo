@@ -58,6 +58,9 @@ public class Wrist extends SubsystemBase {
     m_wristMotor.configMotionCruiseVelocity(Constants.Wrist.kMotionCruiseVelocity, Constants.TalonFX.kTimeoutMs);
     m_wristMotor.configMotionAcceleration(Constants.Wrist.kMotionAcceleration, Constants.TalonFX.kTimeoutMs); 
 
+    m_wristMotor.configVoltageCompSaturation(12.0);
+    m_wristMotor.enableVoltageCompensation(true);
+
     m_wristMotor.configNeutralDeadband(Constants.Wrist.kDeadband);
 
     m_wristMotor.setNeutralMode(NeutralMode.Brake);

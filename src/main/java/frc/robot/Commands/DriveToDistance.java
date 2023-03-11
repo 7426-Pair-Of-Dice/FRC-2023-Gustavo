@@ -49,7 +49,8 @@ public class DriveToDistance extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double speed = m_distPidController.calculate(m_driveTrain.getAverageDistance(), m_setpointDistance) + Constants.DriveToDistanceCommand.kMinCommand;
+    double speed = m_distPidController.calculate(m_driveTrain.getAverageDistance(), m_setpointDistance);
+    speed = speed + (Math.signum(speed) * Constants.DriveToDistanceCommand.kMinCommand);
     double rotation = m_anglePidController.calculate(m_driveTrain.getYaw(), m_setpointAngle);
 
     m_driveTrain.arcadeDrive(speed, rotation);
