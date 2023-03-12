@@ -65,7 +65,8 @@ public class RobotContainer {
   private static Trigger m_wristDownTrigger;
   private static Trigger m_releaseTrigger;
 
-  private static Trigger m_turretConeTrackingTrigger;
+  private static Trigger m_turretConeTopTrackingTrigger;
+  private static Trigger m_turretConeBottomTrackingTrigger;
   private static Trigger m_turretCubeTrackingTrigger;
 
   private static Trigger m_shoulderHomeTrigger;
@@ -99,7 +100,8 @@ public class RobotContainer {
   private static RunCommand m_releaseCube;
   private static RunCommand m_releaseCone;
 
-  private static TurretTracking m_turretTrackingCone;
+  private static TurretTracking m_turretTrackingConeTop;
+  private static TurretTracking m_turretTrackingConeBottom;
   private static TurretTracking m_turretTrackingCube;
 
   private static InstantCommand m_turretStop;
@@ -171,7 +173,8 @@ public class RobotContainer {
     m_wristDownTrigger = m_operatorJoystick.button(Constants.Input.kJoystickCenterRightButtonId).and(m_operatorJoystick.button(Constants.Input.kJoystickTriggerButtonId).negate());
     m_releaseTrigger = m_operatorJoystick.button(Constants.Input.kJoystickTriggerButtonId);
 
-    m_turretConeTrackingTrigger = m_driverController.y();
+    m_turretConeTopTrackingTrigger = m_driverController.y();
+    m_turretConeBottomTrackingTrigger = m_driverController.a();
     m_turretCubeTrackingTrigger = m_driverController.x();
 
     m_shoulderHomeTrigger = m_operatorJoystick.button(Constants.Input.kJoystickCenterMiddleButtonId);
@@ -230,7 +233,8 @@ public class RobotContainer {
     m_releaseCube = new RunCommand(() -> m_intake.releaseCube(), m_intake);
     m_releaseCone = new RunCommand(() -> m_intake.releaseCone(), m_intake);
 
-    m_turretTrackingCone = new TurretTracking(m_turret, m_limelight, Constants.Limelight.kRetroReflectivePipeline);
+    m_turretTrackingConeTop = new TurretTracking(m_turret, m_limelight, Constants.Limelight.kRetroReflectiveTopPipeline);
+    m_turretTrackingConeBottom = new TurretTracking(m_turret, m_limelight, Constants.Limelight.kRetroReflectiveBottomPipeline);
     m_turretTrackingCube = new TurretTracking(m_turret, m_limelight, Constants.Limelight.kAprilTagPipeline);
 
     m_turretStop = new InstantCommand(() -> m_turret.stop(), m_turret);
@@ -424,8 +428,9 @@ public class RobotContainer {
     m_wristUpTrigger.whileTrue(m_wristUp).onFalse(m_wristStop);
     m_wristDownTrigger.whileTrue(m_wristDown).onFalse(m_wristStop);
 
-    m_turretConeTrackingTrigger.and(m_turretCubeTrackingTrigger.negate()).whileTrue(m_turretTrackingCone).onFalse(m_turretStop).onFalse(m_limelightReset);
-    m_turretCubeTrackingTrigger.and(m_turretConeTrackingTrigger.negate()).whileTrue(m_turretTrackingCube).onFalse(m_turretStop).onFalse(m_limelightReset);
+    m_turretConeTopTrackingTrigger.and(m_turretCubeTrackingTrigger.negate()).and(m_turretConeBottomTrackingTrigger.negate()).whileTrue(m_turretTrackingConeTop).onFalse(m_turretStop).onFalse(m_limelightReset);
+    m_turretConeBottomTrackingTrigger.and(m_turretCubeTrackingTrigger.negate()).and(m_turretConeTopTrackingTrigger.negate()).whileTrue(m_turretTrackingConeBottom).onFalse(m_turretStop).onFalse(m_limelightReset);
+    m_turretCubeTrackingTrigger.and(m_turretConeTopTrackingTrigger.negate()).and(m_turretConeBottomTrackingTrigger.negate()).whileTrue(m_turretTrackingCube).onFalse(m_turretStop).onFalse(m_limelightReset);
 
     m_doublePlayerStationCubePresetTrigger.whileTrue(m_doublePlayerStationCubePreset).onFalse(m_homePreset).onFalse(m_intakeStop);
     m_singlePlayerStationCubePresetTrigger.whileTrue(m_singlePlayerStationCubePreset).onFalse(m_homePreset).onFalse(m_intakeStop);

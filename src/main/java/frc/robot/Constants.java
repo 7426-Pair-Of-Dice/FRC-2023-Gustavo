@@ -135,9 +135,10 @@ public class Constants {
     }
 
     public static final class Limelight {
-        public static final int kRetroReflectivePipeline = 0;
-        public static final int kAprilTagPipeline = 1;
-        public static final int kCameraPipeline = 2;
+        public static final int kRetroReflectiveTopPipeline = 0;
+        public static final int kRetroReflectiveBottomPipeline = 1;
+        public static final int kAprilTagPipeline = 3;
+        public static final int kCameraPipeline = 4;
     }
 
     public static final class DriveStraightCommand {
