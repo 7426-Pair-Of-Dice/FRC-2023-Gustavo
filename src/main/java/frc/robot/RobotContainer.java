@@ -37,6 +37,7 @@ public class RobotContainer {
   
   private static Trigger m_driveSlowTrigger;
   private static Trigger m_driveStraightTrigger;
+  private static Trigger m_driveInvertTrigger;
 
   private static Trigger m_doublePlayerStationCubePresetTrigger;
   private static Trigger m_singlePlayerStationCubePresetTrigger;
@@ -80,6 +81,8 @@ public class RobotContainer {
   // Commands
   private static RunCommand m_arcadeDrive;
   private static RunCommand m_arcadeDriveSlow;
+  private static RunCommand m_arcadeDriveInvert;
+  private static RunCommand m_arcadeDriveSlowInvert;
   private static DriveStraight m_driveStraight;
 
   private static SequentialCommandGroup m_homePreset;
@@ -128,7 +131,7 @@ public class RobotContainer {
   private static PrintCommand m_defaultAuto;
   private static SequentialCommandGroup m_oneConeBalance;
   private static SequentialCommandGroup m_oneConeTaxiBalance;
-  private static SequentialCommandGroup m_twoCone;
+  private static SequentialCommandGroup m_oneConeOneCube;
 
   private static SendableChooser<Alliance> m_allianceChooser;
   private static SendableChooser<Command> m_autoChooser;
@@ -140,6 +143,7 @@ public class RobotContainer {
 
     m_driveStraightTrigger = m_driverController.rightTrigger();
     m_driveSlowTrigger = m_driverController.leftTrigger();
+    m_driveInvertTrigger = m_driverController.leftBumper();
 
     m_doublePlayerStationCubePresetTrigger = m_operatorJoystick.button(Constants.Input.kJoystickRightTopLeftButtonId);
     m_singlePlayerStationCubePresetTrigger = m_operatorJoystick.button(Constants.Input.kJoystickRightTopMiddleButtonId);
@@ -209,11 +213,10 @@ public class RobotContainer {
       }, 
       m_driveTrain
     );
-
-    m_arcadeDriveSlow = new RunCommand(
-      () -> m_driveTrain.arcadeDrive(-m_driverController.getLeftY() * 0.3, m_driverController.getRightX() * 0.3),
-      m_driveTrain
-    );
+    
+    m_arcadeDriveSlow = new RunCommand(() -> m_driveTrain.arcadeDrive(-m_driverController.getLeftY() * 0.3, m_driverController.getRightX() * 0.3), m_driveTrain);
+    m_arcadeDriveInvert = new RunCommand(() -> m_driveTrain.arcadeDrive(m_driverController.getLeftY(), -m_driverController.getRightX()), m_driveTrain);
+    m_arcadeDriveSlowInvert = new RunCommand(() -> m_driveTrain.arcadeDrive(m_driverController.getLeftY() * 0.3, -m_driverController.getRightX() * 0.3), m_driveTrain);
 
     m_driveStraight = new DriveStraight(m_driveTrain, m_driverController);
 
@@ -241,12 +244,12 @@ public class RobotContainer {
     m_wristMaintain = new RunCommand(() -> m_wrist.setLastPosition(), m_wrist);
 
     m_homePreset = new SequentialCommandGroup(
-      new TurretPreset(m_turret, 0.0, 5.0),
       new WristPreset(m_wrist, 0.0, 5.0),
-      new ShoulderPreset(m_shoulder, 0.0, 5.0)
+      new ShoulderPreset(m_shoulder, 15.0, 5.0),
+      new TurretPreset(m_turret, 0.0, 5.0)
     );
 
-    m_shoulderHomePreset = new ShoulderPreset(m_shoulder, 10.0, 5.0);
+    m_shoulderHomePreset = new ShoulderPreset(m_shoulder, 0.0, 5.0);
 
     // Cube grabbing presets
     m_doublePlayerStationCubePreset = new ParallelCommandGroup(
@@ -348,7 +351,7 @@ public class RobotContainer {
       new InstantCommand(() -> m_driveTrain.stop(), m_driveTrain)
     );
 
-    m_twoCone = new SequentialCommandGroup(
+    m_oneConeOneCube = new SequentialCommandGroup(
       new ShoulderPreset(m_shoulder, 71.0, 5.0),
       new WristPreset(m_wrist, 122.0, 5.0),
       new TurretPreset(m_turret, 10.0, 5.0),
@@ -359,7 +362,7 @@ public class RobotContainer {
       new ParallelCommandGroup(
         new DriveToDistance(m_driveTrain, Units.inchesToMeters(-72.0), Units.inchesToMeters(2.0)),
         new ShoulderPreset(m_shoulder, 15.0, 5.0),
-        new TurretPreset(m_turret, 270.0, 5.0)
+        new TurretPreset(m_turret, -180.0, 5.0)
       ),
       new ShoulderPreset(m_shoulder, 8.0, 5.0),
       new WristPreset(m_wrist, 51.0, 0),
@@ -371,7 +374,7 @@ public class RobotContainer {
       new ParallelCommandGroup(
         new DriveToDistance(m_driveTrain, 84.0, 5.0),
         new ShoulderPreset(m_shoulder, 15.0, 5.0),
-        new TurretPreset(m_turret, 10.0, 5.0)
+        new TurretPreset(m_turret, -10.0, 5.0)
       ),
       new ShoulderPreset(m_shoulder, 71.0, 5.0),
       new WristPreset(m_wrist, 122.0, 5.0),
@@ -392,7 +395,7 @@ public class RobotContainer {
     m_autoChooser.setDefaultOption("Default", m_defaultAuto);
     m_autoChooser.addOption("OneCone-Balance", m_oneConeBalance);
     m_autoChooser.addOption("OneCone-Taxi-Balance", m_oneConeTaxiBalance);
-    m_autoChooser.addOption("TwoCone", m_twoCone);
+    m_autoChooser.addOption("OneCone-OneCube", m_oneConeOneCube);
 
     SmartDashboard.putData(m_allianceChooser);
     SmartDashboard.putData(m_autoChooser);
@@ -409,7 +412,9 @@ public class RobotContainer {
   
   private void configureBindings() {
     m_driveStraightTrigger.whileTrue(m_driveStraight).onFalse(m_driveStop);
-    m_driveSlowTrigger.whileTrue(m_arcadeDriveSlow).onFalse(m_driveStop);
+    m_driveSlowTrigger.and(m_driveInvertTrigger.negate()).whileTrue(m_arcadeDriveSlow).onFalse(m_driveStop);
+    m_driveInvertTrigger.and(m_driveSlowTrigger.negate()).whileTrue(m_arcadeDriveInvert).onFalse(m_driveStop);
+    m_driveSlowTrigger.and(m_driveInvertTrigger).whileTrue(m_arcadeDriveSlowInvert).onFalse(m_driveStop);
 
     m_turretControlTrigger.whileTrue(m_turretControl).onFalse(m_turretStop);
     m_turretSlowLeftTrigger.whileTrue(m_turretSlowLeft).onFalse(m_turretStop);

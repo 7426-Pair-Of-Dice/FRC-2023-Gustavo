@@ -47,7 +47,7 @@ public class Turret extends SubsystemBase {
 
     m_turretMotor.configMotionCruiseVelocity(Constants.Turret.kMotionCruiseVelocity, Constants.TalonFX.kTimeoutMs);
     m_turretMotor.configMotionAcceleration(Constants.Turret.kMotionAcceleration, Constants.TalonFX.kTimeoutMs);
-    m_turretMotor.configMotionSCurveStrength(Constants.Turret.kMotionSCurveStrength);
+    m_turretMotor.configMotionSCurveStrength(Constants.Turret.kMotionSCurveStrength, Constants.TalonFX.kTimeoutMs);
 
     m_turretMotor.configForwardSoftLimitThreshold(Units.degreesToTicks(Constants.Turret.kForwardSoftLimit, Constants.Turret.kMotorToTurret, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
     m_turretMotor.configReverseSoftLimitThreshold(Units.degreesToTicks(Constants.Turret.kReverseSoftLimit, Constants.Turret.kMotorToTurret, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
