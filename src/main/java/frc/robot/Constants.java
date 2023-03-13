@@ -44,21 +44,27 @@ public class Constants {
     public static final class Turret {
         public static final int kTurretMotorId = 10;
 
-        public static final double kF = 0.0;
-        public static final double kP = 0.05;
+        // public static final double kF = 0.0;
+        // public static final double kP = 0.05;
+        // public static final double kI = 0.0;
+        // public static final double kD = 0.0;
+        public static final double kF = 0.2;
+        public static final double kP = 0.08;
         public static final double kI = 0.0;
-        public static final double kD = 5.0;
+        public static final double kD = 0.0;
 
         public static final double kDeadband = 0.05;
 
-        public static final double kMotionCruiseVelocity = 40000;
-        public static final double kMotionAcceleration = 30000;
+        // public static final double kMotionCruiseVelocity = 40000;
+        // public static final double kMotionAcceleration = 30000;
+        public static final double kMotionCruiseVelocity = 15000;
+        public static final double kMotionAcceleration = 10000;
         public static final int kMotionSCurveStrength = 1;
 
         public static final double kForwardSoftLimit = 360;
         public static final double kReverseSoftLimit = -360;
 
-        public static final double kMotorToTurret = (1.0 / 100.0) * (14.0 / 70.0);
+        public static final double kMotorToTurret = (1.0 / 28.0) * (14.0 / 70.0);
     }
 
     public static final class Shoulder {

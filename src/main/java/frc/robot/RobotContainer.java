@@ -53,7 +53,7 @@ public class RobotContainer {
   private static Trigger m_floorCubePresetTrigger;
 
   private static Trigger m_doublePlayerStationConePresetTrigger;
-  private static Trigger m_singlePlayerStationConePresetTrigger;
+  private static Trigger m_singlePlayerStationConePresetTrigger;  
   private static Trigger m_floorConePresetTrigger;
 
   private static Trigger m_topScoreCubePresetTrigger;
@@ -153,7 +153,7 @@ public class RobotContainer {
     m_driveStraightTrigger = m_driverController.rightTrigger();
     m_driveSlowTrigger = m_driverController.leftTrigger();
     m_autoBalanceTrigger = m_driverController.b();
-
+    
     m_doublePlayerStationCubePresetTrigger = m_operatorJoystick.button(Constants.Input.kJoystickRightTopLeftButtonId);
     m_singlePlayerStationCubePresetTrigger = m_operatorJoystick.button(Constants.Input.kJoystickRightTopMiddleButtonId);
     m_floorCubePresetTrigger = m_operatorJoystick.button(Constants.Input.kJoystickRightTopRightButtonId);
@@ -184,6 +184,7 @@ public class RobotContainer {
     m_turretCubeTrackingTrigger = m_driverController.x();
 
     m_shoulderHomeTrigger = m_operatorJoystick.button(Constants.Input.kJoystickCenterMiddleButtonId);
+
     
     // Subsystems
     m_driveTrain = new Drivetrain();
@@ -232,7 +233,7 @@ public class RobotContainer {
 
     m_autoBalance = new AutoBalance(m_driveTrain);
 
-    m_turretControl = new RunCommand(() -> m_turret.setPercentOutput(-m_operatorJoystick.getZ()), m_turret);
+    m_turretControl = new RunCommand(() -> m_turret.setPercentOutput(-m_operatorJoystick.getZ() * 0.5), m_turret); //Was full speed
     m_turretSlowLeft = new RunCommand(() -> m_turret.setPercentOutput(0.15), m_turret);
     m_turretSlowRight = new RunCommand(() -> m_turret.setPercentOutput(-0.15), m_turret);
     m_shoulderUp = new RunCommand(() -> m_shoulder.setPercentOutput(0.5), m_shoulder);
@@ -261,13 +262,13 @@ public class RobotContainer {
       new ShoulderPreset(m_shoulder, 0.0, 5.0)
     );
 
-    m_shoulderHomePreset = new ShoulderPreset(m_shoulder, 10.0, 5.0);
+    m_shoulderHomePreset = new ShoulderPreset(m_shoulder, 15.0, 5.0);
 
     // Cube grabbing presets
     m_doublePlayerStationCubePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCube(), m_intake).until(m_intake::getCubeDetected).andThen(new InstantCommand(() -> m_intake.stop(), m_intake)),
-      new ShoulderPreset(m_shoulder, 69.0, 5.0),
-      new WristPreset(m_wrist, 124.0, 5.0)
+      new ShoulderPreset(m_shoulder, 74.0, 5.0),
+      new WristPreset(m_wrist, 135.0, 5.0)
     );
     m_singlePlayerStationCubePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCube(), m_intake).until(m_intake::getCubeDetected).andThen(new InstantCommand(() -> m_intake.stop(), m_intake)),
@@ -283,7 +284,7 @@ public class RobotContainer {
     // Cone grabbing presets
     m_doublePlayerStationConePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCone(), m_intake).until(m_intake::getConeDetected).andThen(new InstantCommand(() -> m_intake.stop(), m_intake)),
-      new ShoulderPreset(m_shoulder, 60.0, 5.0),
+      new ShoulderPreset(m_shoulder, 65.0, 5.0),
       new WristPreset(m_wrist, 65.0, 5.0)
     );
     m_singlePlayerStationConePreset = new ParallelCommandGroup(
@@ -293,17 +294,17 @@ public class RobotContainer {
     );
     m_floorConePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCone(), m_intake).until(m_intake::getConeDetected).andThen(new InstantCommand(() -> m_intake.stop(), m_intake)),
-      new ShoulderPreset(m_shoulder, 8.0, 5.0),
-      new WristPreset(m_wrist, 51.0, 5.0)
+      new ShoulderPreset(m_shoulder, 12.0, 5.0),
+      new WristPreset(m_wrist, 53.0, 5.0)
     );
 
     // Cube scoring presets
     m_topScoreCubePreset = new ParallelCommandGroup(
-      new ShoulderPreset(m_shoulder, 71.0, 5.0),
-      new WristPreset(m_wrist, 122.0, 5.0)
+      new ShoulderPreset(m_shoulder, 85.0, 5.0),
+      new WristPreset(m_wrist, 130.0, 5.0)
     );
     m_middleScoreCubePreset = new ParallelCommandGroup(
-      new ShoulderPreset(m_shoulder, 65.0, 5.0),
+      new ShoulderPreset(m_shoulder, 75.0, 5.0),
       new WristPreset(m_wrist, 150.0, 5.0)
     );
     m_bottomScoreCubePreset = new ParallelCommandGroup(
@@ -314,7 +315,7 @@ public class RobotContainer {
     // Cone scoring presets
     m_topScoreConePreset = new ParallelCommandGroup(
       new ShoulderPreset(m_shoulder, 95.0, 5.0),
-      new WristPreset(m_wrist, 125.0, 5.0)
+      new WristPreset(m_wrist, 105.0, 5.0)
     );
     m_middleScoreConePreset = new ParallelCommandGroup(
       new ShoulderPreset(m_shoulder, 75.0, 5.0),
