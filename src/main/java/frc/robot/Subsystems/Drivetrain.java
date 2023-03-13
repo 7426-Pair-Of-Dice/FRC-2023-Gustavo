@@ -31,6 +31,10 @@ public class Drivetrain extends SubsystemBase {
 
   private static Pigeon2 m_gyro;
 
+  private double m_speedInvert = 1.0;
+  private double m_rotationInvert = 1.0;
+  private double m_multiplier = 1.0;
+
   /** Creates a new Drivetrain. */
   public Drivetrain() {
     m_leftDriveOne = new CANSparkMax(Constants.Drive.kLeftMotorOneId, MotorType.kBrushless);
@@ -108,8 +112,8 @@ public class Drivetrain extends SubsystemBase {
     double leftInput = Math.abs(leftSpeed) > 0.1 ? leftSpeed : 0;
     double rightInput = Math.abs(rightSpeed) > 0.1 ? rightSpeed : 0;
 
-    m_leftDriveOne.set(leftInput);
-    m_rightDriveOne.set(rightInput);
+    m_leftDriveOne.set(leftInput * m_speedInvert * m_multiplier);
+    m_rightDriveOne.set(rightInput * m_speedInvert * m_multiplier);
   }
 
   public void arcadeDrive(double speed, double rotation) {
@@ -117,22 +121,22 @@ public class Drivetrain extends SubsystemBase {
     double speedInput = Math.abs(speed) > 0.1 ? speed : 0;
     double rotationInput = Math.abs(rotation) > 0.1 ? rotation : 0;
 
-    m_leftDriveOne.set(speedInput + rotationInput);
-    m_rightDriveOne.set(speedInput - rotationInput);
+    m_leftDriveOne.set((speedInput * m_speedInvert + rotationInput * m_rotationInvert) * m_multiplier);
+    m_rightDriveOne.set((speedInput * m_speedInvert - rotationInput * m_rotationInvert) * m_multiplier);
   }
 
-  /**
- * @param speed
- * @param rotation
- */
-public void arcadeDriveReversed(double speed, double rotation) {
-
-    double speedInput = Math.abs(speed) > 0.1 ? speed : 0;
-    double rotationInput = Math.abs(rotation) > 0.1 ? rotation : 0;
-
-    m_rightDriveOne.set(speedInput + rotationInput);
-    m_leftDriveOne.set(speedInput - rotationInput);
+  public void invertSpeed() {
+    m_speedInvert = m_speedInvert > 0.0 ? -1.0 : 1.0;
   }
+
+  public void invertRotation() {
+    m_rotationInvert = m_rotationInvert > 0.0 ? -1.0 : 1.0;
+  }
+
+  public void setMultiplier(double multiplier) {
+    m_multiplier = multiplier;
+  }
+
   public void stop() {
     m_leftDriveOne.set(0);
     m_rightDriveOne.set(0);
@@ -172,6 +176,10 @@ public void arcadeDriveReversed(double speed, double rotation) {
 
   public boolean isTipped() {
     return Math.abs(m_gyro.getPitch()) > 10.0;
+  }
+
+  public boolean isLevel() {
+    return Math.abs(m_gyro.getPitch()) < 5.0;
   }
 }
 

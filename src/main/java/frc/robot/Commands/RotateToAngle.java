@@ -44,7 +44,8 @@ public class RotateToAngle extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double rotation = m_pidController.calculate(m_driveTrain.getYaw(), m_setpointAngle) - Constants.RotateToAngleCommand.kMinCommand;
+    double rotation = m_pidController.calculate(m_driveTrain.getYaw(), m_setpointAngle);
+    rotation = rotation + (Math.signum(rotation) * Constants.RotateToAngleCommand.kMinCommand);
 
     m_driveTrain.arcadeDrive(0.0, -rotation);
   }

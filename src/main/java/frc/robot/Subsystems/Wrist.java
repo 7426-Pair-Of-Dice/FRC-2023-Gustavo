@@ -58,6 +58,9 @@ public class Wrist extends SubsystemBase {
     m_wristMotor.configMotionCruiseVelocity(Constants.Wrist.kMotionCruiseVelocity, Constants.TalonFX.kTimeoutMs);
     m_wristMotor.configMotionAcceleration(Constants.Wrist.kMotionAcceleration, Constants.TalonFX.kTimeoutMs); 
 
+    m_wristMotor.configVoltageCompSaturation(12.0);
+    m_wristMotor.enableVoltageCompensation(true);
+
     m_wristMotor.configNeutralDeadband(Constants.Wrist.kDeadband);
 
     m_wristMotor.setNeutralMode(NeutralMode.Brake);
@@ -123,6 +126,20 @@ public class Wrist extends SubsystemBase {
 
   public double getRoll() { 
     return m_gyro.getRoll(); 
+  }
+
+  public void enableLimits() {
+    m_wristMotor.configForwardSoftLimitEnable(true, Constants.TalonFX.kTimeoutMs);
+    m_wristMotor.configReverseSoftLimitEnable(true, Constants.TalonFX.kTimeoutMs);
+  }
+
+  public void disableLimits() {
+    m_wristMotor.configForwardSoftLimitEnable(false, Constants.TalonFX.kTimeoutMs);
+    m_wristMotor.configReverseSoftLimitEnable(false, Constants.TalonFX.kTimeoutMs);
+  }
+
+  public void zero() {
+    m_wristMotor.setSelectedSensorPosition(0.0);
   }
 
   public boolean atSetpoint(double tolerance) {

@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -23,8 +25,6 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.WrapperCommand;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 
 public class RobotContainer {
 
@@ -33,20 +33,14 @@ public class RobotContainer {
     RED
   }
 
-  public enum AutoRoutine {
-    DEFAULT,
-    ONECUBE_BALANCE,
-    ONECUBE_TAXI_BALANCE,
-    ONECUBE_TAXI
-  }
-
   // Input
   private static CommandXboxController m_driverController;
   private static CommandJoystick m_operatorJoystick;
   
   private static Trigger m_driveSlowTrigger;
+  private static Trigger m_driveSlowerTrigger;
   private static Trigger m_driveStraightTrigger;
-  private static Trigger m_autoBalanceTrigger;
+  private static Trigger m_driveInvertTrigger;
 
   private static Trigger m_doublePlayerStationCubePresetTrigger;
   private static Trigger m_singlePlayerStationCubePresetTrigger;
@@ -68,13 +62,12 @@ public class RobotContainer {
   private static Trigger m_turretSlowLeftTrigger;
   private static Trigger m_turretSlowRightTrigger;
 
-  private static Trigger m_shoulderUpTrigger;
-  private static Trigger m_shoulderDownTrigger;
-  private static Trigger m_wristUpTrigger;
-  private static Trigger m_wristDownTrigger;
+  private static Trigger m_rezeroShoulderTrigger;
+  private static Trigger m_rezeroWristTrigger;
   private static Trigger m_releaseTrigger;
 
-  private static Trigger m_turretConeTrackingTrigger;
+  private static Trigger m_turretConeTopTrackingTrigger;
+  private static Trigger m_turretConeBottomTrackingTrigger;
   private static Trigger m_turretCubeTrackingTrigger;
 
   private static Trigger m_shoulderHomeTrigger;
@@ -89,26 +82,27 @@ public class RobotContainer {
 
   // Commands
   private static RunCommand m_arcadeDrive;
-  private static RunCommand m_arcadeDriveSlow;
+  private static InstantCommand m_arcadeDriveNormal;
+  private static InstantCommand m_arcadeDriveSlow;
+  private static InstantCommand m_arcadeDriveSlower;
+  private static InstantCommand m_arcadeDriveInvert;
   private static DriveStraight m_driveStraight;
-  
-  private static AutoBalance m_autoBalance;
 
   private static SequentialCommandGroup m_homePreset;
 
-  private static ShoulderPreset m_shoulderHomePreset;
+  private static ParallelCommandGroup m_shoulderHomePreset;
 
-  private static RunCommand m_shoulderUp;
-  private static RunCommand m_shoulderDown;
-  private static RunCommand m_wristUp;
-  private static RunCommand m_wristDown;
   private static RunCommand m_turretControl;
   private static RunCommand m_turretSlowLeft;
   private static RunCommand m_turretSlowRight;
   private static RunCommand m_releaseCube;
   private static RunCommand m_releaseCone;
 
-  private static TurretTracking m_turretTrackingCone;
+  private static RezeroShoulder m_rezeroShoulder;
+  private static RezeroWrist m_rezeroWrist;
+
+  private static TurretTracking m_turretTrackingConeTop;
+  private static TurretTracking m_turretTrackingConeBottom;
   private static TurretTracking m_turretTrackingCube;
 
   private static InstantCommand m_turretStop;
@@ -120,6 +114,7 @@ public class RobotContainer {
 
   private static RunCommand m_shoulderMaintain;
   private static RunCommand m_wristMaintain;
+  private static RunCommand m_intakeMaintain;
 
   private static ParallelCommandGroup m_doublePlayerStationCubePreset;
   private static ParallelCommandGroup m_singlePlayerStationCubePreset;
@@ -138,12 +133,12 @@ public class RobotContainer {
   private static ParallelCommandGroup m_bottomScoreConePreset;
 
   private static PrintCommand m_defaultAuto;
-  private static SequentialCommandGroup m_oneCubeBalance;
-  private static SequentialCommandGroup m_oneCubeTaxiBalance;
-  private static SequentialCommandGroup m_oneCubeTaxi;
+  private static SequentialCommandGroup m_oneConeBalance;
+  private static SequentialCommandGroup m_oneConeTaxiBalance;
+  private static SequentialCommandGroup m_oneConeOneCube;
 
   private static SendableChooser<Alliance> m_allianceChooser;
-  private static SendableChooser<AutoRoutine> m_autoChooser;
+  private static SendableChooser<Command> m_autoChooser;
 
   public RobotContainer() {
     // Input
@@ -151,9 +146,10 @@ public class RobotContainer {
     m_operatorJoystick = new CommandJoystick(Constants.Input.kOperatorJoystickId);
 
     m_driveStraightTrigger = m_driverController.rightTrigger();
-    m_driveSlowTrigger = m_driverController.leftTrigger();
-    m_autoBalanceTrigger = m_driverController.b();
-    
+    m_driveSlowTrigger = m_driverController.leftBumper();
+    m_driveSlowerTrigger = m_driverController.leftTrigger();
+    m_driveInvertTrigger = m_driverController.rightBumper();
+
     m_doublePlayerStationCubePresetTrigger = m_operatorJoystick.button(Constants.Input.kJoystickRightTopLeftButtonId);
     m_singlePlayerStationCubePresetTrigger = m_operatorJoystick.button(Constants.Input.kJoystickRightTopMiddleButtonId);
     m_floorCubePresetTrigger = m_operatorJoystick.button(Constants.Input.kJoystickRightTopRightButtonId);
@@ -174,18 +170,16 @@ public class RobotContainer {
     m_turretSlowLeftTrigger = m_operatorJoystick.povLeft();
     m_turretSlowRightTrigger = m_operatorJoystick.povRight();
 
-    m_shoulderUpTrigger = m_operatorJoystick.button(Constants.Input.kJoystickCenterLeftButtonId).and(m_operatorJoystick.button(Constants.Input.kJoystickTriggerButtonId).negate());
-    m_shoulderDownTrigger = m_operatorJoystick.button(Constants.Input.kJoystickCenterLeftButtonId).and(m_operatorJoystick.button(Constants.Input.kJoystickTriggerButtonId));
-    m_wristUpTrigger = m_operatorJoystick.button(Constants.Input.kJoystickCenterRightButtonId).and(m_operatorJoystick.button(Constants.Input.kJoystickTriggerButtonId));
-    m_wristDownTrigger = m_operatorJoystick.button(Constants.Input.kJoystickCenterRightButtonId).and(m_operatorJoystick.button(Constants.Input.kJoystickTriggerButtonId).negate());
+    m_rezeroShoulderTrigger = m_operatorJoystick.button(Constants.Input.kJoystickCenterLeftButtonId);
+    m_rezeroWristTrigger = m_operatorJoystick.button(Constants.Input.kJoystickCenterRightButtonId);
     m_releaseTrigger = m_operatorJoystick.button(Constants.Input.kJoystickTriggerButtonId);
 
-    m_turretConeTrackingTrigger = m_driverController.y();
+    m_turretConeTopTrackingTrigger = m_driverController.y();
+    m_turretConeBottomTrackingTrigger = m_driverController.a();
     m_turretCubeTrackingTrigger = m_driverController.x();
 
     m_shoulderHomeTrigger = m_operatorJoystick.button(Constants.Input.kJoystickCenterMiddleButtonId);
 
-    
     // Subsystems
     m_driveTrain = new Drivetrain();
     m_turret = new Turret();
@@ -223,27 +217,25 @@ public class RobotContainer {
       }, 
       m_driveTrain
     );
-
-    m_arcadeDriveSlow = new RunCommand(
-      () -> m_driveTrain.arcadeDrive(-m_driverController.getLeftY() * 0.3, m_driverController.getRightX() * 0.3),
-      m_driveTrain
-    );
+    
+    m_arcadeDriveNormal = new InstantCommand(() -> m_driveTrain.setMultiplier(1.0), m_driveTrain);
+    m_arcadeDriveSlow = new InstantCommand(() -> m_driveTrain.setMultiplier(0.3), m_driveTrain);
+    m_arcadeDriveSlower = new InstantCommand(() -> m_driveTrain.setMultiplier(0.2), m_driveTrain);
+    m_arcadeDriveInvert = new InstantCommand(() -> m_driveTrain.invertSpeed(), m_driveTrain);
 
     m_driveStraight = new DriveStraight(m_driveTrain, m_driverController);
-
-    m_autoBalance = new AutoBalance(m_driveTrain);
 
     m_turretControl = new RunCommand(() -> m_turret.setPercentOutput(-m_operatorJoystick.getZ() * 0.5), m_turret); //Was full speed
     m_turretSlowLeft = new RunCommand(() -> m_turret.setPercentOutput(0.15), m_turret);
     m_turretSlowRight = new RunCommand(() -> m_turret.setPercentOutput(-0.15), m_turret);
-    m_shoulderUp = new RunCommand(() -> m_shoulder.setPercentOutput(0.5), m_shoulder);
-    m_shoulderDown = new RunCommand(() -> m_shoulder.setPercentOutput(-0.5), m_shoulder);
-    m_wristUp = new RunCommand(() -> m_wrist.setPercentOutput(-0.25), m_wrist);
-    m_wristDown = new RunCommand(() -> m_wrist.setPercentOutput(0.25), m_wrist);
     m_releaseCube = new RunCommand(() -> m_intake.releaseCube(), m_intake);
     m_releaseCone = new RunCommand(() -> m_intake.releaseCone(), m_intake);
 
-    m_turretTrackingCone = new TurretTracking(m_turret, m_limelight, Constants.Limelight.kRetroReflectivePipeline);
+    m_rezeroShoulder = new RezeroShoulder(m_shoulder);
+    m_rezeroWrist = new RezeroWrist(m_wrist);
+
+    m_turretTrackingConeTop = new TurretTracking(m_turret, m_limelight, Constants.Limelight.kRetroReflectiveTopPipeline);
+    m_turretTrackingConeBottom = new TurretTracking(m_turret, m_limelight, Constants.Limelight.kRetroReflectiveBottomPipeline);
     m_turretTrackingCube = new TurretTracking(m_turret, m_limelight, Constants.Limelight.kAprilTagPipeline);
 
     m_turretStop = new InstantCommand(() -> m_turret.stop(), m_turret);
@@ -255,14 +247,29 @@ public class RobotContainer {
 
     m_shoulderMaintain = new RunCommand(() -> m_shoulder.setLastPosition(), m_shoulder);
     m_wristMaintain = new RunCommand(() -> m_wrist.setLastPosition(), m_wrist);
-
-    m_homePreset = new SequentialCommandGroup(
-      new TurretPreset(m_turret, 0.0, 5.0),
-      new WristPreset(m_wrist, 0.0, 5.0),
-      new ShoulderPreset(m_shoulder, 0.0, 5.0)
+    m_intakeMaintain = new RunCommand(
+      () -> {
+        if (m_intake.getCubeDetected()) {
+          m_intake.intakeCubeSlow();
+        } else if (m_intake.getConeDetected()) {
+          m_intake.intakeConeSlow();
+        } else {
+          m_intake.stop();
+        }
+      }, 
+      m_intake
     );
 
-    m_shoulderHomePreset = new ShoulderPreset(m_shoulder, 15.0, 5.0);
+    m_homePreset = new SequentialCommandGroup(
+      new WristPreset(m_wrist, 0.0, 5.0),
+      new ShoulderPreset(m_shoulder, 15.0, 5.0),
+      new TurretPreset(m_turret, 0.0, 5.0)
+    );
+
+    m_shoulderHomePreset = new ParallelCommandGroup(
+      new ShoulderPreset(m_shoulder, 0.0, 5.0),
+      new WristPreset(m_wrist, 0.0, 5.0)
+    );
 
     // Cube grabbing presets
     m_doublePlayerStationCubePreset = new ParallelCommandGroup(
@@ -326,50 +333,90 @@ public class RobotContainer {
       new WristPreset(m_wrist, 0.0, 5.0)
     );
 
+    m_driveTrain.setDefaultCommand(m_arcadeDrive);
+    m_shoulder.setDefaultCommand(m_shoulderMaintain);
+    m_wrist.setDefaultCommand(m_wristMaintain);
+    m_intake.setDefaultCommand(m_intakeMaintain);
+
     // Autonomous Commands
     m_defaultAuto = new PrintCommand("Default Auto");
 
-    m_oneCubeBalance = new SequentialCommandGroup(
+    m_oneConeBalance = new SequentialCommandGroup(
       new ShoulderPreset(m_shoulder, 71.0, 5.0),
       new WristPreset(m_wrist, 122.0, 5.0),
-      new RunCommand(() -> m_intake.releaseCube(), m_intake).raceWith(new WaitCommand(1.0)),
+      new WaitCommand(1.0),
+      new RunCommand(() -> m_intake.releaseCone(), m_intake).raceWith(new WaitCommand(1.0)),
+      new InstantCommand(() -> m_intake.stop(), m_intake),
+      new WristPreset(m_wrist, 0.0, 5.0),
+      new ShoulderPreset(m_shoulder, 0.0, 5.0),
+      new DriveStraight(m_driveTrain, -0.5).until(m_driveTrain::isTipped),
+      new DriveStraight(m_driveTrain, -0.12).raceWith(new WaitCommand(2.7)),
+      new InstantCommand(() -> m_driveTrain.stop(), m_driveTrain)
+    );
+
+    m_oneConeTaxiBalance = new SequentialCommandGroup(
+      new ShoulderPreset(m_shoulder, 71.0, 5.0),
+      new WristPreset(m_wrist, 122.0, 5.0),
+      new WaitCommand(1.0),
+      new RunCommand(() -> m_intake.releaseCone(), m_intake).raceWith(new WaitCommand(1.0)),
+      new InstantCommand(() -> m_intake.stop(), m_intake),
+      new WristPreset(m_wrist, 0.0, 5.0),
+      new ShoulderPreset(m_shoulder, 0.0, 5.0),
+      new DriveStraight(m_driveTrain, -0.5).until(m_driveTrain::isTipped),
+      new DriveStraight(m_driveTrain, -0.12).until(m_driveTrain::isLevel),
+      new DriveStraight(m_driveTrain, -0.12).until(m_driveTrain::isTipped),
+      new DriveStraight(m_driveTrain, -0.12).until(m_driveTrain::isLevel),
+      new InstantCommand(() -> m_driveTrain.stop(), m_driveTrain),
       new DriveToDistance(m_driveTrain, Units.inchesToMeters(-24.0), Units.inchesToMeters(2.0)),
-      new RunCommand(() -> m_driveTrain.arcadeDrive(-0.5, 0), m_driveTrain).until(m_driveTrain::isTipped),
-      new AutoBalance(m_driveTrain)
+      new DriveStraight(m_driveTrain, 0.5).until(m_driveTrain::isTipped),
+      new DriveStraight(m_driveTrain, 0.12).raceWith(new WaitCommand(2.4)),
+      new InstantCommand(() -> m_driveTrain.stop(), m_driveTrain)
     );
 
-    m_oneCubeTaxiBalance = new SequentialCommandGroup(
+    m_oneConeOneCube = new SequentialCommandGroup(
+      new ShoulderPreset(m_shoulder, 15.0, 5.0),
+      new TurretPreset(m_turret, -20.0, 5.0),
       new ShoulderPreset(m_shoulder, 71.0, 5.0),
       new WristPreset(m_wrist, 122.0, 5.0),
-      new RunCommand(() -> m_intake.releaseCube(), m_intake).raceWith(new WaitCommand(1.0)),
-      new DriveToDistance(m_driveTrain, Units.inchesToMeters(-24.0), Units.inchesToMeters(2.0)),
-      new RunCommand(() -> m_driveTrain.arcadeDrive(-0.5, 0), m_driveTrain).until(m_driveTrain::isTipped),
-      new AutoBalance(m_driveTrain),
-      new RunCommand(() -> m_driveTrain.arcadeDrive(-0.5, 0), m_driveTrain).raceWith(new WaitCommand(3.0)),
-      new RunCommand(() -> m_driveTrain.arcadeDrive(0.5, 0), m_driveTrain).until(m_driveTrain::isTipped),
-      new AutoBalance(m_driveTrain)
+      new WaitCommand(1.0),
+      new RunCommand(() -> m_intake.releaseCone(), m_intake).raceWith(new WaitCommand(1.0)),
+      new InstantCommand(() -> m_intake.stop(), m_intake),
+      new WristPreset(m_wrist, 0.0, 5.0),
+      new ShoulderPreset(m_shoulder, 15.0, 5.0),
+      new TurretPreset(m_turret, 0.0, 5.0),
+      new ParallelCommandGroup(
+        new DriveToDistance(m_driveTrain, Units.inchesToMeters(-178.0), Units.inchesToMeters(2.0)),
+        new TurretPreset(m_turret, -180.0, 5.0)
+      ),
+      new InstantCommand(() -> m_driveTrain.stop(), m_driveTrain),
+      new ShoulderPreset(m_shoulder, 14.0, 5.0),
+      new WristPreset(m_wrist, 115.0, 5.0),
+      new RunCommand(() -> m_intake.intakeCube(), m_intake).until(m_intake::getCubeDetected).raceWith(new WaitCommand(2.0)),
+      new InstantCommand(() -> m_intake.stop(), m_intake),
+      new WristPreset(m_wrist, 0.0, 5.0),
+      new ShoulderPreset(m_shoulder, 15.0, 5.0),
+      new ParallelCommandGroup(
+        new DriveToDistance(m_driveTrain, Units.inchesToMeters(175.0), Units.inchesToMeters(2.0)),
+        new TurretPreset(m_turret, 25.0, 5.0)
+      ),
+      new ShoulderPreset(m_shoulder, 75.0, 5.0),
+      new WristPreset(m_wrist, 150.0, 5.0),
+      new RunCommand(() -> m_intake.releaseCube(), m_intake).raceWith(new WaitCommand(2.0)),
+      new InstantCommand(() -> m_intake.stop(), m_intake),
+      new WristPreset(m_wrist, 0.0, 5.0),
+      new ShoulderPreset(m_shoulder, 15.0, 5.0)
     );
 
-    m_oneCubeTaxi = new SequentialCommandGroup(
-      new ShoulderPreset(m_shoulder, 71.0, 5.0),
-      new WristPreset(m_wrist, 122.0, 5.0),
-      new RunCommand(() -> m_intake.releaseCube(), m_intake).raceWith(new WaitCommand(1.0)),
-      new DriveToDistance(m_driveTrain, Units.inchesToMeters(-72.0), Units.inchesToMeters(2.0))
-    );
-
+    // Smart Dashboard 
     m_allianceChooser = new SendableChooser<Alliance>();
     m_allianceChooser.setDefaultOption("Blue", Alliance.BLUE);
     m_allianceChooser.addOption("Red", Alliance.RED);
 
-    m_autoChooser = new SendableChooser<AutoRoutine>();
-    m_autoChooser.setDefaultOption("Default", AutoRoutine.DEFAULT);
-    m_autoChooser.addOption("OneCube-Balance", AutoRoutine.ONECUBE_BALANCE);
-    m_autoChooser.addOption("OneCube-Taxi-Balance", AutoRoutine.ONECUBE_TAXI_BALANCE);
-    m_autoChooser.addOption("OneCube-Taxi", AutoRoutine.ONECUBE_TAXI);
-
-    m_driveTrain.setDefaultCommand(m_arcadeDrive);
-    m_shoulder.setDefaultCommand(m_shoulderMaintain);
-    m_wrist.setDefaultCommand(m_wristMaintain);
+    m_autoChooser = new SendableChooser<Command>();
+    m_autoChooser.setDefaultOption("Default", m_defaultAuto);
+    m_autoChooser.addOption("OneCone-Balance", m_oneConeBalance);
+    m_autoChooser.addOption("OneCone-Taxi-Balance", m_oneConeTaxiBalance);
+    m_autoChooser.addOption("OneCone-OneCube", m_oneConeOneCube);
 
     SmartDashboard.putData(m_allianceChooser);
     SmartDashboard.putData(m_autoChooser);
@@ -386,19 +433,20 @@ public class RobotContainer {
   
   private void configureBindings() {
     m_driveStraightTrigger.whileTrue(m_driveStraight).onFalse(m_driveStop);
-    m_driveSlowTrigger.whileTrue(m_arcadeDriveSlow).onFalse(m_driveStop);
-    m_autoBalanceTrigger.whileTrue(m_autoBalance).onFalse(m_driveStop);
+    m_driveSlowTrigger.and(m_driveSlowerTrigger.negate()).onTrue(m_arcadeDriveSlow).onFalse(m_arcadeDriveNormal);
+    m_driveSlowerTrigger.and(m_driveSlowTrigger.negate()).onTrue(m_arcadeDriveSlower).onFalse(m_arcadeDriveNormal);
+    m_driveInvertTrigger.onTrue(m_arcadeDriveInvert).onFalse(m_arcadeDriveInvert);
 
     m_turretControlTrigger.whileTrue(m_turretControl).onFalse(m_turretStop);
     m_turretSlowLeftTrigger.whileTrue(m_turretSlowLeft).onFalse(m_turretStop);
     m_turretSlowRightTrigger.whileTrue(m_turretSlowRight).onFalse(m_turretStop);
-    m_shoulderUpTrigger.whileTrue(m_shoulderUp).onFalse(m_shoulderStop);
-    m_shoulderDownTrigger.whileTrue(m_shoulderDown).onFalse(m_shoulderStop);
-    m_wristUpTrigger.whileTrue(m_wristUp).onFalse(m_wristStop);
-    m_wristDownTrigger.whileTrue(m_wristDown).onFalse(m_wristStop);
 
-    m_turretConeTrackingTrigger.and(m_turretCubeTrackingTrigger.negate()).whileTrue(m_turretTrackingCone).onFalse(m_turretStop).onFalse(m_limelightReset);
-    m_turretCubeTrackingTrigger.and(m_turretConeTrackingTrigger.negate()).whileTrue(m_turretTrackingCube).onFalse(m_turretStop).onFalse(m_limelightReset);
+    m_rezeroShoulderTrigger.whileTrue(m_rezeroShoulder);
+    m_rezeroWristTrigger.whileTrue(m_rezeroWrist);
+
+    m_turretConeTopTrackingTrigger.and(m_turretCubeTrackingTrigger.negate()).and(m_turretConeBottomTrackingTrigger.negate()).whileTrue(m_turretTrackingConeTop).onFalse(m_turretStop).onFalse(m_limelightReset);
+    m_turretConeBottomTrackingTrigger.and(m_turretCubeTrackingTrigger.negate()).and(m_turretConeTopTrackingTrigger.negate()).whileTrue(m_turretTrackingConeBottom).onFalse(m_turretStop).onFalse(m_limelightReset);
+    m_turretCubeTrackingTrigger.and(m_turretConeTopTrackingTrigger.negate()).and(m_turretConeBottomTrackingTrigger.negate()).whileTrue(m_turretTrackingCube).onFalse(m_turretStop).onFalse(m_limelightReset);
 
     m_doublePlayerStationCubePresetTrigger.whileTrue(m_doublePlayerStationCubePreset).onFalse(m_homePreset).onFalse(m_intakeStop);
     m_singlePlayerStationCubePresetTrigger.whileTrue(m_singlePlayerStationCubePreset).onFalse(m_homePreset).onFalse(m_intakeStop);
@@ -430,14 +478,10 @@ public class RobotContainer {
   public void updateDashboard() {}
 
   public Command getAutonomousCommand() {
-    return m_defaultAuto;
+    return m_autoChooser.getSelected();
   }
 
   public Alliance getAlliance() {
     return m_allianceChooser.getSelected();
-  }
-
-  public AutoRoutine getAutoRoutine() {
-    return m_autoChooser.getSelected();
   }
 }

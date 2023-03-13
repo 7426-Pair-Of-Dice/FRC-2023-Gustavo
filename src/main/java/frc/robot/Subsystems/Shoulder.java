@@ -5,12 +5,10 @@
 package frc.robot.Subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -31,13 +29,6 @@ public class Shoulder extends SubsystemBase {
 
     m_shoulderMotor = new TalonFX(Constants.Shoulder.kLeftArmMotorId);
     m_shoulderMotorFollower = new TalonFX(Constants.Shoulder.kRightArmMotorId);
-
-    /* m_shoulderAngle = new TalonSRX(16);
-
-    m_shoulderAngle.configFactoryDefault();
-
-    m_shoulderAngle.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute); */
-
 
     // Arm Configuration
     m_shoulderMotor.configFactoryDefault();
@@ -72,6 +63,12 @@ public class Shoulder extends SubsystemBase {
     m_shoulderMotor.configNeutralDeadband(Constants.Shoulder.kDeadband);
     m_shoulderMotorFollower.configNeutralDeadband(Constants.Shoulder.kDeadband);
 
+    m_shoulderMotor.configVoltageCompSaturation(12.0);
+    m_shoulderMotorFollower.configVoltageCompSaturation(12.0);
+
+    m_shoulderMotor.enableVoltageCompensation(true);
+    m_shoulderMotorFollower.enableVoltageCompensation(true);
+
     m_shoulderMotorFollower.follow(m_shoulderMotor);
     m_shoulderMotorFollower.setInverted(TalonFXInvertType.OpposeMaster);
 
@@ -79,7 +76,7 @@ public class Shoulder extends SubsystemBase {
 
     m_shoulderMotor.setNeutralMode(NeutralMode.Brake);
     m_shoulderMotorFollower.setNeutralMode(NeutralMode.Brake);
-
+    
     m_setpoint = getPosition();
   }
 
@@ -117,7 +114,7 @@ public class Shoulder extends SubsystemBase {
   }
 
   public void stop() {
-    m_shoulderMotor.set(ControlMode.PercentOutput, 0);
+    m_shoulderMotor.set(ControlMode.PercentOutput, 0.0);
   }
 
   public double getPosition() {
@@ -130,6 +127,22 @@ public class Shoulder extends SubsystemBase {
 
   public double getSetpoint() {
     return m_setpoint;
+  }
+
+  public void zero() {
+    m_shoulderMotor.setSelectedSensorPosition(0.0);
+    System.out.println("Zeroed shoulder");
+  }
+
+  public void enableLimits() {
+    System.out.println("zeroed wrist");
+    m_shoulderMotor.configForwardSoftLimitEnable(true, Constants.TalonFX.kTimeoutMs);
+    m_shoulderMotor.configReverseSoftLimitEnable(true, Constants.TalonFX.kTimeoutMs);
+  }
+
+  public void disableLimits() {
+    m_shoulderMotor.configForwardSoftLimitEnable(false, Constants.TalonFX.kTimeoutMs);
+    m_shoulderMotor.configReverseSoftLimitEnable(false, Constants.TalonFX.kTimeoutMs);
   }
 
   public boolean atSetpoint(double tolerance) {

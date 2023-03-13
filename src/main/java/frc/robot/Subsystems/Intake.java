@@ -6,6 +6,7 @@ package frc.robot.Subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
@@ -35,9 +36,12 @@ public class Intake extends SubsystemBase {
     Ultrasonic.setAutomaticMode(true);
 
     m_leftIntakeMotor.setInverted(true);
-
+    
     m_leftIntakeMotor.configNeutralDeadband(0.05);
     m_rightIntakeMotor.configNeutralDeadband(0.05);
+
+    m_leftIntakeMotor.setNeutralMode(NeutralMode.Brake);
+    m_rightIntakeMotor.setNeutralMode(NeutralMode.Brake);
   }
 
   @Override
@@ -60,23 +64,31 @@ public class Intake extends SubsystemBase {
   }
 
   public void intakeCone() {
-    setPercentOutput(1, -1);
+    setPercentOutput(1.0, -1.0);
   }
 
   public void intakeCube() {
-    setPercentOutput(-1, 1);
+    setPercentOutput(-1.0, 1.0);
+  }
+
+  public void intakeConeSlow() {
+    setPercentOutput(0.1, -0.1);
+  }
+
+  public void intakeCubeSlow() {
+    setPercentOutput(-0.1, 0.1);
   }
 
   public void releaseCone() {
-    setPercentOutput(-1, 1);
+    setPercentOutput(-1.0, 1.0);
   }
 
   public void releaseCube() {
-    setPercentOutput(1, -1);
+    setPercentOutput(0.7, -0.7);
   }
 
   public void stop() {
-    setPercentOutput(0, 0);
+    setPercentOutput(0.0, 0.0);
   }
 
   public double getConeRange() { 
@@ -88,12 +100,10 @@ public class Intake extends SubsystemBase {
   }
 
   public boolean getConeDetected() {
-    // return m_coneRange < 8.0;
-    return false;
+    return m_coneRange < 8.0;
   }
 
   public boolean getCubeDetected() {
-    return m_cubeRange < 8.0 && !m_cubeDistanceSensor.isRangeValid();
-    //return false;
+    return m_cubeRange < 8.0;
   }
 }
