@@ -418,8 +418,8 @@ public class RobotContainer {
     m_autoChooser.addOption("OneCone-Taxi-Balance", m_oneConeTaxiBalance);
     m_autoChooser.addOption("OneCone-OneCube", m_oneConeOneCube);
 
-    SmartDashboard.putData(m_allianceChooser);
-    SmartDashboard.putData(m_autoChooser);
+    SmartDashboard.putData("Alliance Chooser", m_allianceChooser);
+    SmartDashboard.putData("Auto Chooser", m_autoChooser);
     SmartDashboard.putData(m_driveTrain);
     SmartDashboard.putData(m_turret);
     SmartDashboard.putData(m_shoulder);
