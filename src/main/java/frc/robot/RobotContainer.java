@@ -262,7 +262,7 @@ public class RobotContainer {
 
     m_homePreset = new SequentialCommandGroup(
       new WristPreset(m_wrist, 0.0, 5.0),
-      new ShoulderPreset(m_shoulder, 15.0, 5.0),
+      new ShoulderPreset(m_shoulder, 18.0, 5.0),
       new TurretPreset(m_turret, 0.0, 5.0)
     );
 
@@ -274,8 +274,8 @@ public class RobotContainer {
     // Cube grabbing presets
     m_doublePlayerStationCubePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCube(), m_intake).until(m_intake::getCubeDetected).andThen(new InstantCommand(() -> m_intake.stop(), m_intake)),
-      new ShoulderPreset(m_shoulder, 74.0, 5.0),
-      new WristPreset(m_wrist, 135.0, 5.0)
+      new ShoulderPreset(m_shoulder, 78.0, 5.0),
+      new WristPreset(m_wrist, 140.0, 5.0)
     );
     m_singlePlayerStationCubePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCube(), m_intake).until(m_intake::getCubeDetected).andThen(new InstantCommand(() -> m_intake.stop(), m_intake)),
@@ -284,15 +284,15 @@ public class RobotContainer {
     );
     m_floorCubePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCube(), m_intake).until(m_intake::getCubeDetected).andThen(new InstantCommand(() -> m_intake.stop(), m_intake)),
-      new ShoulderPreset(m_shoulder, 14.0, 5.0),
-      new WristPreset(m_wrist, 110.0, 5.0)
+      new ShoulderPreset(m_shoulder, 20.0, 5.0),
+      new WristPreset(m_wrist, 127.0, 5.0)
     );
 
     // Cone grabbing presets
     m_doublePlayerStationConePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCone(), m_intake).until(m_intake::getConeDetected).andThen(new InstantCommand(() -> m_intake.stop(), m_intake)),
-      new ShoulderPreset(m_shoulder, 65.0, 5.0),
-      new WristPreset(m_wrist, 65.0, 5.0)
+      new ShoulderPreset(m_shoulder, 68.0, 5.0),
+      new WristPreset(m_wrist, 68.0, 5.0)
     );
     m_singlePlayerStationConePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCone(), m_intake).until(m_intake::getConeDetected).andThen(new InstantCommand(() -> m_intake.stop(), m_intake)),
@@ -301,7 +301,7 @@ public class RobotContainer {
     );
     m_floorConePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCone(), m_intake).until(m_intake::getConeDetected).andThen(new InstantCommand(() -> m_intake.stop(), m_intake)),
-      new ShoulderPreset(m_shoulder, 12.0, 5.0),
+      new ShoulderPreset(m_shoulder, 14.0, 5.0),
       new WristPreset(m_wrist, 53.0, 5.0)
     );
 
@@ -315,7 +315,7 @@ public class RobotContainer {
       new WristPreset(m_wrist, 150.0, 5.0)
     );
     m_bottomScoreCubePreset = new ParallelCommandGroup(
-      new ShoulderPreset(m_shoulder, 10.0, 5.0),
+      new ShoulderPreset(m_shoulder, 18.0, 5.0),
       new WristPreset(m_wrist, 0.0, 5.0)
     );
 
@@ -325,11 +325,11 @@ public class RobotContainer {
       new WristPreset(m_wrist, 105.0, 5.0)
     );
     m_middleScoreConePreset = new ParallelCommandGroup(
-      new ShoulderPreset(m_shoulder, 75.0, 5.0),
+      new ShoulderPreset(m_shoulder, 77.0, 5.0),
       new WristPreset(m_wrist, 120.0, 5.0)
     );
     m_bottomScoreConePreset = new ParallelCommandGroup(
-      new ShoulderPreset(m_shoulder, 10.0, 5.0),
+      new ShoulderPreset(m_shoulder, 18.0, 5.0),
       new WristPreset(m_wrist, 0.0, 5.0)
     );
 
