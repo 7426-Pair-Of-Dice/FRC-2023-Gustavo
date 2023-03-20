@@ -38,8 +38,9 @@ public class Shoulder extends SubsystemBase {
     // Encoder Configuration
     m_encoder.configFactoryDefault();
     m_encoder.clearStickyFaults();
-    m_encoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
+    m_encoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
     m_encoder.configMagnetOffset(Constants.Shoulder.kZeroOffset);
+    m_encoder.setPositionToAbsolute();
 
     // Motor Configuration
     m_shoulderMotor.configFactoryDefault();
@@ -87,8 +88,8 @@ public class Shoulder extends SubsystemBase {
 
     m_shoulderMotor.configOpenloopRamp(Constants.Shoulder.kRampRate);
 
-    m_shoulderMotor.setNeutralMode(NeutralMode.Brake);
-    m_shoulderMotorFollower.setNeutralMode(NeutralMode.Brake);
+    m_shoulderMotor.setNeutralMode(NeutralMode.Coast);
+    m_shoulderMotorFollower.setNeutralMode(NeutralMode.Coast);
     
     m_setpoint = getPosition();
   }

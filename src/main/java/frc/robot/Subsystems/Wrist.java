@@ -36,9 +36,9 @@ public class Wrist extends SubsystemBase {
 
     m_encoder.configFactoryDefault();
     m_encoder.clearStickyFaults();
-
-    m_encoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
+    m_encoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
     m_encoder.configMagnetOffset(Constants.Wrist.kZeroOffset);
+    m_encoder.setPositionToAbsolute();
 
     // Motor Configuration
     m_wristMotor.configFactoryDefault();

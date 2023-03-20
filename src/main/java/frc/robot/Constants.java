@@ -17,8 +17,7 @@ public class Constants {
     }
 
     public static final class Sensors {
-        public static final int kDrivetrainGyroId = 11;
-        public static final int kClawGyroId = 15;
+        public static final int kDrivetrainGyroId = 9;
 
         public static final int kClawSonarPingChannel = 1;
         public static final int kClawSonarEchoChannel = 0;
@@ -46,7 +45,7 @@ public class Constants {
     }
 
     public static final class Turret {
-        public static final int kTurretMotorId = 10;
+        public static final int kTurretMotorId = 13;
 
         public static final double kF = 0.2;
         public static final double kP = 0.08;
@@ -66,14 +65,14 @@ public class Constants {
     }
 
     public static final class Shoulder {
-        public static final int kLeftArmMotorId = 7;
-        public static final int kRightArmMotorId = 8;
-        public static final int kShoulderEncoderId = 0;
+        public static final int kLeftArmMotorId = 10;
+        public static final int kRightArmMotorId = 11;
+        public static final int kShoulderEncoderId = 7;
 
-        public static final double kZeroOffset = 0.0;
+        public static final double kZeroOffset = 117.16; // 245.39
 
-        public static final double kF = 0.2;
-        public static final double kP = 0.1;
+        public static final double kF = 0.25;
+        public static final double kP = 2.0;
         public static final double kI = 0.0;
         public static final double kD = 0.0;
 
@@ -81,9 +80,9 @@ public class Constants {
 
         public static final double kDeadband = 0.05;
 
-        public static final double kMotionCruiseVelocity = 40000;
-        public static final double kMotionAcceleration = 20000;
-        public static final int kMotionSCurveStrength = 1;
+        public static final double kMotionCruiseVelocity = 300000;
+        public static final double kMotionAcceleration = 15000;
+        public static final int kMotionSCurveStrength = 6;
 
         public static final double kForwardSoftLimit = 100.0;
         public static final double kReverseSoftLimit = 0.0;
@@ -116,7 +115,7 @@ public class Constants {
 
     public static final class Intake {
         public static final int kLeftIntakeMotorId = 14;
-        public static final int kRightIntakeMotorId = 13;
+        public static final int kRightIntakeMotorId = 15;
     }
 
     public static final class Input {
