@@ -60,7 +60,7 @@ public class Wrist extends SubsystemBase {
 
     m_wristMotor.configAllowableClosedloopError(0, 0, Constants.TalonFX.kTimeoutMs);
 
-    m_wristMotor.configForwardSoftLimitThreshold(Units.degreesToTicks(Constants.Wrist.kForwardSoftLimit, Constants.Wrist.kMotorToWrist, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
+    m_wristMotor.configForwardSoftLimitThreshold(Units.degreesToTicks(Constants.Wrist.kForwardSoftLimit, 1.0, Constants.CANCoder.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
     m_wristMotor.configReverseSoftLimitThreshold(Constants.Wrist.kReverseSoftLimit, Constants.TalonFX.kTimeoutMs);
     
     m_wristMotor.configForwardSoftLimitEnable(true);
@@ -108,7 +108,7 @@ public class Wrist extends SubsystemBase {
   }
 
   public void setSetpoint(double degrees) {
-    double ticks = Units.degreesToTicks(degrees, Constants.Wrist.kMotorToWrist, Constants.TalonFX.kEncoderResolution);
+    double ticks = Units.degreesToTicks(degrees, 1.0, Constants.CANCoder.kEncoderResolution);
     m_setpoint = ticks;
   }
 
@@ -121,7 +121,7 @@ public class Wrist extends SubsystemBase {
   }
 
   public double getAngle() {
-    return Units.ticksToDegrees(getPosition(), Constants.Wrist.kMotorToWrist, Constants.TalonFX.kEncoderResolution);
+    return Units.ticksToDegrees(getPosition(), 1.0, Constants.CANCoder.kEncoderResolution);
   }
 
   public void enableLimits() {
@@ -139,7 +139,7 @@ public class Wrist extends SubsystemBase {
   }
 
   public boolean atSetpoint(double tolerance) {
-    double setpointAngle = Units.ticksToDegrees(m_setpoint, Constants.Wrist.kMotorToWrist, Constants.TalonFX.kEncoderResolution);
+    double setpointAngle = Units.ticksToDegrees(m_setpoint, 1.0, Constants.CANCoder.kEncoderResolution);
 
     return Math.abs(setpointAngle - getAngle()) < tolerance;
   }

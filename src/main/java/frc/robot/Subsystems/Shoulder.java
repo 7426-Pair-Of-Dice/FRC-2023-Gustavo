@@ -58,7 +58,7 @@ public class Shoulder extends SubsystemBase {
 
     m_shoulderMotor.configAllowableClosedloopError(0, 0, Constants.TalonFX.kTimeoutMs);
 
-    m_shoulderMotor.configForwardSoftLimitThreshold(Units.degreesToTicks(Constants.Shoulder.kForwardSoftLimit, Constants.Shoulder.kMotorToArm, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
+    m_shoulderMotor.configForwardSoftLimitThreshold(Units.degreesToTicks(Constants.Shoulder.kForwardSoftLimit, 1.0, Constants.CANCoder.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
     m_shoulderMotor.configReverseSoftLimitThreshold(Constants.Shoulder.kReverseSoftLimit, Constants.TalonFX.kTimeoutMs);
     m_shoulderMotor.configForwardSoftLimitEnable(true);
     m_shoulderMotor.configReverseSoftLimitEnable(true);
