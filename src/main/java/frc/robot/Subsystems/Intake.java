@@ -6,8 +6,10 @@ package frc.robot.Subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -19,6 +21,10 @@ public class Intake extends SubsystemBase {
   private static VictorSPX m_leftIntakeMotor;
   private static VictorSPX m_rightIntakeMotor;
 
+  private static TalonSRX m_ledController;
+
+/*   private static TalonSRX m_ledController = new TalonSRX(12);
+ */
   private static Ultrasonic m_coneDistanceSensor;
   private static Ultrasonic m_cubeDistanceSensor;
 
@@ -32,6 +38,10 @@ public class Intake extends SubsystemBase {
 
     m_coneDistanceSensor = new Ultrasonic(Constants.Sensors.kConeSonarPingChannel, Constants.Sensors.kConeSonarEchoChannel);
     m_cubeDistanceSensor = new Ultrasonic(Constants.Sensors.kClawSonarPingChannel, Constants.Sensors.kClawSonarEchoChannel);
+
+    m_ledController = new TalonSRX(16);
+
+    m_ledController.configFactoryDefault();
     
     Ultrasonic.setAutomaticMode(true);
 
@@ -49,6 +59,12 @@ public class Intake extends SubsystemBase {
     // This method will be called once per scheduler run
     m_coneRange = m_coneDistanceSensor.getRangeInches();
     m_cubeRange = m_cubeDistanceSensor.getRangeInches();
+
+    if (getConeDetected() || getCubeDetected()) {
+      m_ledController.set(ControlMode.PercentOutput, 1.0);
+    } else {
+      m_ledController.set(ControlMode.PercentOutput, 0.0);
+    }
   }
 
   @Override
@@ -100,10 +116,10 @@ public class Intake extends SubsystemBase {
   }
 
   public boolean getConeDetected() {
-    return m_coneRange < 8.0;
+    return (m_coneRange < 8.0 && m_coneRange > 0);
   }
 
   public boolean getCubeDetected() {
-    return m_cubeRange < 8.0;
+    return (m_cubeRange < 3.0 && m_cubeRange > 0);
   }
 }

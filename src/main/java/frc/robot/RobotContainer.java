@@ -135,7 +135,9 @@ public class RobotContainer {
   private static PrintCommand m_defaultAuto;
   private static SequentialCommandGroup m_oneConeBalance;
   private static SequentialCommandGroup m_oneConeTaxiBalance;
-  private static SequentialCommandGroup m_oneConeOneCube;
+  private static SelectCommand m_oneConeOneCube;
+  private static SelectCommand m_oneConeBackwards;
+  private static SequentialCommandGroup m_oneCone;
 
   private static SendableChooser<Alliance> m_allianceChooser;
   private static SendableChooser<Command> m_autoChooser;
@@ -200,17 +202,17 @@ public class RobotContainer {
         double shoulderAngle = m_shoulder.getAngle();
 
         if (shoulderAngle > 60.0) {
-          speedInput = leftY * 0.15;
-          rotationInput = rightX * 0.15;
+          speedInput = leftY * 0.12;
+          rotationInput = rightX * 0.1;
         } else if (shoulderAngle > 30.0) {
           speedInput = leftY * 0.4;
           rotationInput = rightX * 0.4;
-        } else if (shoulderAngle > 10.0) {
+        } else if (shoulderAngle > 20.0) {
           speedInput = leftY * 0.75;
-          rotationInput = rightX * 0.75;
+          rotationInput = rightX * 0.5;
         } else {
           speedInput = leftY;
-          rotationInput = rightX;
+          rotationInput = rightX * 0.6;
         }
 
         m_driveTrain.arcadeDrive(speedInput, rotationInput);
@@ -285,7 +287,7 @@ public class RobotContainer {
     m_floorCubePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCube(), m_intake).until(m_intake::getCubeDetected).andThen(new InstantCommand(() -> m_intake.stop(), m_intake)),
       new ShoulderPreset(m_shoulder, 20.0, 5.0),
-      new WristPreset(m_wrist, 127.0, 5.0)
+      new WristPreset(m_wrist, 130.0, 5.0)
     );
 
     // Cone grabbing presets
@@ -311,7 +313,7 @@ public class RobotContainer {
       new WristPreset(m_wrist, 130.0, 5.0)
     );
     m_middleScoreCubePreset = new ParallelCommandGroup(
-      new ShoulderPreset(m_shoulder, 75.0, 5.0),
+      new ShoulderPreset(m_shoulder, 70.0, 5.0),
       new WristPreset(m_wrist, 150.0, 5.0)
     );
     m_bottomScoreCubePreset = new ParallelCommandGroup(
@@ -329,8 +331,8 @@ public class RobotContainer {
       new WristPreset(m_wrist, 120.0, 5.0)
     );
     m_bottomScoreConePreset = new ParallelCommandGroup(
-      new ShoulderPreset(m_shoulder, 18.0, 5.0),
-      new WristPreset(m_wrist, 0.0, 5.0)
+      new ShoulderPreset(m_shoulder, 20.0, 5.0),
+      new WristPreset(m_wrist, 15.0, 5.0)
     );
 
     m_driveTrain.setDefaultCommand(m_arcadeDrive);
@@ -344,13 +346,13 @@ public class RobotContainer {
     m_oneConeBalance = new SequentialCommandGroup(
       new ShoulderPreset(m_shoulder, 71.0, 5.0),
       new WristPreset(m_wrist, 122.0, 5.0),
-      new WaitCommand(1.0),
+      new WaitCommand(0.25),
       new RunCommand(() -> m_intake.releaseCone(), m_intake).raceWith(new WaitCommand(1.0)),
       new InstantCommand(() -> m_intake.stop(), m_intake),
       new WristPreset(m_wrist, 0.0, 5.0),
       new ShoulderPreset(m_shoulder, 0.0, 5.0),
-      new DriveStraight(m_driveTrain, -0.5).until(m_driveTrain::isTipped),
-      new DriveStraight(m_driveTrain, -0.12).raceWith(new WaitCommand(2.7)),
+      new DriveStraight(m_driveTrain, -0.625).until(m_driveTrain::isTipped),
+      new DriveStraight(m_driveTrain, -0.12).raceWith(new WaitCommand(2.5)),
       new InstantCommand(() -> m_driveTrain.stop(), m_driveTrain)
     );
 
@@ -373,38 +375,128 @@ public class RobotContainer {
       new InstantCommand(() -> m_driveTrain.stop(), m_driveTrain)
     );
 
-    m_oneConeOneCube = new SequentialCommandGroup(
-      new ShoulderPreset(m_shoulder, 15.0, 5.0),
-      new TurretPreset(m_turret, -20.0, 5.0),
+    m_oneConeOneCube = new SelectCommand(
+      Map.ofEntries(
+        Map.entry(
+          Alliance.BLUE, 
+          new SequentialCommandGroup(
+            new ShoulderPreset(m_shoulder, 18.0, 5.0),
+            new TurretPreset(m_turret, -20.0, 5.0),
+            new ShoulderPreset(m_shoulder, 71.0, 5.0),
+            new WristPreset(m_wrist, 122.0, 5.0),
+            new WaitCommand(0.25),
+            new RunCommand(() -> m_intake.releaseCone(), m_intake).raceWith(new WaitCommand(0.5)),
+            new InstantCommand(() -> m_intake.stop(), m_intake),
+            new WristPreset(m_wrist, 0.0, 5.0),
+            new ShoulderPreset(m_shoulder, 18.0, 5.0),
+            new ParallelCommandGroup(
+              new DriveToDistance(m_driveTrain, Units.inchesToMeters(-181.0), Units.inchesToMeters(2.0)),
+              new TurretPreset(m_turret, -180.0, 5.0)
+            ),
+            new InstantCommand(() -> m_driveTrain.stop(), m_driveTrain),
+            new ShoulderPreset(m_shoulder, 20.0, 5.0),
+            new WristPreset(m_wrist, 130.0, 5.0),
+            new RunCommand(() -> m_intake.intakeCube(), m_intake).until(m_intake::getCubeDetected).raceWith(new WaitCommand(1.0)),
+            new InstantCommand(() -> m_intake.stop(), m_intake),
+            new WristPreset(m_wrist, 0.0, 5.0),
+            new ShoulderPreset(m_shoulder, 18.0, 5.0),
+            new ParallelCommandGroup(
+              new DriveToDistance(m_driveTrain, Units.inchesToMeters(175.0), Units.inchesToMeters(2.0)),
+              new TurretPreset(m_turret, 25.0, 5.0)
+            ),
+            new ShoulderPreset(m_shoulder, 75.0, 5.0),
+            new WristPreset(m_wrist, 150.0, 5.0),
+            new RunCommand(() -> m_intake.releaseCube(), m_intake).raceWith(new WaitCommand(1.0)),
+            new InstantCommand(() -> m_intake.stop(), m_intake),
+            new WristPreset(m_wrist, 0.0, 5.0),
+            new ShoulderPreset(m_shoulder, 18.0, 5.0)
+          )
+        ),
+        Map.entry(
+          Alliance.RED, 
+          new SequentialCommandGroup(
+            new ShoulderPreset(m_shoulder, 18.0, 5.0),
+            new TurretPreset(m_turret, 20.0, 5.0),
+            new ShoulderPreset(m_shoulder, 71.0, 5.0),
+            new WristPreset(m_wrist, 122.0, 5.0),
+            new WaitCommand(0.25),
+            new RunCommand(() -> m_intake.releaseCone(), m_intake).raceWith(new WaitCommand(0.5)),
+            new InstantCommand(() -> m_intake.stop(), m_intake),
+            new WristPreset(m_wrist, 0.0, 5.0),
+            new ShoulderPreset(m_shoulder, 18.0, 5.0),
+            new ParallelCommandGroup(
+              new DriveToDistance(m_driveTrain, Units.inchesToMeters(-178.0), Units.inchesToMeters(2.0)),
+              new TurretPreset(m_turret, 180.0, 5.0)
+            ),
+            new InstantCommand(() -> m_driveTrain.stop(), m_driveTrain),
+            new ShoulderPreset(m_shoulder, 18.0, 5.0),
+            new WristPreset(m_wrist, 115.0, 5.0),
+            new RunCommand(() -> m_intake.intakeCube(), m_intake).until(m_intake::getCubeDetected).raceWith(new WaitCommand(1.0)),
+            new InstantCommand(() -> m_intake.stop(), m_intake),
+            new WristPreset(m_wrist, 0.0, 5.0),
+            new ShoulderPreset(m_shoulder, 18.0, 5.0),
+            new ParallelCommandGroup(
+              new DriveToDistance(m_driveTrain, Units.inchesToMeters(175.0), Units.inchesToMeters(2.0)),
+              new TurretPreset(m_turret, -25.0, 5.0)
+            ),
+            new ShoulderPreset(m_shoulder, 75.0, 5.0),
+            new WristPreset(m_wrist, 150.0, 5.0),
+            new RunCommand(() -> m_intake.releaseCube(), m_intake).raceWith(new WaitCommand(1.0)),
+            new InstantCommand(() -> m_intake.stop(), m_intake),
+            new WristPreset(m_wrist, 0.0, 5.0),
+            new ShoulderPreset(m_shoulder, 18.0, 5.0)
+          )
+        )
+      ),
+      this::getAlliance
+    );
+
+    m_oneConeBackwards = new SelectCommand(
+      Map.ofEntries(
+        Map.entry(
+          Alliance.BLUE, 
+          new SequentialCommandGroup(
+            new ShoulderPreset(m_shoulder, 71.0, 5.0),
+            new WristPreset(m_wrist, 122.0, 5.0),
+            new WaitCommand(1.0),
+            new RunCommand(() -> m_intake.releaseCone(), m_intake).raceWith(new WaitCommand(1.0)),
+            new InstantCommand(() -> m_intake.stop(), m_intake),
+            new WristPreset(m_wrist, 0.0, 5.0),
+            new ShoulderPreset(m_shoulder, 18.0, 5.0),
+            new ParallelCommandGroup(
+              new DriveToDistance(m_driveTrain, Units.inchesToMeters(-178.0), Units.inchesToMeters(2.0)),
+              new TurretPreset(m_turret, -180, 5.0)
+            )
+          )
+        ),
+        Map.entry(
+          Alliance.RED, 
+          new SequentialCommandGroup(
+            new ShoulderPreset(m_shoulder, 71.0, 5.0),
+            new WristPreset(m_wrist, 122.0, 5.0),
+            new WaitCommand(1.0),
+            new RunCommand(() -> m_intake.releaseCone(), m_intake).raceWith(new WaitCommand(1.0)),
+            new InstantCommand(() -> m_intake.stop(), m_intake),
+            new WristPreset(m_wrist, 0.0, 5.0),
+            new ShoulderPreset(m_shoulder, 18.0, 5.0),
+            new ParallelCommandGroup(
+              new DriveToDistance(m_driveTrain, Units.inchesToMeters(-178.0), Units.inchesToMeters(2.0)),
+              new TurretPreset(m_turret, 180, 5.0)
+            )
+          )
+        )
+      ), 
+      this::getAlliance
+    );
+
+    m_oneCone = new SequentialCommandGroup(
       new ShoulderPreset(m_shoulder, 71.0, 5.0),
       new WristPreset(m_wrist, 122.0, 5.0),
       new WaitCommand(1.0),
       new RunCommand(() -> m_intake.releaseCone(), m_intake).raceWith(new WaitCommand(1.0)),
       new InstantCommand(() -> m_intake.stop(), m_intake),
       new WristPreset(m_wrist, 0.0, 5.0),
-      new ShoulderPreset(m_shoulder, 15.0, 5.0),
-      new TurretPreset(m_turret, 0.0, 5.0),
-      new ParallelCommandGroup(
-        new DriveToDistance(m_driveTrain, Units.inchesToMeters(-178.0), Units.inchesToMeters(2.0)),
-        new TurretPreset(m_turret, -180.0, 5.0)
-      ),
-      new InstantCommand(() -> m_driveTrain.stop(), m_driveTrain),
-      new ShoulderPreset(m_shoulder, 14.0, 5.0),
-      new WristPreset(m_wrist, 115.0, 5.0),
-      new RunCommand(() -> m_intake.intakeCube(), m_intake).until(m_intake::getCubeDetected).raceWith(new WaitCommand(2.0)),
-      new InstantCommand(() -> m_intake.stop(), m_intake),
-      new WristPreset(m_wrist, 0.0, 5.0),
-      new ShoulderPreset(m_shoulder, 15.0, 5.0),
-      new ParallelCommandGroup(
-        new DriveToDistance(m_driveTrain, Units.inchesToMeters(175.0), Units.inchesToMeters(2.0)),
-        new TurretPreset(m_turret, 25.0, 5.0)
-      ),
-      new ShoulderPreset(m_shoulder, 75.0, 5.0),
-      new WristPreset(m_wrist, 150.0, 5.0),
-      new RunCommand(() -> m_intake.releaseCube(), m_intake).raceWith(new WaitCommand(2.0)),
-      new InstantCommand(() -> m_intake.stop(), m_intake),
-      new WristPreset(m_wrist, 0.0, 5.0),
-      new ShoulderPreset(m_shoulder, 15.0, 5.0)
+      new ShoulderPreset(m_shoulder, 0.0, 5.0)
     );
 
     // Smart Dashboard 
@@ -417,6 +509,8 @@ public class RobotContainer {
     m_autoChooser.addOption("OneCone-Balance", m_oneConeBalance);
     m_autoChooser.addOption("OneCone-Taxi-Balance", m_oneConeTaxiBalance);
     m_autoChooser.addOption("OneCone-OneCube", m_oneConeOneCube);
+    m_autoChooser.addOption("OneCone-Backwards", m_oneConeBackwards);
+    m_autoChooser.addOption("OneCone", m_oneCone);
 
     SmartDashboard.putData("Alliance Chooser", m_allianceChooser);
     SmartDashboard.putData("Auto Chooser", m_autoChooser);
