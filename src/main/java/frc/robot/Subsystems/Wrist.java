@@ -8,8 +8,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.sensors.AbsoluteSensorRange;
+import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -20,7 +23,7 @@ public class Wrist extends SubsystemBase {
 
   private static TalonFX m_wristMotor;
 
-  private static Pigeon2 m_gyro;
+  private static CANCoder m_encoder;
 
   private static double m_setpoint;
 
@@ -28,13 +31,21 @@ public class Wrist extends SubsystemBase {
   public Wrist() {
     m_wristMotor = new TalonFX(Constants.Wrist.kWristMotorId);
 
-    m_gyro = new Pigeon2(Constants.Sensors.kClawGyroId);
+    // Encoder Configuration
+    m_encoder = new CANCoder(Constants.Wrist.kWristEncoderId);
 
+    m_encoder.configFactoryDefault();
+    m_encoder.clearStickyFaults();
+
+    m_encoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
+    m_encoder.configMagnetOffset(Constants.Wrist.kZeroOffset);
+
+    // Motor Configuration
     m_wristMotor.configFactoryDefault();
+    m_wristMotor.clearStickyFaults();
 
+    m_wristMotor.configRemoteFeedbackFilter(m_encoder.getDeviceID(), RemoteSensorSource.CANCoder, 0);
     m_wristMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, Constants.TalonFX.kTimeoutMs);
-
-    m_wristMotor.setSelectedSensorPosition(0);
 
     m_wristMotor.configNominalOutputForward(0, Constants.TalonFX.kTimeoutMs);
     m_wristMotor.configNominalOutputReverse(0, Constants.TalonFX.kTimeoutMs);
@@ -78,9 +89,6 @@ public class Wrist extends SubsystemBase {
   @Override
   public void initSendable(SendableBuilder builder) {
     builder.setSmartDashboardType("Wrist");
-    builder.addDoubleProperty("Wrist Yaw", this::getYaw, null);
-    builder.addDoubleProperty("Wrist Pitch", this::getPitch, null);
-    builder.addDoubleProperty("Wrist Roll", this::getRoll, null);
     builder.addDoubleProperty("Wrist Position", this::getPosition, null);
     builder.addDoubleProperty("Wrist Angle", this::getAngle, null);
   }
@@ -114,18 +122,6 @@ public class Wrist extends SubsystemBase {
 
   public double getAngle() {
     return Units.ticksToDegrees(getPosition(), Constants.Wrist.kMotorToWrist, Constants.TalonFX.kEncoderResolution);
-  }
-
-  public double getYaw() { 
-    return m_gyro.getYaw(); 
-  }
-
-  public double getPitch() { 
-    return m_gyro.getPitch(); 
-  }
-
-  public double getRoll() { 
-    return m_gyro.getRoll(); 
   }
 
   public void enableLimits() {

@@ -12,6 +12,10 @@ public class Constants {
         public static final int kTimeoutMs = 30;
     }
 
+    public static final class CANCoder {
+        public static final int kEncoderResolution = 4096;
+    }
+
     public static final class Sensors {
         public static final int kDrivetrainGyroId = 11;
         public static final int kClawGyroId = 15;
@@ -64,6 +68,9 @@ public class Constants {
     public static final class Shoulder {
         public static final int kLeftArmMotorId = 7;
         public static final int kRightArmMotorId = 8;
+        public static final int kShoulderEncoderId = 0;
+
+        public static final double kZeroOffset = 0.0;
 
         public static final double kF = 0.2;
         public static final double kP = 0.1;
@@ -86,6 +93,10 @@ public class Constants {
 
     public static final class Wrist {
         public static final int kWristMotorId = 12;
+
+        public static final int kWristEncoderId = 0;
+
+        public static final double kZeroOffset = 0.0;
 
         public static final double kF = 0.2;
         public static final double kP = 0.08;
