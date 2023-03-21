@@ -88,8 +88,8 @@ public class Shoulder extends SubsystemBase {
 
     m_shoulderMotor.configOpenloopRamp(Constants.Shoulder.kRampRate);
 
-    m_shoulderMotor.setNeutralMode(NeutralMode.Coast);
-    m_shoulderMotorFollower.setNeutralMode(NeutralMode.Coast);
+    m_shoulderMotor.setNeutralMode(NeutralMode.Brake);
+    m_shoulderMotorFollower.setNeutralMode(NeutralMode.Brake);
     
     m_setpoint = getPosition();
   }

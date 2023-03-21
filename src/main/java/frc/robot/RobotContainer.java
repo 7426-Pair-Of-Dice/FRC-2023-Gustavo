@@ -261,7 +261,7 @@ public class RobotContainer {
     );
 
     m_homePreset = new SequentialCommandGroup(
-      //new WristPreset(m_wrist, 0.0, 5.0),
+      new WristPreset(m_wrist, 0.0, 5.0),
       new ShoulderPreset(m_shoulder, 15.0, 5.0),
       new TurretPreset(m_turret, 0.0, 5.0)
     );

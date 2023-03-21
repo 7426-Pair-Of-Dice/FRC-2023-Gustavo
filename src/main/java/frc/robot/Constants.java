@@ -93,19 +93,20 @@ public class Constants {
     public static final class Wrist {
         public static final int kWristMotorId = 12;
 
-        public static final int kWristEncoderId = 0;
+        public static final int kWristEncoderId = 8;
 
-        public static final double kZeroOffset = 0.0;
+        public static final double kZeroOffset = 127.27;
 
         public static final double kF = 0.2;
-        public static final double kP = 0.08;
+        public static final double kP = 1.2;
         public static final double kI = 0.0;
         public static final double kD = 0.0;
 
         public static final double kDeadband = 0.05;
 
-        public static final double kMotionCruiseVelocity = 40000;
-        public static final double kMotionAcceleration = 20000;
+        public static final double kMotionCruiseVelocity = 100000;
+        public static final double kMotionAcceleration = 15000;
+        public static final int kMotionSCurveStrength = 5;
 
         public static final double kForwardSoftLimit = 180.0;
         public static final double kReverseSoftLimit = 0.0;

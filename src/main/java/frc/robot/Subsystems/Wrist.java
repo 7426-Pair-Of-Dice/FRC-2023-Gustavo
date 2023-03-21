@@ -38,6 +38,7 @@ public class Wrist extends SubsystemBase {
     m_encoder.clearStickyFaults();
     m_encoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
     m_encoder.configMagnetOffset(Constants.Wrist.kZeroOffset);
+    m_encoder.configSensorDirection(false);
     m_encoder.setPositionToAbsolute();
 
     // Motor Configuration
@@ -45,7 +46,7 @@ public class Wrist extends SubsystemBase {
     m_wristMotor.clearStickyFaults();
 
     m_wristMotor.configRemoteFeedbackFilter(m_encoder.getDeviceID(), RemoteSensorSource.CANCoder, 0);
-    m_wristMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, Constants.TalonFX.kTimeoutMs);
+    m_wristMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.RemoteSensor0, 0, Constants.TalonFX.kTimeoutMs);
 
     m_wristMotor.configNominalOutputForward(0, Constants.TalonFX.kTimeoutMs);
     m_wristMotor.configNominalOutputReverse(0, Constants.TalonFX.kTimeoutMs);
@@ -68,13 +69,14 @@ public class Wrist extends SubsystemBase {
 
     m_wristMotor.configMotionCruiseVelocity(Constants.Wrist.kMotionCruiseVelocity, Constants.TalonFX.kTimeoutMs);
     m_wristMotor.configMotionAcceleration(Constants.Wrist.kMotionAcceleration, Constants.TalonFX.kTimeoutMs); 
+    m_wristMotor.configMotionSCurveStrength(Constants.Wrist.kMotionSCurveStrength);
 
     m_wristMotor.configVoltageCompSaturation(12.0);
     m_wristMotor.enableVoltageCompensation(true);
 
     m_wristMotor.configNeutralDeadband(Constants.Wrist.kDeadband);
 
-    m_wristMotor.setNeutralMode(NeutralMode.Brake);
+    m_wristMotor.setNeutralMode(NeutralMode.Coast);
 
     m_wristMotor.setInverted(false);
 
