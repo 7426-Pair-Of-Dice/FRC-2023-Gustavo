@@ -25,6 +25,7 @@ public class Turret extends SubsystemBase {
     m_turretMotor = new TalonFX(Constants.Turret.kTurretMotorId);
 
     m_turretMotor.configFactoryDefault();
+    m_turretMotor.clearStickyFaults();
 
     m_turretMotor.setInverted(true);
 

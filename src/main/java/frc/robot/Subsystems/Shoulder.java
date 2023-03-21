@@ -6,9 +6,12 @@ package frc.robot.Subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.sensors.AbsoluteSensorRange;
+import com.ctre.phoenix.sensors.CANCoder;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -19,6 +22,7 @@ public class Shoulder extends SubsystemBase {
 
   private static TalonFX m_shoulderMotor;
   private static TalonFX m_shoulderMotorFollower;
+  private static CANCoder m_encoder;
 
   /* private static TalonSRX m_shoulderAngle; */
 
@@ -29,14 +33,24 @@ public class Shoulder extends SubsystemBase {
 
     m_shoulderMotor = new TalonFX(Constants.Shoulder.kLeftArmMotorId);
     m_shoulderMotorFollower = new TalonFX(Constants.Shoulder.kRightArmMotorId);
+    m_encoder = new CANCoder(Constants.Shoulder.kShoulderEncoderId);
 
-    // Arm Configuration
+    // Encoder Configuration
+    m_encoder.configFactoryDefault();
+    m_encoder.clearStickyFaults();
+    m_encoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
+    m_encoder.configMagnetOffset(Constants.Shoulder.kZeroOffset);
+    m_encoder.setPositionToAbsolute();
+
+    // Motor Configuration
     m_shoulderMotor.configFactoryDefault();
     m_shoulderMotorFollower.configFactoryDefault();
 
-    m_shoulderMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, Constants.TalonFX.kTimeoutMs);
+    m_shoulderMotor.clearStickyFaults();
+    m_shoulderMotorFollower.clearStickyFaults();
 
-    m_shoulderMotor.setSelectedSensorPosition(0);
+    m_shoulderMotor.configRemoteFeedbackFilter(m_encoder.getDeviceID(), RemoteSensorSource.CANCoder, 0);
+    m_shoulderMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.RemoteSensor0, 0, Constants.TalonFX.kTimeoutMs);
 
     m_shoulderMotor.configNominalOutputForward(0, Constants.TalonFX.kTimeoutMs);
     m_shoulderMotor.configNominalOutputReverse(0, Constants.TalonFX.kTimeoutMs);
@@ -45,7 +59,7 @@ public class Shoulder extends SubsystemBase {
 
     m_shoulderMotor.configAllowableClosedloopError(0, 0, Constants.TalonFX.kTimeoutMs);
 
-    m_shoulderMotor.configForwardSoftLimitThreshold(Units.degreesToTicks(Constants.Shoulder.kForwardSoftLimit, Constants.Shoulder.kMotorToArm, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
+    m_shoulderMotor.configForwardSoftLimitThreshold(Units.degreesToTicks(Constants.Shoulder.kForwardSoftLimit, 1.0, Constants.CANCoder.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
     m_shoulderMotor.configReverseSoftLimitThreshold(Constants.Shoulder.kReverseSoftLimit, Constants.TalonFX.kTimeoutMs);
     m_shoulderMotor.configForwardSoftLimitEnable(true);
     m_shoulderMotor.configReverseSoftLimitEnable(true);
@@ -105,7 +119,7 @@ public class Shoulder extends SubsystemBase {
   }
 
   public void setSetpoint(double degrees) {
-    double ticks = Units.degreesToTicks(degrees, Constants.Shoulder.kMotorToArm, Constants.TalonFX.kEncoderResolution);
+    double ticks = Units.degreesToTicks(degrees, 1.0, Constants.CANCoder.kEncoderResolution);
     m_setpoint = ticks;
   }
 
@@ -122,7 +136,7 @@ public class Shoulder extends SubsystemBase {
   }
 
   public double getAngle() {
-    return Units.ticksToDegrees(getPosition(), Constants.Shoulder.kMotorToArm, Constants.TalonFX.kEncoderResolution);
+    return Units.ticksToDegrees(getPosition(), 1.0, Constants.CANCoder.kEncoderResolution);
   }
 
   public double getSetpoint() {
@@ -131,11 +145,9 @@ public class Shoulder extends SubsystemBase {
 
   public void zero() {
     m_shoulderMotor.setSelectedSensorPosition(0.0);
-    System.out.println("Zeroed shoulder");
   }
 
   public void enableLimits() {
-    System.out.println("zeroed wrist");
     m_shoulderMotor.configForwardSoftLimitEnable(true, Constants.TalonFX.kTimeoutMs);
     m_shoulderMotor.configReverseSoftLimitEnable(true, Constants.TalonFX.kTimeoutMs);
   }
@@ -146,7 +158,7 @@ public class Shoulder extends SubsystemBase {
   }
 
   public boolean atSetpoint(double tolerance) {
-    double setpointAngle = Units.ticksToDegrees(m_setpoint, Constants.Shoulder.kMotorToArm, Constants.TalonFX.kEncoderResolution);
+    double setpointAngle = Units.ticksToDegrees(m_setpoint, 1.0, Constants.CANCoder.kEncoderResolution);
 
     return Math.abs(setpointAngle - getAngle()) < tolerance;
   }

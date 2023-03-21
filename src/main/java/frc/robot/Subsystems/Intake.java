@@ -45,6 +45,12 @@ public class Intake extends SubsystemBase {
     
     Ultrasonic.setAutomaticMode(true);
 
+    m_leftIntakeMotor.configFactoryDefault();
+    m_rightIntakeMotor.configFactoryDefault();
+
+    m_leftIntakeMotor.clearStickyFaults();
+    m_rightIntakeMotor.clearStickyFaults();
+
     m_leftIntakeMotor.setInverted(true);
     
     m_leftIntakeMotor.configNeutralDeadband(0.05);

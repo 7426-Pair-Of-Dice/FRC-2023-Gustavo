@@ -8,8 +8,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.sensors.AbsoluteSensorRange;
+import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -20,7 +23,7 @@ public class Wrist extends SubsystemBase {
 
   private static TalonFX m_wristMotor;
 
-  private static Pigeon2 m_gyro;
+  private static CANCoder m_encoder;
 
   private static double m_setpoint;
 
@@ -28,13 +31,22 @@ public class Wrist extends SubsystemBase {
   public Wrist() {
     m_wristMotor = new TalonFX(Constants.Wrist.kWristMotorId);
 
-    m_gyro = new Pigeon2(Constants.Sensors.kClawGyroId);
+    // Encoder Configuration
+    m_encoder = new CANCoder(Constants.Wrist.kWristEncoderId);
 
+    m_encoder.configFactoryDefault();
+    m_encoder.clearStickyFaults();
+    m_encoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
+    m_encoder.configMagnetOffset(Constants.Wrist.kZeroOffset);
+    m_encoder.configSensorDirection(false);
+    m_encoder.setPositionToAbsolute();
+
+    // Motor Configuration
     m_wristMotor.configFactoryDefault();
+    m_wristMotor.clearStickyFaults();
 
-    m_wristMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, Constants.TalonFX.kTimeoutMs);
-
-    m_wristMotor.setSelectedSensorPosition(0);
+    m_wristMotor.configRemoteFeedbackFilter(m_encoder.getDeviceID(), RemoteSensorSource.CANCoder, 0);
+    m_wristMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.RemoteSensor0, 0, Constants.TalonFX.kTimeoutMs);
 
     m_wristMotor.configNominalOutputForward(0, Constants.TalonFX.kTimeoutMs);
     m_wristMotor.configNominalOutputReverse(0, Constants.TalonFX.kTimeoutMs);
@@ -49,7 +61,7 @@ public class Wrist extends SubsystemBase {
 
     m_wristMotor.configAllowableClosedloopError(0, 0, Constants.TalonFX.kTimeoutMs);
 
-    m_wristMotor.configForwardSoftLimitThreshold(Units.degreesToTicks(Constants.Wrist.kForwardSoftLimit, Constants.Wrist.kMotorToWrist, Constants.TalonFX.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
+    m_wristMotor.configForwardSoftLimitThreshold(Units.degreesToTicks(Constants.Wrist.kForwardSoftLimit, 1.0, Constants.CANCoder.kEncoderResolution), Constants.TalonFX.kTimeoutMs);
     m_wristMotor.configReverseSoftLimitThreshold(Constants.Wrist.kReverseSoftLimit, Constants.TalonFX.kTimeoutMs);
     
     m_wristMotor.configForwardSoftLimitEnable(true);
@@ -57,13 +69,14 @@ public class Wrist extends SubsystemBase {
 
     m_wristMotor.configMotionCruiseVelocity(Constants.Wrist.kMotionCruiseVelocity, Constants.TalonFX.kTimeoutMs);
     m_wristMotor.configMotionAcceleration(Constants.Wrist.kMotionAcceleration, Constants.TalonFX.kTimeoutMs); 
+    m_wristMotor.configMotionSCurveStrength(Constants.Wrist.kMotionSCurveStrength);
 
     m_wristMotor.configVoltageCompSaturation(12.0);
     m_wristMotor.enableVoltageCompensation(true);
 
     m_wristMotor.configNeutralDeadband(Constants.Wrist.kDeadband);
 
-    m_wristMotor.setNeutralMode(NeutralMode.Brake);
+    m_wristMotor.setNeutralMode(NeutralMode.Coast);
 
     m_wristMotor.setInverted(false);
 
@@ -78,9 +91,6 @@ public class Wrist extends SubsystemBase {
   @Override
   public void initSendable(SendableBuilder builder) {
     builder.setSmartDashboardType("Wrist");
-    builder.addDoubleProperty("Wrist Yaw", this::getYaw, null);
-    builder.addDoubleProperty("Wrist Pitch", this::getPitch, null);
-    builder.addDoubleProperty("Wrist Roll", this::getRoll, null);
     builder.addDoubleProperty("Wrist Position", this::getPosition, null);
     builder.addDoubleProperty("Wrist Angle", this::getAngle, null);
   }
@@ -100,7 +110,7 @@ public class Wrist extends SubsystemBase {
   }
 
   public void setSetpoint(double degrees) {
-    double ticks = Units.degreesToTicks(degrees, Constants.Wrist.kMotorToWrist, Constants.TalonFX.kEncoderResolution);
+    double ticks = Units.degreesToTicks(degrees, 1.0, Constants.CANCoder.kEncoderResolution);
     m_setpoint = ticks;
   }
 
@@ -113,19 +123,7 @@ public class Wrist extends SubsystemBase {
   }
 
   public double getAngle() {
-    return Units.ticksToDegrees(getPosition(), Constants.Wrist.kMotorToWrist, Constants.TalonFX.kEncoderResolution);
-  }
-
-  public double getYaw() { 
-    return m_gyro.getYaw(); 
-  }
-
-  public double getPitch() { 
-    return m_gyro.getPitch(); 
-  }
-
-  public double getRoll() { 
-    return m_gyro.getRoll(); 
+    return Units.ticksToDegrees(getPosition(), 1.0, Constants.CANCoder.kEncoderResolution);
   }
 
   public void enableLimits() {
@@ -143,7 +141,7 @@ public class Wrist extends SubsystemBase {
   }
 
   public boolean atSetpoint(double tolerance) {
-    double setpointAngle = Units.ticksToDegrees(m_setpoint, Constants.Wrist.kMotorToWrist, Constants.TalonFX.kEncoderResolution);
+    double setpointAngle = Units.ticksToDegrees(m_setpoint, 1.0, Constants.CANCoder.kEncoderResolution);
 
     return Math.abs(setpointAngle - getAngle()) < tolerance;
   }

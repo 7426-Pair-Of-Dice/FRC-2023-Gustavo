@@ -12,9 +12,13 @@ public class Constants {
         public static final int kTimeoutMs = 30;
     }
 
+    public static final class CANCoder {
+        public static final int kEncoderResolution = 4096;
+    }
+
     public static final class Sensors {
-        public static final int kDrivetrainGyroId = 9;
         public static final int kClawGyroId = 15;
+        public static final int kDrivetrainGyroId = 9;
 
         public static final int kClawSonarPingChannel = 1;
         public static final int kClawSonarEchoChannel = 0;
@@ -64,9 +68,12 @@ public class Constants {
     public static final class Shoulder {
         public static final int kLeftArmMotorId = 10;
         public static final int kRightArmMotorId = 11;
+        public static final int kShoulderEncoderId = 7;
 
-        public static final double kF = 0.2;
-        public static final double kP = 0.1;
+        public static final double kZeroOffset = 117.16; // 245.39
+
+        public static final double kF = 0.25;
+        public static final double kP = 2.0;
         public static final double kI = 0.0;
         public static final double kD = 0.0;
 
@@ -74,9 +81,9 @@ public class Constants {
 
         public static final double kDeadband = 0.05;
 
-        public static final double kMotionCruiseVelocity = 50000;
-        public static final double kMotionAcceleration = 25000;
-        public static final int kMotionSCurveStrength = 1;
+        public static final double kMotionCruiseVelocity = 300000;
+        public static final double kMotionAcceleration = 15000;
+        public static final int kMotionSCurveStrength = 6;
 
         public static final double kForwardSoftLimit = 100.0;
         public static final double kReverseSoftLimit = 0.0;
@@ -87,15 +94,20 @@ public class Constants {
     public static final class Wrist {
         public static final int kWristMotorId = 12;
 
+        public static final int kWristEncoderId = 8;
+
+        public static final double kZeroOffset = 127.27;
+
         public static final double kF = 0.2;
-        public static final double kP = 0.08;
+        public static final double kP = 1.2;
         public static final double kI = 0.0;
         public static final double kD = 0.0;
 
         public static final double kDeadband = 0.05;
 
-        public static final double kMotionCruiseVelocity = 45000;
-        public static final double kMotionAcceleration = 20000;
+        public static final double kMotionCruiseVelocity = 100000;
+        public static final double kMotionAcceleration = 15000;
+        public static final int kMotionSCurveStrength = 5;
 
         public static final double kForwardSoftLimit = 180.0;
         public static final double kReverseSoftLimit = 0.0;
@@ -106,7 +118,6 @@ public class Constants {
     public static final class Intake {
         public static final int kLeftIntakeMotorId = 14;
         public static final int kRightIntakeMotorId = 15;
-        public static final int kLedControllerId = 12;
     }
 
     public static final class Input {
