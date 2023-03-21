@@ -52,7 +52,7 @@ public class Wrist extends SubsystemBase {
     m_wristMotor.configNominalOutputReverse(0, Constants.TalonFX.kTimeoutMs);
     m_wristMotor.configPeakOutputForward(1, Constants.TalonFX.kTimeoutMs);
     m_wristMotor.configPeakOutputReverse(-1, Constants.TalonFX.kTimeoutMs);
-
+    
     m_wristMotor.selectProfileSlot(0, 0);
     m_wristMotor.config_kF(0, Constants.Wrist.kF);
     m_wristMotor.config_kP(0, Constants.Wrist.kP);
@@ -76,7 +76,7 @@ public class Wrist extends SubsystemBase {
 
     m_wristMotor.configNeutralDeadband(Constants.Wrist.kDeadband);
 
-    m_wristMotor.setNeutralMode(NeutralMode.Coast);
+    m_wristMotor.setNeutralMode(NeutralMode.Brake);
 
     m_wristMotor.setInverted(false);
 

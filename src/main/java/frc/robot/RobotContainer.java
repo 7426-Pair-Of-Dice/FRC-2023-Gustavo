@@ -203,7 +203,7 @@ public class RobotContainer {
 
         if (shoulderAngle > 60.0) {
           speedInput = leftY * 0.12;
-          rotationInput = rightX * 0.1;
+          rotationInput = rightX * 0.12;
         } else if (shoulderAngle > 30.0) {
           speedInput = leftY * 0.4;
           rotationInput = rightX * 0.4;
@@ -276,45 +276,45 @@ public class RobotContainer {
     // Cube grabbing presets
     m_doublePlayerStationCubePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCube(), m_intake).until(m_intake::getCubeDetected).andThen(new InstantCommand(() -> m_intake.stop(), m_intake)),
-      new ShoulderPreset(m_shoulder, 78.0, 5.0),
-      new WristPreset(m_wrist, 140.0, 5.0)
+      new ShoulderPreset(m_shoulder, 75.0, 5.0),
+      new WristPreset(m_wrist, 118.0, 5.0)
     );
     m_singlePlayerStationCubePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCube(), m_intake).until(m_intake::getCubeDetected).andThen(new InstantCommand(() -> m_intake.stop(), m_intake)),
-      new ShoulderPreset(m_shoulder, 31.0, 5.0),
+      new ShoulderPreset(m_shoulder, 27.0, 5.0),
       new WristPreset(m_wrist, 0, 34.0)
     );
     m_floorCubePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCube(), m_intake).until(m_intake::getCubeDetected).andThen(new InstantCommand(() -> m_intake.stop(), m_intake)),
-      new ShoulderPreset(m_shoulder, 20.0, 5.0),
-      new WristPreset(m_wrist, 130.0, 5.0)
+      new ShoulderPreset(m_shoulder, 16.0, 5.0),
+      new WristPreset(m_wrist, 98.0, 5.0)
     );
 
     // Cone grabbing presets
     m_doublePlayerStationConePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCone(), m_intake).until(m_intake::getConeDetected).andThen(new InstantCommand(() -> m_intake.stop(), m_intake)),
-      new ShoulderPreset(m_shoulder, 68.0, 5.0),
-      new WristPreset(m_wrist, 68.0, 5.0)
+      new ShoulderPreset(m_shoulder, 64.0, 5.0),
+      new WristPreset(m_wrist, 43.0, 5.0)
     );
     m_singlePlayerStationConePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCone(), m_intake).until(m_intake::getConeDetected).andThen(new InstantCommand(() -> m_intake.stop(), m_intake)),
-      new ShoulderPreset(m_shoulder, 38.0, 5.0),
+      new ShoulderPreset(m_shoulder, 43.0, 5.0),
       new WristPreset(m_wrist, 0.0, 5.0)
     );
     m_floorConePreset = new ParallelCommandGroup(
       new RunCommand(() -> m_intake.intakeCone(), m_intake).until(m_intake::getConeDetected).andThen(new InstantCommand(() -> m_intake.stop(), m_intake)),
       new ShoulderPreset(m_shoulder, 14.0, 5.0),
-      new WristPreset(m_wrist, 53.0, 5.0)
+      new WristPreset(m_wrist, 36.0, 5.0)
     );
 
     // Cube scoring presets
     m_topScoreCubePreset = new ParallelCommandGroup(
-      new ShoulderPreset(m_shoulder, 85.0, 5.0),
-      new WristPreset(m_wrist, 130.0, 5.0)
+      new ShoulderPreset(m_shoulder, 78.0, 5.0),
+      new WristPreset(m_wrist, 110.0, 5.0)
     );
     m_middleScoreCubePreset = new ParallelCommandGroup(
-      new ShoulderPreset(m_shoulder, 70.0, 5.0),
-      new WristPreset(m_wrist, 150.0, 5.0)
+      new ShoulderPreset(m_shoulder, 58.0, 5.0),
+      new WristPreset(m_wrist, 104.0, 5.0)
     );
     m_bottomScoreCubePreset = new ParallelCommandGroup(
       new ShoulderPreset(m_shoulder, 18.0, 5.0),
@@ -324,15 +324,15 @@ public class RobotContainer {
     // Cone scoring presets
     m_topScoreConePreset = new ParallelCommandGroup(
       new ShoulderPreset(m_shoulder, 95.0, 5.0),
-      new WristPreset(m_wrist, 105.0, 5.0)
+      new WristPreset(m_wrist, 90.0, 5.0)
     );
     m_middleScoreConePreset = new ParallelCommandGroup(
-      new ShoulderPreset(m_shoulder, 77.0, 5.0),
-      new WristPreset(m_wrist, 120.0, 5.0)
+      new ShoulderPreset(m_shoulder, 75.0 , 5.0),
+      new WristPreset(m_wrist, 108.0, 5.0)
     );
     m_bottomScoreConePreset = new ParallelCommandGroup(
-      new ShoulderPreset(m_shoulder, 20.0, 5.0),
-      new WristPreset(m_wrist, 15.0, 5.0)
+      new ShoulderPreset(m_shoulder, 18.0, 5.0),
+      new WristPreset(m_wrist, 0, 5.0)
     );
 
     m_driveTrain.setDefaultCommand(m_arcadeDrive);
