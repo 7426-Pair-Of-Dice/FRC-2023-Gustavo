@@ -13,8 +13,6 @@ import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -39,7 +37,6 @@ public class RobotContainer {
   
   private static Trigger m_driveSlowTrigger;
   private static Trigger m_driveSlowerTrigger;
-  private static Trigger m_driveStraightTrigger;
   private static Trigger m_driveInvertTrigger;
 
   private static Trigger m_doublePlayerStationCubePresetTrigger;
@@ -62,8 +59,6 @@ public class RobotContainer {
   private static Trigger m_turretSlowLeftTrigger;
   private static Trigger m_turretSlowRightTrigger;
 
-  private static Trigger m_rezeroShoulderTrigger;
-  private static Trigger m_rezeroWristTrigger;
   private static Trigger m_releaseTrigger;
 
   private static Trigger m_turretConeTopTrackingTrigger;
@@ -86,7 +81,6 @@ public class RobotContainer {
   private static InstantCommand m_arcadeDriveSlow;
   private static InstantCommand m_arcadeDriveSlower;
   private static InstantCommand m_arcadeDriveInvert;
-  private static DriveStraight m_driveStraight;
 
   private static SequentialCommandGroup m_homePreset;
 
@@ -97,9 +91,6 @@ public class RobotContainer {
   private static RunCommand m_turretSlowRight;
   private static RunCommand m_releaseCube;
   private static RunCommand m_releaseCone;
-
-  private static RezeroShoulder m_rezeroShoulder;
-  private static RezeroWrist m_rezeroWrist;
 
   private static TurretTracking m_turretTrackingConeTop;
   private static TurretTracking m_turretTrackingConeBottom;
@@ -147,7 +138,6 @@ public class RobotContainer {
     m_driverController = new CommandXboxController(Constants.Input.kDriverControllerId);
     m_operatorJoystick = new CommandJoystick(Constants.Input.kOperatorJoystickId);
 
-    m_driveStraightTrigger = m_driverController.rightTrigger();
     m_driveSlowTrigger = m_driverController.leftBumper();
     m_driveSlowerTrigger = m_driverController.leftTrigger();
     m_driveInvertTrigger = m_driverController.rightBumper();
@@ -172,8 +162,6 @@ public class RobotContainer {
     m_turretSlowLeftTrigger = m_operatorJoystick.povLeft();
     m_turretSlowRightTrigger = m_operatorJoystick.povRight();
 
-    m_rezeroShoulderTrigger = m_operatorJoystick.button(Constants.Input.kJoystickCenterLeftButtonId);
-    m_rezeroWristTrigger = m_operatorJoystick.button(Constants.Input.kJoystickCenterRightButtonId);
     m_releaseTrigger = m_operatorJoystick.button(Constants.Input.kJoystickTriggerButtonId);
 
     m_turretConeTopTrackingTrigger = m_driverController.y();
@@ -202,7 +190,7 @@ public class RobotContainer {
         double shoulderAngle = m_shoulder.getAngle();
 
         if (shoulderAngle > 60.0) {
-          speedInput = leftY * 0.12;
+          speedInput = leftY * 0.2;
           rotationInput = rightX * 0.12;
         } else if (shoulderAngle > 30.0) {
           speedInput = leftY * 0.4;
@@ -212,7 +200,7 @@ public class RobotContainer {
           rotationInput = rightX * 0.5;
         } else {
           speedInput = leftY;
-          rotationInput = rightX * 0.6;
+          rotationInput = rightX * 0.4;
         }
 
         m_driveTrain.arcadeDrive(speedInput, rotationInput);
@@ -225,16 +213,11 @@ public class RobotContainer {
     m_arcadeDriveSlower = new InstantCommand(() -> m_driveTrain.setMultiplier(0.2), m_driveTrain);
     m_arcadeDriveInvert = new InstantCommand(() -> m_driveTrain.invertSpeed(), m_driveTrain);
 
-    m_driveStraight = new DriveStraight(m_driveTrain, m_driverController);
-
     m_turretControl = new RunCommand(() -> m_turret.setPercentOutput(-m_operatorJoystick.getZ() * 0.5), m_turret); //Was full speed
     m_turretSlowLeft = new RunCommand(() -> m_turret.setPercentOutput(0.15), m_turret);
     m_turretSlowRight = new RunCommand(() -> m_turret.setPercentOutput(-0.15), m_turret);
     m_releaseCube = new RunCommand(() -> m_intake.releaseCube(), m_intake);
     m_releaseCone = new RunCommand(() -> m_intake.releaseCone(), m_intake);
-
-    m_rezeroShoulder = new RezeroShoulder(m_shoulder);
-    m_rezeroWrist = new RezeroWrist(m_wrist);
 
     m_turretTrackingConeTop = new TurretTracking(m_turret, m_limelight, Constants.Limelight.kRetroReflectiveTopPipeline);
     m_turretTrackingConeBottom = new TurretTracking(m_turret, m_limelight, Constants.Limelight.kRetroReflectiveBottomPipeline);
@@ -348,7 +331,7 @@ public class RobotContainer {
         Map.entry(
           Alliance.BLUE, 
           new SequentialCommandGroup(
-            new ShoulderPreset(m_shoulder, 105.0, 5.0),
+            /* new ShoulderPreset(m_shoulder, 105.0, 5.0),
             new DriveStraight(m_driveTrain, 0.12).raceWith(new WaitCommand(0.3)),
             new InstantCommand(() -> m_driveTrain.stop(), m_driveTrain),
             new WristPreset(m_wrist, 95.0, 5.0),
@@ -359,10 +342,12 @@ public class RobotContainer {
             new DriveStraight(m_driveTrain, -0.12).raceWith(new WaitCommand(0.3)),
             new InstantCommand(() -> m_driveTrain.stop(), m_driveTrain),
             new WristPreset(m_wrist, 0.0, 5.0),
-            new ShoulderPreset(m_shoulder, 0.0, 5.0),
+            new ShoulderPreset(m_shoulder, 0.0, 5.0), */
             new DriveStraight(m_driveTrain, -0.45).until(m_driveTrain::isTipped),
-            new RunCommand(() -> m_driveTrain.arcadeDrive(-0.12, 0), m_driveTrain).raceWith(new WaitCommand(2.8)),
-            new InstantCommand(() -> m_driveTrain.stop(), m_driveTrain)
+            new RunCommand(() -> m_driveTrain.arcadeDrive(-0.2, 0), m_driveTrain).raceWith(new WaitCommand(1.5)),
+            new AutoBalance(m_driveTrain)
+            /* new RunCommand(() -> m_driveTrain.arcadeDrive(-0.12, 0), m_driveTrain).raceWith(new WaitCommand(2.8)),
+            new InstantCommand(() -> m_driveTrain.stop(), m_driveTrain) */
           )
         ),
         Map.entry(
@@ -564,7 +549,7 @@ public class RobotContainer {
     m_allianceChooser.addOption("Red", Alliance.RED);
 
     m_autoChooser = new SendableChooser<Command>();
-    m_autoChooser.setDefaultOption("Default", m_defaultAuto);
+    m_autoChooser.setDefaultOption("Do Nothing", m_defaultAuto);
     m_autoChooser.addOption("OneCone-Balance", m_oneConeBalance);
     m_autoChooser.addOption("OneCone-Taxi-Balance", m_oneConeTaxiBalance);
     m_autoChooser.addOption("OneCone-OneCube", m_oneConeOneCube);
@@ -585,7 +570,6 @@ public class RobotContainer {
   }
   
   private void configureBindings() {
-    m_driveStraightTrigger.whileTrue(m_driveStraight).onFalse(m_driveStop);
     m_driveSlowTrigger.and(m_driveSlowerTrigger.negate()).onTrue(m_arcadeDriveSlow).onFalse(m_arcadeDriveNormal);
     m_driveSlowerTrigger.and(m_driveSlowTrigger.negate()).onTrue(m_arcadeDriveSlower).onFalse(m_arcadeDriveNormal);
     m_driveInvertTrigger.onTrue(m_arcadeDriveInvert).onFalse(m_arcadeDriveInvert);
@@ -593,9 +577,6 @@ public class RobotContainer {
     m_turretControlTrigger.whileTrue(m_turretControl).onFalse(m_turretStop);
     m_turretSlowLeftTrigger.whileTrue(m_turretSlowLeft).onFalse(m_turretStop);
     m_turretSlowRightTrigger.whileTrue(m_turretSlowRight).onFalse(m_turretStop);
-
-    m_rezeroShoulderTrigger.whileTrue(m_rezeroShoulder);
-    m_rezeroWristTrigger.whileTrue(m_rezeroWrist);
 
     m_turretConeTopTrackingTrigger.and(m_turretCubeTrackingTrigger.negate()).and(m_turretConeBottomTrackingTrigger.negate()).whileTrue(m_turretTrackingConeTop).onFalse(m_turretStop).onFalse(m_limelightReset);
     m_turretConeBottomTrackingTrigger.and(m_turretCubeTrackingTrigger.negate()).and(m_turretConeTopTrackingTrigger.negate()).whileTrue(m_turretTrackingConeBottom).onFalse(m_turretStop).onFalse(m_limelightReset);
