@@ -21,10 +21,6 @@ public class Intake extends SubsystemBase {
   private static VictorSPX m_leftIntakeMotor;
   private static VictorSPX m_rightIntakeMotor;
 
-  private static TalonSRX m_ledController;
-
-/*   private static TalonSRX m_ledController = new TalonSRX(12);
- */
   private static Ultrasonic m_coneDistanceSensor;
   private static Ultrasonic m_cubeDistanceSensor;
 
@@ -39,10 +35,6 @@ public class Intake extends SubsystemBase {
     m_coneDistanceSensor = new Ultrasonic(Constants.Sensors.kConeSonarPingChannel, Constants.Sensors.kConeSonarEchoChannel);
     m_cubeDistanceSensor = new Ultrasonic(Constants.Sensors.kClawSonarPingChannel, Constants.Sensors.kClawSonarEchoChannel);
 
-    m_ledController = new TalonSRX(16);
-
-    m_ledController.configFactoryDefault();
-    
     Ultrasonic.setAutomaticMode(true);
 
     m_leftIntakeMotor.configFactoryDefault();
@@ -65,12 +57,6 @@ public class Intake extends SubsystemBase {
     // This method will be called once per scheduler run
     m_coneRange = m_coneDistanceSensor.getRangeInches();
     m_cubeRange = m_cubeDistanceSensor.getRangeInches();
-
-    if (getConeDetected() || getCubeDetected()) {
-      m_ledController.set(ControlMode.PercentOutput, 1.0);
-    } else {
-      m_ledController.set(ControlMode.PercentOutput, 0.0);
-    }
   }
 
   @Override

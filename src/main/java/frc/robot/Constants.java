@@ -166,7 +166,7 @@ public class Constants {
         public static final double kIDist = 0.0;
         public static final double kDDist = 0.0;
 
-        public static final double kPAngle = 0.02;
+        public static final double kPAngle = 0.009;
         public static final double kIAngle = 0.0;
         public static final double kDAngle = 0.0;
     }
