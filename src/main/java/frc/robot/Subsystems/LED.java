@@ -4,6 +4,9 @@
 
 package frc.robot.Subsystems;
 
+import java.util.ArrayList;
+
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Timer;
@@ -17,8 +20,6 @@ public class LED extends SubsystemBase {
     CONE_WANTED,
     CUBE_WANTED,
     IDLE,
-    CONE_DETECTED,
-    CUBE_DETECTED
   }
 
   public static enum BottomLEDState {
@@ -41,9 +42,14 @@ public class LED extends SubsystemBase {
   private static Color m_gold;
   private static Color m_purple;
   private static Color m_yellow;
+  private static Color m_white;
   private static Color m_off;
 
+  private static ArrayList<Color> m_prevColors;
+
   private static Timer m_timer;
+
+  private static double m_miliseconds;
 
   /** Creates a new LED. */
   public LED() {
@@ -59,9 +65,14 @@ public class LED extends SubsystemBase {
     m_gold = new Color(228, 211, 0);
     m_purple = new Color(175, 0, 228);
     m_yellow = new Color(243, 243, 0);
+    m_white = new Color(255, 255, 255);
     m_off = new Color(0, 0, 0);
 
+    m_prevColors = new ArrayList<Color>();
+
     m_timer = new Timer();
+
+    m_miliseconds = 0.0;
 
     m_bottomLED.setLength(m_bottomLEDBuffer.getLength());
     m_topLeftLED.setLength(m_topLeftLEDBuffer.getLength());
@@ -76,12 +87,49 @@ public class LED extends SubsystemBase {
     m_topRightLED.start();
 
     m_timer.start();
+
+    setTopLEDState(TopLEDState.IDLE);
+    setBottomLEDState(BottomLEDState.STROBE);
+
+    topSetup();
+    bottomSetup();
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+
+    m_miliseconds = Units.secondsToMilliseconds(Math.floor(m_timer.get()));
+
+    if (m_topLEDState == TopLEDState.CUBE_WANTED) {
+      cube();
+    } else if (m_topLEDState == TopLEDState.CONE_WANTED) {
+      cone();
+    } else if (m_topLEDState == TopLEDState.IDLE) {
+      idle();
+    }
+
+    if (m_bottomLEDState == BottomLEDState.STROBE) {
+      strobe();
+    } else if (m_bottomLEDState == BottomLEDState.BLINK) {
+      blink();
+    }
   }
+ 
+  private void topSetup() {
+    setTopLEDs(m_white);
+  }
+
+  private void bottomSetup() {
+    for (int i = 0; i < m_bottomLEDBuffer.getLength(); i++) {
+      if (i % 2 == 0) {
+        m_bottomLEDBuffer.setLED(i, m_red);
+      } else {
+        m_bottomLEDBuffer.setLED(i, m_gold);
+      }
+      m_prevColors.set(i, m_bottomLEDBuffer.getLED(i));
+    }
+  }
+
 
   public void setTopLEDState(TopLEDState state) {
     m_topLEDState = state;
@@ -91,49 +139,55 @@ public class LED extends SubsystemBase {
     m_bottomLEDState = state;
   }
 
-  private void strobe() {
+  private void setTopLEDs(Color color) {
+    for (int i = 0; i < m_topLeftLEDBuffer.getLength(); i++) {
+      m_topLeftLEDBuffer.setLED(i, color);
+    }
+
+    for (int i = 0; i < m_topRightLEDBuffer.getLength(); i++) {
+      m_topRightLEDBuffer.setLED(i, color);
+    }
+  }
+
+  private void setBottomLEDs(Color color) {
     for (int i = 0; i < m_bottomLEDBuffer.getLength(); i++) {
-      if (m_bottomLEDBuffer.getLED(i) == m_yellow) {
-        m_bottomLEDBuffer.setLED(i, m_red);
-      } else {
-        m_bottomLEDBuffer.setLED(i, m_gold);
+      m_bottomLEDBuffer.setLED(i, color);
+    }
+  }
+
+  private void strobe() {
+    if (m_miliseconds % 300 == 0.0) {
+
+      for (int i = 0; i < m_bottomLEDBuffer.getLength(); i++) {
+        if (m_prevColors.get(i) == m_yellow) {
+          m_bottomLEDBuffer.setLED(i, m_red);
+        } else {
+          m_bottomLEDBuffer.setLED(i, m_gold);
+        }
       }
+
+    } else if (m_miliseconds % 150 == 0.0) {
+      setBottomLEDs(m_red);
+    }
+  }
+
+  private void blink() {
+    if (m_miliseconds % 300 == 0.0) {
+      setTopLEDs(m_red);
+    } else if (m_miliseconds % 150 == 0.0) {
+      setTopLEDs(m_off);
     }
   }
 
   private void cube() {
-    for (int i = 0; i < m_topLeftLEDBuffer.getLength(); i++) {
-      m_topLeftLEDBuffer.setLED(i, m_purple);
-    }
-
-    for (int i = 0; i < m_topRightLEDBuffer.getLength(); i++) {
-      m_topRightLEDBuffer.setLED(i, m_purple);
-    }
+    setTopLEDs(m_purple);
   }
 
   private void cone() {
-    for (int i = 0; i < m_topLeftLEDBuffer.getLength(); i++) {
-      m_topLeftLEDBuffer.setLED(i, m_yellow);
-    }
-
-    for (int i = 0; i < m_topRightLEDBuffer.getLength(); i++) {
-      m_topRightLEDBuffer.setLED(i, m_yellow);
-    }
+    setTopLEDs(m_yellow);
   }
 
-  private void topOff() {
-    for (int i = 0; i < m_topLeftLEDBuffer.getLength(); i++) {
-      m_topLeftLEDBuffer.setLED(i, m_off);
-    }
-
-    for (int i = 0; i < m_topRightLEDBuffer.getLength(); i++) {
-      m_topRightLEDBuffer.setLED(i, m_off);
-    }
-  }
-
-  private void bottomOff() {
-    for (int i = 0; i < m_bottomLEDBuffer.getLength(); i++) {
-      m_bottomLEDBuffer.setLED(i, m_off);
-    }
+  private void idle() {
+    setTopLEDs(m_white);
   }
 }

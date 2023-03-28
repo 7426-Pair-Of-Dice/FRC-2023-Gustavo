@@ -98,9 +98,7 @@ public class RobotContainer {
 
   private static InstantCommand m_turretStop;
   private static InstantCommand m_shoulderStop;
-  private static InstantCommand m_wristStop;
   private static InstantCommand m_intakeStop;
-  private static InstantCommand m_driveStop;
   private static InstantCommand m_limelightReset;
 
   private static RunCommand m_shoulderMaintain;
@@ -225,9 +223,7 @@ public class RobotContainer {
 
     m_turretStop = new InstantCommand(() -> m_turret.stop(), m_turret);
     m_shoulderStop = new InstantCommand(() -> m_shoulder.stop(), m_shoulder);
-    m_wristStop = new InstantCommand(() -> m_wrist.stop(), m_wrist);
     m_intakeStop = new InstantCommand(() -> m_intake.stop(), m_intake);
-    m_driveStop = new InstantCommand(() -> m_driveTrain.stop(), m_driveTrain);
     m_limelightReset = new InstantCommand(() -> m_limelight.setPipeline(0), m_limelight);
 
     m_shoulderMaintain = new RunCommand(() -> m_shoulder.setLastPosition(), m_shoulder);
