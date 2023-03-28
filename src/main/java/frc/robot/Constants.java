@@ -7,13 +7,13 @@ package frc.robot;
 public class Constants {
 
     public static final class LED {
-        public static final int kBottomLEDId = 0;
+        public static final int kBottomLEDId = 2;
         public static final int kTopLeftLEDID = 0;
-        public static final int kTopRightLEDID = 0;
+        public static final int kTopRightLEDID = 1;
 
-        public static final int kBottomLEDLength = 0;
-        public static final int kTopLeftLEDLength = 0;
-        public static final int kTopRightLEDLength = 0;
+        public static final int kBottomLEDLength = 43;
+        public static final int kTopLeftLEDLength = 40;
+        public static final int kTopRightLEDLength = 40;
     }
 
     public static final class TalonFX {

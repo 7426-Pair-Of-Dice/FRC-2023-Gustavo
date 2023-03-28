@@ -74,6 +74,7 @@ public class RobotContainer {
   private static Wrist m_wrist;
   private static Intake m_intake;
   private static Limelight m_limelight;
+  private static LED m_led;
 
   // Commands
   private static RunCommand m_arcadeDrive;
@@ -175,6 +176,7 @@ public class RobotContainer {
     m_wrist = new Wrist();
     m_intake = new Intake();
     m_limelight = new Limelight();
+    m_led = new LED();
 
     // Commands
     m_arcadeDrive = new RunCommand(
