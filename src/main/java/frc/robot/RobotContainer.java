@@ -344,7 +344,11 @@ public class RobotContainer {
             new WristPreset(m_wrist, 0.0, 5.0),
             new ShoulderPreset(m_shoulder, 0.0, 5.0), */
             new DriveStraight(m_driveTrain, -0.45).until(m_driveTrain::isTipped),
-            new RunCommand(() -> m_driveTrain.arcadeDrive(-0.2, 0), m_driveTrain).raceWith(new WaitCommand(1.5)),
+            new InstantCommand(() -> m_driveTrain.stop(), m_driveTrain),
+            new WaitCommand(0.5),
+            new RunCommand(() -> m_driveTrain.arcadeDrive(-0.11, 0), m_driveTrain).raceWith(new WaitCommand(1.5)),
+            new InstantCommand(() -> m_driveTrain.stop(), m_driveTrain),
+            new WaitCommand(0.5),
             new AutoBalance(m_driveTrain)
             /* new RunCommand(() -> m_driveTrain.arcadeDrive(-0.12, 0), m_driveTrain).raceWith(new WaitCommand(2.8)),
             new InstantCommand(() -> m_driveTrain.stop(), m_driveTrain) */

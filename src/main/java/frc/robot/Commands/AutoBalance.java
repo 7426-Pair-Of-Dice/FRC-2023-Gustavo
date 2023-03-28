@@ -27,9 +27,31 @@ public class AutoBalance extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (m_driveTrain.getPitch() > 14.0) {
+   /* 
+    if (m_driveTrain.getRoll() > -11 && m_driveTrain.getRoll() < 11) 
+      {
+        m_driveTrain.stop();
+      }
+
+    else if (m_driveTrain.getRoll() > 0) 
+      {
       m_driveTrain.arcadeDrive(-0.11, 0);
-    } else if (m_driveTrain.getPitch() < -14.0) {
+      } 
+
+    else if (m_driveTrain.getRoll() < -0) 
+      {
+      m_driveTrain.arcadeDrive(0.11, 0);
+      } 
+
+     else 
+      {
+      m_driveTrain.stop();
+      }
+
+    */
+    if (m_driveTrain.getRoll() > 11.0) {
+      m_driveTrain.arcadeDrive(-0.11, 0);
+    } else if (m_driveTrain.getRoll() < -11.0) {
       m_driveTrain.arcadeDrive(0.11, 0);
     } else {
       m_driveTrain.stop();

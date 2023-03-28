@@ -175,11 +175,11 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public boolean isTipped() {
-    return Math.abs(m_gyro.getPitch()) > 13.0;
+    return Math.abs(m_gyro.getRoll()) > 13.0;
   }
 
   public boolean isLevel() {
-    return Math.abs(m_gyro.getPitch()) < 5.0;
+    return Math.abs(m_gyro.getRoll()) < 5.0;
   }
 }
 
