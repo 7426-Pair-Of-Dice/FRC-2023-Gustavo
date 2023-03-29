@@ -5,6 +5,8 @@
 package frc.robot;
 
 import frc.robot.Subsystems.*;
+import frc.robot.Subsystems.LED.BottomLEDState;
+import frc.robot.Subsystems.LED.TopLEDState;
 import frc.robot.Commands.*;
 
 import java.util.Map;
@@ -67,6 +69,9 @@ public class RobotContainer {
 
   private static Trigger m_shoulderHomeTrigger;
 
+  private static Trigger m_cubeWantedTrigger;
+  private static Trigger m_coneWantedTrigger;
+
   // Subsystems
   private static Drivetrain m_driveTrain;
   private static Turret m_turret;
@@ -74,6 +79,7 @@ public class RobotContainer {
   private static Wrist m_wrist;
   private static Intake m_intake;
   private static Limelight m_limelight;
+  private static LED m_led;
 
   // Commands
   private static RunCommand m_arcadeDrive;
@@ -98,9 +104,7 @@ public class RobotContainer {
 
   private static InstantCommand m_turretStop;
   private static InstantCommand m_shoulderStop;
-  private static InstantCommand m_wristStop;
   private static InstantCommand m_intakeStop;
-  private static InstantCommand m_driveStop;
   private static InstantCommand m_limelightReset;
 
   private static RunCommand m_shoulderMaintain;
@@ -132,6 +136,10 @@ public class RobotContainer {
 
   private static SendableChooser<Alliance> m_allianceChooser;
   private static SendableChooser<Command> m_autoChooser;
+
+  private static InstantCommand m_coneWantedLED;
+  private static InstantCommand m_cubeWantedLED;
+  private static SequentialCommandGroup m_idleLED;
 
   public RobotContainer() {
     // Input
@@ -170,6 +178,9 @@ public class RobotContainer {
 
     m_shoulderHomeTrigger = m_operatorJoystick.button(Constants.Input.kJoystickCenterMiddleButtonId);
 
+    m_cubeWantedTrigger = m_operatorJoystick.button(Constants.Input.kJoystickCenterLeftButtonId);
+    m_coneWantedTrigger = m_operatorJoystick.button(Constants.Input.kJoystickCenterRightButtonId);
+
     // Subsystems
     m_driveTrain = new Drivetrain();
     m_turret = new Turret();
@@ -177,6 +188,7 @@ public class RobotContainer {
     m_wrist = new Wrist();
     m_intake = new Intake();
     m_limelight = new Limelight();
+    m_led = new LED();
 
     // Commands
     m_arcadeDrive = new RunCommand(
@@ -225,9 +237,7 @@ public class RobotContainer {
 
     m_turretStop = new InstantCommand(() -> m_turret.stop(), m_turret);
     m_shoulderStop = new InstantCommand(() -> m_shoulder.stop(), m_shoulder);
-    m_wristStop = new InstantCommand(() -> m_wrist.stop(), m_wrist);
     m_intakeStop = new InstantCommand(() -> m_intake.stop(), m_intake);
-    m_driveStop = new InstantCommand(() -> m_driveTrain.stop(), m_driveTrain);
     m_limelightReset = new InstantCommand(() -> m_limelight.setPipeline(0), m_limelight);
 
     m_shoulderMaintain = new RunCommand(() -> m_shoulder.setLastPosition(), m_shoulder);
@@ -316,6 +326,13 @@ public class RobotContainer {
     m_bottomScoreConePreset = new ParallelCommandGroup(
       new ShoulderPreset(m_shoulder, 18.0, 5.0),
       new WristPreset(m_wrist, 0, 5.0)
+    );
+
+    m_coneWantedLED = new InstantCommand(() -> m_led.setTopLEDState(TopLEDState.CONE_WANTED), m_led);
+    m_cubeWantedLED = new InstantCommand(() -> m_led.setTopLEDState(TopLEDState.CUBE_WANTED), m_led);
+    m_idleLED = new SequentialCommandGroup(
+      new WaitCommand(5.0),
+      new InstantCommand(() -> m_led.setTopLEDState(TopLEDState.IDLE), m_led)
     );
 
     m_driveTrain.setDefaultCommand(m_arcadeDrive);
@@ -611,6 +628,9 @@ public class RobotContainer {
     m_bottomScoreConePresetTrigger.and(m_releaseTrigger).whileTrue(m_releaseCone).onFalse(m_intakeStop);
 
     m_shoulderHomeTrigger.whileTrue(m_shoulderHomePreset).onFalse(m_shoulderStop);
+
+    m_coneWantedTrigger.onTrue(m_cubeWantedLED).onFalse(m_idleLED);
+    m_cubeWantedTrigger.onTrue(m_coneWantedLED).onFalse(m_idleLED);
   }
 
   public void updateDashboard() {}

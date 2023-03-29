@@ -6,6 +6,11 @@ package frc.robot;
 
 public class Constants {
 
+    public static final class LED {
+        public static final int kLEDStripID = 9;
+        public static final int kStripLength = 123;
+    }
+
     public static final class TalonFX {
         public static final double kEncoderResolution = 2048;
 
