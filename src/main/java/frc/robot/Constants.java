@@ -159,7 +159,7 @@ public class Constants {
     }
 
     public static final class DriveStraightCommand {
-        public static final double kP = 0.02;
+        public static final double kP = 0.01;
         public static final double kI = 0.0;
         public static final double kD = 0.0;
     }
@@ -171,7 +171,7 @@ public class Constants {
         public static final double kIDist = 0.0;
         public static final double kDDist = 0.0;
 
-        public static final double kPAngle = 0.009;
+        public static final double kPAngle = 0.02;
         public static final double kIAngle = 0.0;
         public static final double kDAngle = 0.0;
     }

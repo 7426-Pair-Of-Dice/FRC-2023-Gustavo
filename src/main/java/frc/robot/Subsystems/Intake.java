@@ -64,7 +64,7 @@ public class Intake extends SubsystemBase {
     builder.addDoubleProperty("Cube Range", this::getCubeRange, null);
   }
 
-  private void setPercentOutput(double leftPercentOutput, double rightPercentOutput) {
+  public void setPercentOutput(double leftPercentOutput, double rightPercentOutput) {
     m_leftIntakeMotor.set(VictorSPXControlMode.PercentOutput, leftPercentOutput);
     m_rightIntakeMotor.set(VictorSPXControlMode.PercentOutput, rightPercentOutput);
   }

@@ -53,7 +53,7 @@ public class DriveToDistance extends CommandBase {
     speed = speed + (Math.signum(speed) * Constants.DriveToDistanceCommand.kMinCommand);
     double rotation = m_anglePidController.calculate(m_driveTrain.getYaw(), m_setpointAngle);
 
-    m_driveTrain.arcadeDrive(speed, rotation);
+    m_driveTrain.autoArcadeDrive(speed, -rotation);
   }
 
   // Called once the command ends or is interrupted.

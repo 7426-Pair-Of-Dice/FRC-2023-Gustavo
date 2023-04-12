@@ -64,9 +64,9 @@ public class DriveStraight extends CommandBase {
 
     if (m_isTeleop) {
       double speed = -m_xboxController.getLeftY();
-      m_driveTrain.arcadeDrive(speed, m_pidController.calculate(m_driveTrain.getYaw(), m_setAngle));
+      m_driveTrain.autoArcadeDrive(speed, -m_pidController.calculate(m_driveTrain.getYaw(), m_setAngle));
     } else {
-      m_driveTrain.arcadeDrive(m_speed, m_pidController.calculate(m_driveTrain.getYaw(), m_setAngle));
+      m_driveTrain.autoArcadeDrive(m_speed, -m_pidController.calculate(m_driveTrain.getYaw(), m_setAngle));
     }
   }
 

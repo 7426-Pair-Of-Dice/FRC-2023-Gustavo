@@ -125,6 +125,11 @@ public class Drivetrain extends SubsystemBase {
     m_rightDriveOne.set((speedInput * m_speedInvert - rotationInput * m_rotationInvert) * m_multiplier);
   }
 
+  public void autoArcadeDrive(double speed, double rotation) {
+    m_leftDriveOne.set(speed + rotation);
+    m_rightDriveOne.set(speed - rotation);
+  }
+
   public void invertSpeed() {
     m_speedInvert = m_speedInvert > 0.0 ? -1.0 : 1.0;
   }
